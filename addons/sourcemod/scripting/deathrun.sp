@@ -1,6 +1,8 @@
 #include <sourcemod>
 #include <sdktools>
-#include <tf2attributes>
+//#include <tf2attributes>
+
+#define CONFIG_FILE		"configs/deathrun/deathrun.cfg"
 
 enum AttributeModMode
 {
@@ -21,7 +23,7 @@ enum struct WeaponAttributeConfig
 		
 		char mode[PLATFORM_MAX_PATH];
 		kv.GetString("mode", mode, sizeof(mode));
-		
+		PrintToServer(this.name);
 		if (StrEqual(mode, "set"))
 			this.mode = ModMode_Set;
 		else if (StrEqual(mode, "remove"))
@@ -39,33 +41,39 @@ enum struct WeaponConfig
 	
 	void ReadConfig(KeyValues kv)
 	{
-		char defindex[8];
-		kv.GetSectionName(defindex, sizeof(defindex));
-		this.defindex = StringToInt(defindex);
+		char defindexes[PLATFORM_MAX_PATH];
+		kv.GetSectionName(defindexes, sizeof(defindexes));
 		
-		this.blockPrimaryFire = view_as<bool>(kv.GetNum("block_attack"));
-		this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
+		char parts[32][8]; // maximum 32 defindexes up to 8 characters
+		int retrieved = ExplodeString(defindexes, ";", parts, sizeof(parts), sizeof(parts[]));
 		
-		this.remove = view_as<bool>(kv.GetNum("block_attack2"));
-		
-		if (kv.JumpToKey("attributes", false))
+		for (int i = 0; i < retrieved; i++)
 		{
-			this.attributes = new ArrayList();
+			this.defindex = StringToInt(parts[i]);
+			this.blockPrimaryFire = view_as<bool>(kv.GetNum("block_attack"));
+			this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
+			this.remove = view_as<bool>(kv.GetNum("block_attack2"));
 			
-			if (kv.GotoFirstSubKey(false))
+			PrintToServer(parts[i]);
+			
+			if (kv.JumpToKey("attributes", false))
 			{
-				do
+				this.attributes = new ArrayList();
+				
+				if (kv.GotoFirstSubKey(false))
 				{
-					WeaponAttributeConfig attribute;
-					attribute.ReadConfig(kv);
-					this.attributes.PushArray(attribute, sizeof(attribute));
+					do
+					{
+						WeaponAttributeConfig attribute;
+						attribute.ReadConfig(kv);
+						this.attributes.PushArray(attribute, sizeof(attribute));
+					}
+					while (kv.GotoNextKey(false));
+					kv.GoBack();
 				}
-				while (kv.GotoNextKey(false));
 				kv.GoBack();
 			}
-			kv.GoBack();
 		}
-		kv.GoBack();
 	}
 }
 
@@ -99,6 +107,8 @@ methodmap WeaponConfigList < ArrayList
 	}
 }
 
+static WeaponConfigList g_Weapons;
+
 public Plugin pluginInfo =  {
 	name = "Deathrun", 
 	author = "Mikusch", 
@@ -109,5 +119,18 @@ public Plugin pluginInfo =  {
 
 public void OnPluginStart()
 {
+	g_Weapons = new WeaponConfigList();
 	
+	char path[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, path, sizeof(path), CONFIG_FILE);
+	KeyValues kv = new KeyValues("Config");
+	if (kv.ImportFromFile(path))
+	{
+		if (kv.JumpToKey("Weapons", false))
+		{
+			g_Weapons.ReadConfig(kv);
+		}
+		kv.GoBack();
+	}
+	delete kv;
 }
