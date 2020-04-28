@@ -1,6 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
-//#include <tf2attributes>
+#include <dhooks>
+#include <tf2attributes>
 
 #define CONFIG_FILE		"configs/deathrun/deathrun.cfg"
 
@@ -107,7 +108,9 @@ methodmap WeaponConfigList < ArrayList
 	}
 }
 
-static WeaponConfigList g_Weapons;
+WeaponConfigList g_Weapons;
+
+#include "deathrun/sdk.sp"
 
 public Plugin pluginInfo =  {
 	name = "Deathrun", 
@@ -119,6 +122,9 @@ public Plugin pluginInfo =  {
 
 public void OnPluginStart()
 {
+	SDK_Init();
+	
+	
 	g_Weapons = new WeaponConfigList();
 	
 	char path[PLATFORM_MAX_PATH];
@@ -133,4 +139,16 @@ public void OnPluginStart()
 		kv.GoBack();
 	}
 	delete kv;
+	
+	// Late load!
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client))
+			OnClientPutInServer(client);
+	}
+}
+
+public void OnClientPutInServer(int client)
+{
+	DHook_HookGiveNamedItem(client);
 }

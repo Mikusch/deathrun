@@ -1,0 +1,43 @@
+"Games"
+{
+	"tf"
+	{
+		"Offsets"
+		{
+			"CTFPlayer::GiveNamedItem"
+			{
+				"linux"		"482"
+				"windows"	"475"
+			}
+		}
+		"Functions"
+		{
+			"CTFPlayer::GiveNamedItem"
+			{
+				"offset"	"CTFPlayer::GiveNamedItem"
+				"hooktype"	"entity"
+				"return"	"cbaseentity"
+				"this"		"entity"
+				"arguments"
+				{
+					"pszName"
+					{
+						"type"	"charptr"
+					}
+					"iSubType"
+					{
+						"type"	"int"
+					}
+					"pScriptItem"
+					{
+						"type"	"objectptr"
+					}
+					"bForce"
+					{
+						"type"	"bool"
+					}
+				}
+			}
+		}
+	}
+}
