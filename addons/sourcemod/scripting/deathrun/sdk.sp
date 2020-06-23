@@ -82,10 +82,15 @@ public MRESReturn DHook_GiveNamedItemPost(int client, Handle returnVal, Handle p
 				WeaponAttributeConfig attribute;
 				if (config.attributes.GetArray(i, attribute, sizeof(attribute) > 0))
 				{
+					//TODO: For some reason accessing attribute.name directly causes only 4 bytes to be read
+					//This is a dirty workaround, find a better way to do this
+					char name[PLATFORM_MAX_PATH];
+					config.attributes.GetString(i, name, sizeof(name));
+					
 					if (attribute.mode == ModMode_Set)
-						TF2Attrib_SetByName(weapon, attribute.name, attribute.value);
+						TF2Attrib_SetByName(weapon, name, attribute.value);
 					else if (attribute.mode == ModMode_Remove)
-						TF2Attrib_RemoveByName(weapon, attribute.name);
+						TF2Attrib_RemoveByName(weapon, name);
 				}
 			}
 		}
