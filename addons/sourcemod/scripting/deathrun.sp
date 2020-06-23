@@ -1,6 +1,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <dhooks>
+#include <tf2_stocks>
 #include <tf2attributes>
 
 #define CONFIG_FILE		"configs/deathrun/deathrun.cfg"
@@ -84,7 +85,7 @@ enum struct WeaponConfig
 		this.defindex = defindex;
 		this.blockPrimaryAttack = view_as<bool>(kv.GetNum("block_attack"));
 		this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
-		this.remove = view_as<bool>(kv.GetNum("block_attack2"));
+		this.remove = view_as<bool>(kv.GetNum("remove"));
 		
 		this.attributes = new ArrayList(sizeof(WeaponAttributeConfig));
 		if (kv.JumpToKey("attributes", false))
@@ -161,9 +162,28 @@ methodmap WeaponConfigList < ArrayList
 	}
 }
 
+enum
+{
+	WeaponSlot_Primary = 0,
+	WeaponSlot_Secondary,
+	WeaponSlot_Melee,
+	WeaponSlot_PDABuild,
+	WeaponSlot_PDADisguise = 3,
+	WeaponSlot_PDADestroy,
+	WeaponSlot_InvisWatch = 4,
+	WeaponSlot_BuilderEngie,
+	WeaponSlot_Unknown1,
+	WeaponSlot_Head,
+	WeaponSlot_Misc1,
+	WeaponSlot_Action,
+	WeaponSlot_Misc2
+};
+
 WeaponConfigList g_Weapons;
 
+#include "deathrun/event.sp"
 #include "deathrun/sdk.sp"
+#include "deathrun/stocks.sp"
 
 public Plugin pluginInfo =  {
 	name = "Deathrun", 
@@ -175,6 +195,7 @@ public Plugin pluginInfo =  {
 
 public void OnPluginStart()
 {
+	Event_Init();
 	SDK_Init();
 	
 	g_Weapons = new WeaponConfigList();
@@ -202,7 +223,6 @@ public void OnPluginStart()
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
 	int activeWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
-	
 	if (activeWeapon == -1)
 		return Plugin_Continue;
 	
