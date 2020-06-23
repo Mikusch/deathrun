@@ -140,8 +140,6 @@ public void OnPluginStart()
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);
 	}
-	
-	PrintToChatAll("length %d", g_Weapons.Length);
 }
 
 public void OnClientPutInServer(int client)
