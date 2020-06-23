@@ -2,7 +2,7 @@ static Handle g_DHookGiveNamedItem;
 
 void SDK_Init()
 {
-	GameData gamedata = new GameData("royale");
+	GameData gamedata = new GameData("deathrun");
 	if (gamedata == null)
 		SetFailState("Could not find deathrun gamedata");
 	
@@ -20,11 +20,11 @@ static void DHook_CreateDetour(GameData gamedata, const char[] name, DHookCallba
 	{
 		if (preCallback != INVALID_FUNCTION)
 			if (!DHookEnableDetour(detour, false, preCallback))
-			LogError("Failed to enable pre detour: %s", name);
+				LogError("Failed to enable pre detour: %s", name);
 		
 		if (postCallback != INVALID_FUNCTION)
 			if (!DHookEnableDetour(detour, true, postCallback))
-			LogError("Failed to enable post detour: %s", name);
+				LogError("Failed to enable post detour: %s", name);
 		
 		delete detour;
 	}
