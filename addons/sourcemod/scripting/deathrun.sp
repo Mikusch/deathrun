@@ -156,23 +156,25 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	if (activeWeapon == -1)
 		return Plugin_Continue;
 	
+	bool changed;
+	
 	WeaponConfig config;
 	if (g_Weapons.GetByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config) > 0)
 	{
 		if (buttons & IN_ATTACK && config.blockPrimaryAttack)
 		{
 			buttons &= ~IN_ATTACK;
-			return Plugin_Changed;
+			changed = true;
 		}
 		
 		if (buttons & IN_ATTACK2 && config.blockSecondaryAttack)
 		{
 			buttons &= ~IN_ATTACK2;
-			return Plugin_Changed;
+			changed = true;
 		}
 	}
 	
-	return Plugin_Continue;
+	return changed ? Plugin_Changed : Plugin_Continue;
 }
 
 public Action CommandListener_Build(int client, const char[] command, int argc)
