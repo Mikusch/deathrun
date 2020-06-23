@@ -13,6 +13,39 @@ enum AttributeModMode
 	ModMode_Remove		/*< Removes the attribute */
 }
 
+enum struct WeaponEntPropConfig
+{
+	char name[256];
+	PropType type;
+	PropFieldType fieldType;
+	char value[256];
+	
+	void ReadConfig(KeyValues kv)
+	{
+		kv.GetString("name", this.name, 256);
+		
+		char type[256];
+		kv.GetString("type", type, sizeof(type));
+		if (StrEqual(type, "send"))
+			this.type = Prop_Send;
+		else if (StrEqual(type, "send"))
+			this.type = Prop_Data;
+		
+		char fieldType[256];
+		kv.GetString("field_type", fieldType, sizeof(fieldType));
+		if (StrEqual(fieldType, "int") || StrEqual(fieldType, "integer"))
+			this.fieldType = PropField_Integer;
+		else if (StrEqual(fieldType, "float"))
+			this.fieldType = PropField_Float;
+		else if (StrEqual(fieldType, "vec") || StrEqual(fieldType, "vector"))
+			this.fieldType = PropField_Vector;
+		else if (StrEqual(fieldType, "str") || StrEqual(fieldType, "string"))
+			this.fieldType = PropField_String;
+		
+		kv.GetString("value", this.value, 256);
+	}
+}
+
 enum struct WeaponAttributeConfig
 {
 	char name[PLATFORM_MAX_PATH];	/*< Attribute name (e.g. "ammo regen") */
@@ -26,7 +59,6 @@ enum struct WeaponAttributeConfig
 		
 		char mode[PLATFORM_MAX_PATH];
 		kv.GetString("mode", mode, sizeof(mode));
-		
 		if (StrEqual(mode, "set"))
 			this.mode = ModMode_Set;
 		else if (StrEqual(mode, "add"))
@@ -41,10 +73,11 @@ enum struct WeaponAttributeConfig
 enum struct WeaponConfig
 {
 	int defindex;				/*< Item definition index of the weapon */
-	bool blockPrimaryAttack;		/*< Whether to block primary fire */
+	bool blockPrimaryAttack;	/*< Whether to block primary fire */
 	bool blockSecondaryAttack;	/*< Whether to block the secondary attack */
 	bool remove;				/*< Whether this weapon should be removed entirely */
 	ArrayList attributes;		/*< Attributes of the weapon - ArrayList<WeaponAttributeConfig> */
+	ArrayList props;			/*< Entity props - ArrayList<WeaponEntPropConfig> */
 	
 	void SetConfig(int defindex, KeyValues kv)
 	{
@@ -63,6 +96,23 @@ enum struct WeaponConfig
 					WeaponAttributeConfig attribute;
 					attribute.ReadConfig(kv);
 					this.attributes.PushArray(attribute);
+				}
+				while (kv.GotoNextKey(false));
+				kv.GoBack();
+			}
+			kv.GoBack();
+		}
+		
+		this.props = new ArrayList(sizeof(WeaponEntPropConfig));
+		if (kv.JumpToKey("props", false))
+		{
+			if (kv.GotoFirstSubKey(false))
+			{
+				do
+				{
+					WeaponEntPropConfig prop;
+					prop.ReadConfig(kv);
+					this.props.PushArray(prop);
 				}
 				while (kv.GotoNextKey(false));
 				kv.GoBack();
