@@ -7,15 +7,17 @@
 
 enum AttributeModMode
 {
-	ModMode_Set, 
-	ModMode_Remove, 
+	ModMode_Set,		/*< Sets the attribute, overriding any previous value */
+	ModMode_Add,		/*< Adds to the current value of the attribute */
+	ModMode_Subtract,	/*< Subtracts from the current value of the attribute */
+	ModMode_Remove		/*< Removes the attribute */
 }
 
 enum struct WeaponAttributeConfig
 {
-	char name[PLATFORM_MAX_PATH];
-	float value;
-	AttributeModMode mode;
+	char name[PLATFORM_MAX_PATH];	/*< Attribute name (e.g. "ammo regen") */
+	float value;					/*< Attribute value */
+	AttributeModMode mode;			/*< How this attribute should be modified */
 	
 	void ReadConfig(KeyValues kv)
 	{
@@ -27,6 +29,10 @@ enum struct WeaponAttributeConfig
 		
 		if (StrEqual(mode, "set"))
 			this.mode = ModMode_Set;
+		else if (StrEqual(mode, "add"))
+			this.mode = ModMode_Add;
+		else if (StrEqual(mode, "subtract"))
+			this.mode = ModMode_Subtract;
 		else if (StrEqual(mode, "remove"))
 			this.mode = ModMode_Remove;
 	}
@@ -34,44 +40,34 @@ enum struct WeaponAttributeConfig
 
 enum struct WeaponConfig
 {
-	int defindex;
-	bool blockPrimaryFire;
-	bool blockSecondaryAttack;
-	bool remove;
-	ArrayList attributes; // ArrayList of WeaponAttributeConfig
+	int defindex;				/*< Item definition index of the weapon */
+	bool blockPrimaryFire;		/*< Whether to block primary fire */
+	bool blockSecondaryAttack;	/*< Whether to block the secondary attack */
+	bool remove;				/*< Whether this weapon should be removed entirely */
+	ArrayList attributes;		/*< Attributes of the weapon - ArrayList<WeaponAttributeConfig> */
 	
-	void ReadConfig(KeyValues kv)
+	void SetConfig(int defindex, KeyValues kv)
 	{
-		char defindexes[PLATFORM_MAX_PATH];
-		kv.GetSectionName(defindexes, sizeof(defindexes));
+		this.defindex = defindex;
+		this.blockPrimaryFire = view_as<bool>(kv.GetNum("block_attack"));
+		this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
+		this.remove = view_as<bool>(kv.GetNum("block_attack2"));
 		
-		char parts[32][8]; // maximum 32 defindexes up to 8 characters
-		int retrieved = ExplodeString(defindexes, ";", parts, sizeof(parts), sizeof(parts[]));
-		
-		for (int i = 0; i < retrieved; i++)
+		this.attributes = new ArrayList(sizeof(WeaponAttributeConfig));
+		if (kv.JumpToKey("attributes", false))
 		{
-			this.defindex = StringToInt(parts[i]);
-			this.blockPrimaryFire = view_as<bool>(kv.GetNum("block_attack"));
-			this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
-			this.remove = view_as<bool>(kv.GetNum("block_attack2"));
-			
-			if (kv.JumpToKey("attributes", false))
+			if (kv.GotoFirstSubKey(false))
 			{
-				this.attributes = new ArrayList(sizeof(WeaponAttributeConfig));
-				
-				if (kv.GotoFirstSubKey(false))
+				do
 				{
-					do
-					{
-						WeaponAttributeConfig attribute;
-						attribute.ReadConfig(kv);
-						this.attributes.PushArray(attribute);
-					}
-					while (kv.GotoNextKey(false));
-					kv.GoBack();
+					WeaponAttributeConfig attribute;
+					attribute.ReadConfig(kv);
+					this.attributes.PushArray(attribute);
 				}
+				while (kv.GotoNextKey(false));
 				kv.GoBack();
 			}
+			kv.GoBack();
 		}
 	}
 }
@@ -89,9 +85,18 @@ methodmap WeaponConfigList < ArrayList
 		{
 			do
 			{
-				WeaponConfig weapon;
-				weapon.ReadConfig(kv);
-				this.PushArray(weapon);
+				char defindexes[PLATFORM_MAX_PATH];
+				kv.GetSectionName(defindexes, sizeof(defindexes));
+				
+				char parts[32][8]; // maximum 32 defindexes up to 8 characters
+				int retrieved = ExplodeString(defindexes, ";", parts, sizeof(parts), sizeof(parts[]));
+				
+				for (int i = 0; i < retrieved; i++)
+				{
+					WeaponConfig weapon;
+					weapon.SetConfig(StringToInt(parts[i]), kv);
+					this.PushArray(weapon);
+				}
 			}
 			while (kv.GotoNextKey(false));
 			kv.GoBack();
@@ -134,12 +139,45 @@ public void OnPluginStart()
 	}
 	delete kv;
 	
+	AddCommandListener(CommandListener_Build, "build");
+	
 	// Late load!
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);
 	}
+}
+
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+{
+	int activeWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	
+	if (activeWeapon == -1)
+		return Plugin_Continue;
+	
+	WeaponConfig config;
+	if (g_Weapons.GetByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config) > 0)
+	{
+		if (config.blockPrimaryFire && buttons & IN_ATTACK)
+		{
+			buttons &= ~IN_ATTACK;
+			return Plugin_Changed;
+		}
+		
+		if (config.blockSecondaryAttack && buttons & IN_ATTACK2)
+		{
+			buttons &= ~IN_ATTACK2;
+			return Plugin_Changed;
+		}
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action CommandListener_Build(int client, const char[] command, int argc)
+{
+	return Plugin_Handled;
 }
 
 public void OnClientPutInServer(int client)

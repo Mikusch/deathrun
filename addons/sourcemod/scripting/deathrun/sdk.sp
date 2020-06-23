@@ -89,6 +89,10 @@ public MRESReturn DHook_GiveNamedItemPost(int client, Handle returnVal, Handle p
 					
 					if (attribute.mode == ModMode_Set)
 						TF2Attrib_SetByName(weapon, name, attribute.value);
+					else if (attribute.mode == ModMode_Add)
+						TF2Attrib_SetByName(weapon, name, TF2Attrib_GetValue(TF2Attrib_GetByName(weapon, name)) + attribute.value);
+					else if (attribute.mode == ModMode_Subtract)
+						TF2Attrib_SetByName(weapon, name, TF2Attrib_GetValue(TF2Attrib_GetByName(weapon, name)) - attribute.value);
 					else if (attribute.mode == ModMode_Remove)
 						TF2Attrib_RemoveByName(weapon, name);
 				}
