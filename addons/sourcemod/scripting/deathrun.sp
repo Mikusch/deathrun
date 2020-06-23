@@ -41,7 +41,7 @@ enum struct WeaponAttributeConfig
 enum struct WeaponConfig
 {
 	int defindex;				/*< Item definition index of the weapon */
-	bool blockPrimaryFire;		/*< Whether to block primary fire */
+	bool blockPrimaryAttack;		/*< Whether to block primary fire */
 	bool blockSecondaryAttack;	/*< Whether to block the secondary attack */
 	bool remove;				/*< Whether this weapon should be removed entirely */
 	ArrayList attributes;		/*< Attributes of the weapon - ArrayList<WeaponAttributeConfig> */
@@ -49,7 +49,7 @@ enum struct WeaponConfig
 	void SetConfig(int defindex, KeyValues kv)
 	{
 		this.defindex = defindex;
-		this.blockPrimaryFire = view_as<bool>(kv.GetNum("block_attack"));
+		this.blockPrimaryAttack = view_as<bool>(kv.GetNum("block_attack"));
 		this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
 		this.remove = view_as<bool>(kv.GetNum("block_attack2"));
 		
@@ -159,13 +159,13 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	WeaponConfig config;
 	if (g_Weapons.GetByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config) > 0)
 	{
-		if (config.blockPrimaryFire && buttons & IN_ATTACK)
+		if (buttons & IN_ATTACK && config.blockPrimaryAttack)
 		{
 			buttons &= ~IN_ATTACK;
 			return Plugin_Changed;
 		}
 		
-		if (config.blockSecondaryAttack && buttons & IN_ATTACK2)
+		if (buttons & IN_ATTACK2 && config.blockSecondaryAttack)
 		{
 			buttons &= ~IN_ATTACK2;
 			return Plugin_Changed;
