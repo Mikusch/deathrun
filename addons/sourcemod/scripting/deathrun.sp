@@ -24,7 +24,7 @@ enum struct WeaponAttributeConfig
 		
 		char mode[PLATFORM_MAX_PATH];
 		kv.GetString("mode", mode, sizeof(mode));
-		PrintToServer(this.name);
+		
 		if (StrEqual(mode, "set"))
 			this.mode = ModMode_Set;
 		else if (StrEqual(mode, "remove"))
@@ -55,11 +55,9 @@ enum struct WeaponConfig
 			this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
 			this.remove = view_as<bool>(kv.GetNum("block_attack2"));
 			
-			PrintToServer(parts[i]);
-			
 			if (kv.JumpToKey("attributes", false))
 			{
-				this.attributes = new ArrayList();
+				this.attributes = new ArrayList(sizeof(WeaponAttributeConfig));
 				
 				if (kv.GotoFirstSubKey(false))
 				{
@@ -67,7 +65,7 @@ enum struct WeaponConfig
 					{
 						WeaponAttributeConfig attribute;
 						attribute.ReadConfig(kv);
-						this.attributes.PushArray(attribute, sizeof(attribute));
+						this.attributes.PushArray(attribute);
 					}
 					while (kv.GotoNextKey(false));
 					kv.GoBack();
@@ -93,7 +91,7 @@ methodmap WeaponConfigList < ArrayList
 			{
 				WeaponConfig weapon;
 				weapon.ReadConfig(kv);
-				this.PushArray(weapon, sizeof(weapon));
+				this.PushArray(weapon);
 			}
 			while (kv.GotoNextKey(false));
 			kv.GoBack();
@@ -124,18 +122,14 @@ public void OnPluginStart()
 {
 	SDK_Init();
 	
-	
 	g_Weapons = new WeaponConfigList();
 	
 	char path[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, path, sizeof(path), CONFIG_FILE);
-	KeyValues kv = new KeyValues("Config");
+	KeyValues kv = new KeyValues("Weapons");
 	if (kv.ImportFromFile(path))
 	{
-		if (kv.JumpToKey("Weapons", false))
-		{
-			g_Weapons.ReadConfig(kv);
-		}
+		g_Weapons.ReadConfig(kv);
 		kv.GoBack();
 	}
 	delete kv;
@@ -146,6 +140,8 @@ public void OnPluginStart()
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);
 	}
+	
+	PrintToChatAll("length %d", g_Weapons.Length);
 }
 
 public void OnClientPutInServer(int client)

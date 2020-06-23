@@ -83,13 +83,9 @@ public MRESReturn DHook_GiveNamedItemPost(int client, Handle returnVal, Handle p
 				if (config.attributes.GetArray(i, attribute, sizeof(attribute) > 0))
 				{
 					if (attribute.mode == ModMode_Set)
-					{
 						TF2Attrib_SetByName(weapon, attribute.name, attribute.value);
-					}
 					else if (attribute.mode == ModMode_Remove)
-					{
 						TF2Attrib_RemoveByName(weapon, attribute.name);
-					}
 				}
 			}
 		}
