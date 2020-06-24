@@ -76,12 +76,12 @@ public MRESReturn DHookCallback_CalculateMaxSpeed_Pre(int client, Handle returnV
 public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, Handle returnVal, Handle params)
 {
 	client = g_DHookCalculateMaxSpeedClient;
-	float speed = DHookGetReturn(returnVal);
 	
 	//We don't want speedy scouts
-	if (TF2_GetPlayerClass(client) == TFClass_Scout)
+	if (IsClientInGame(client) && TF2_GetPlayerClass(client) == TFClass_Scout)
 	{
-		DHookSetReturn(returnVal, speed - 80.0);
+		float speed = DHookGetReturn(returnVal);
+		DHookSetReturn(returnVal, FloatMax(speed - 80.0, 1.0));
 		return MRES_Supercede;
 	}
 	

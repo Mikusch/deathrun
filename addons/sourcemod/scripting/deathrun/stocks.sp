@@ -24,6 +24,21 @@ stock void StringToVector(const char[] buffer, float vec[3], float defvalue[3] =
 	vec[2] = StringToFloat(sPart[2]);
 }
 
+stock float FloatMin(float a, float b)
+{
+	return (a < b) ? a : b;
+}
+
+stock float FloatMax(float a, float b)
+{
+	return (a > b) ? a : b;
+}
+
+stock float FloatClamp(float val, float min, float max)
+{
+	return FloatMax(min, FloatMin(max, val));
+}
+
 stock int TF2_GetItemInSlot(int client, int slot)
 {
 	int weapon = GetPlayerWeaponSlot(client, slot);
