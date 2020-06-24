@@ -2,9 +2,6 @@ void Menus_DisplayQueue(int caller)
 {
 	Menu menu = new Menu(Menus_HandleQueue);
 	
-	char buffer[512];
-	Format(buffer, sizeof(buffer), "Queue List:");
-	
 	for (int i = 0; i < 7; i++)
 	{
 		int client = Queue_GetPlayerInQueue(i);
@@ -15,7 +12,7 @@ void Menus_DisplayQueue(int caller)
 		char display[256];
 		Format(display, sizeof(display), "%s (%d)", name, DRPlayer(client).QueuePoints);
 		
-		menu.AddItem("queue_entry", display, ITEMDRAW_DEFAULT);
+		menu.AddItem(NULL_STRING, display, ITEMDRAW_DEFAULT);
 	}
 	
 	if (DRPlayer(caller).QueuePoints == -1)

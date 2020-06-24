@@ -188,6 +188,8 @@ enum
 	WeaponSlot_Misc2
 };
 
+int g_CurrentActivator = -1;
+
 #include "deathrun/player.sp"
 
 #include "deathrun/commands.sp"
@@ -251,13 +253,12 @@ public void OnClientCookiesCached(int client)
 
 int GetActivator()
 {
-	//TODO: Get the activator
-	return 1;
+	return g_CurrentActivator;
 }
 
 void SetActivator(int client)
 {
-	//TODO: Set the activator
+	g_CurrentActivator = client;
 }
 
 public Action CommandListener_Build(int client, const char[] command, int argc)
