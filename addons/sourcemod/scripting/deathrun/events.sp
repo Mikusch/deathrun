@@ -1,6 +1,9 @@
-void Event_Init()
+void Events_Init()
 {
 	HookEvent("post_inventory_application", Event_PostInventoryApplication);
+	HookEvent("arena_round_start", Event_ArenaRoundStart);
+	HookEvent("teamplay_round_start", Event_TeamplayRoundStart);
+	HookEvent("teamplay_round_win", Event_TeamplayRoundWin);
 }
 
 public Action Event_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
@@ -75,4 +78,31 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 			}
 		}
 	}
+}
+
+public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = Queue_GetPlayerInQueue(0);
+	Queue_ResetPlayer(client);
+	SetActivator(client);
+}
+
+public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && GetActivator() != client)
+		{
+			Queue_AddPlayerPoints(client, 15);
+		}
+	}
+}
+
+public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
+{
+	int activator = GetActivator();
+	
+	char activatorName[MAX_NAME_LENGTH];
+	GetClientName(activator, activatorName, sizeof(activatorName));
+	PrintToChatAll("%s has become the activator!", activatorName);	//TODO: HUD text
 }

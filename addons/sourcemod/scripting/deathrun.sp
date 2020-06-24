@@ -9,6 +9,7 @@
 
 #pragma newdecls required
 
+#define TF_MAXPLAYERS		33
 #define INTEGER_MAX_VALUE	0x7FFFFFFF
 
 #define MAIN_CONFIG_FILE		"configs/deathrun/deathrun.cfg"
@@ -187,12 +188,16 @@ enum
 	WeaponSlot_Misc2
 };
 
-Cookie g_CookieActivatorOptOut;
+#include "deathrun/player.sp"
 
+#include "deathrun/commands.sp"
 #include "deathrun/config.sp"
+#include "deathrun/cookies.sp"
 #include "deathrun/convars.sp"
 #include "deathrun/dhooks.sp"
 #include "deathrun/events.sp"
+#include "deathrun/menus.sp"
+#include "deathrun/queue.sp"
 #include "deathrun/sdkcalls.sp"
 #include "deathrun/stocks.sp"
 
@@ -206,9 +211,11 @@ public Plugin pluginInfo =  {
 
 public void OnPluginStart()
 {
+	Commands_Init();
+	Cookies_Init();
 	Config_Init();
 	ConVars_Init();
-	Event_Init();
+	Events_Init();
 	
 	GameData gamedata = new GameData("deathrun");
 	if (gamedata == null)
@@ -218,8 +225,6 @@ public void OnPluginStart()
 	SDKCalls_Init(gamedata);
 	
 	AddCommandListener(CommandListener_Build, "build");
-	
-	g_CookieActivatorOptOut = new Cookie("DR_ActivatorOptOut", "Whether the client wants to opt-out of becoming the activator", CookieAccess_Protected);
 	
 	ConVars_Enable();
 	
@@ -246,14 +251,13 @@ public void OnClientCookiesCached(int client)
 
 int GetActivator()
 {
-	//TODO: this is for testing purposes only
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (IsClientInGame(i) && TF2_GetClientTeam(i) == TFTeam_Blue)
-			return i;
-	}
-	
-	return -1;
+	//TODO: Get the activator
+	return 1;
+}
+
+void SetActivator(int client)
+{
+	//TODO: Set the activator
 }
 
 public Action CommandListener_Build(int client, const char[] command, int argc)
@@ -264,4 +268,5 @@ public Action CommandListener_Build(int client, const char[] command, int argc)
 public void OnClientPutInServer(int client)
 {
 	DHooks_OnClientPutInServer(client);
+	Cookies_OnClientPutInServer(client);
 }
