@@ -85,6 +85,8 @@ public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dont
 	int client = Queue_GetPlayerInQueue(0);
 	Queue_ResetPlayer(client);
 	SetActivator(client);
+	
+	BalanceTeams();
 }
 
 public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
@@ -105,4 +107,6 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 	char activatorName[MAX_NAME_LENGTH];
 	GetClientName(activator, activatorName, sizeof(activatorName));
 	PrintToChatAll("%s has become the activator!", activatorName);	//TODO: HUD text
+	
+	BalanceTeams();
 }

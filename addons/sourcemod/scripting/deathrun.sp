@@ -251,6 +251,32 @@ public void OnClientCookiesCached(int client)
 	// TODO: Read cookie value and save in local array
 }
 
+stock void BalanceTeams()
+{
+	int activator = GetActivator();
+	if (activator == -1)
+		return;
+	
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client))
+		{
+			TFTeam team = TF2_GetClientTeam(client);
+			if (team > TFTeam_Spectator)	//Don't do 
+			{
+				if (client == activator && team != TFTeam_Blue)
+					TF2_ChangeClientTeam(client, TFTeam_Blue);
+				else if (client != activator && team != TFTeam_Red)
+					TF2_ChangeClientTeam(client, TFTeam_Red);
+				
+				//Respawn only if the team was changed
+				if (team != TF2_GetClientTeam(client))
+					TF2_RespawnPlayer(client);
+			}
+		}
+	}
+}
+
 int GetActivator()
 {
 	return g_CurrentActivator;
