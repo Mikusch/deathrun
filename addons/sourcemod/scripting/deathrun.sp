@@ -183,6 +183,7 @@ enum
 
 WeaponConfigList g_Weapons;
 
+#include "deathrun/convars.sp"
 #include "deathrun/dhooks.sp"
 #include "deathrun/events.sp"
 #include "deathrun/sdkcalls.sp"
@@ -198,6 +199,7 @@ public Plugin pluginInfo =  {
 
 public void OnPluginStart()
 {
+	ConVars_Init();
 	Event_Init();
 	
 	GameData gamedata = new GameData("deathrun");
@@ -221,12 +223,19 @@ public void OnPluginStart()
 	
 	AddCommandListener(CommandListener_Build, "build");
 	
+	ConVars_Enable();
+	
 	// Late load!
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);
 	}
+}
+
+public void OnPluginEnd()
+{
+	ConVars_Disable();
 }
 
 int GetActivator()
