@@ -12,6 +12,11 @@ void ConVars_Init()
 {
 	ConVars = new ArrayList(sizeof(ConVarInfo));
 	
+	ConVars_Add("mp_autoteambalance", 0.0);
+	ConVars_Add("mp_teams_unbalance_limit", 0.0);
+	ConVars_Add("tf_arena_first_blood", 0.0);
+	ConVars_Add("tf_arena_use_queue", 0.0);
+	ConVars_Add("tf_avoidteammates_pushaway", 0.0);
 	ConVars_Add("tf_scout_air_dash_count", 0.0);
 }
 

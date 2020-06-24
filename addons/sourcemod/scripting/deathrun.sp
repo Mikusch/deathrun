@@ -1,8 +1,12 @@
+#pragma semicolon 1 
+
 #include <sourcemod>
 #include <sdktools>
 #include <dhooks>
 #include <tf2_stocks>
 #include <tf2attributes>
+
+#pragma newdecls required
 
 #define INTEGER_MAX_VALUE	0x7FFFFFFF
 
