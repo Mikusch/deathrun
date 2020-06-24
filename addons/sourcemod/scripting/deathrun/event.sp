@@ -6,7 +6,6 @@ void Event_Init()
 public Action Event_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	TFClassType class = TF2_GetPlayerClass(client);
 	
 	for (int slot = 0; slot <= WeaponSlot_InvisWatch; slot++)
 	{
@@ -19,6 +18,15 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 			WeaponConfig config;
 			if (g_Weapons.GetByDefIndex(defindex, config) > 0)
 			{
+				//Handle primary attack
+				if (config.blockPrimaryAttack)
+					SetEntPropFloat(weapon, Prop_Data, "m_flNextPrimaryAttack", float(INTEGER_MAX_VALUE));
+				
+				//Handle secondary attack
+				if (config.blockSecondaryAttack)
+					SetEntPropFloat(weapon, Prop_Data, "m_flNextSecondaryAttack", float(INTEGER_MAX_VALUE));
+				
+				//Handle attributes
 				for (int i = 0; i < config.attributes.Length; i++)
 				{
 					WeaponAttributeConfig attribute;
@@ -35,6 +43,7 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 					}
 				}
 				
+				//Handle entity props
 				for (int i = 0; i < config.props.Length; i++)
 				{
 					WeaponEntPropConfig prop;
@@ -66,18 +75,4 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 			}
 		}
 	}
-}
-
-stock int TF2_GetItemInSlot(int client, int slot)
-{
-	int weapon = GetPlayerWeaponSlot(client, slot);
-	if (!IsValidEntity(weapon))
-	{
-		// If no weapon was found in the slot, check if it is a wearable
-		int wearable = SDK_GetEquippedWearable(client, slot);
-		if (IsValidEntity(wearable))
-			weapon = wearable;
-	}
-	
-	return weapon;
 }
