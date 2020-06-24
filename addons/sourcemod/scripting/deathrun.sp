@@ -5,12 +5,14 @@
 #include <dhooks>
 #include <tf2_stocks>
 #include <tf2attributes>
+#include <clientprefs>
 
 #pragma newdecls required
 
 #define INTEGER_MAX_VALUE	0x7FFFFFFF
 
-#define CONFIG_FILE		"configs/deathrun/deathrun.cfg"
+#define MAIN_CONFIG_FILE		"configs/deathrun/deathrun.cfg"
+#define WEAPON_CONFIG_FILE		"configs/deathrun/weapons.cfg"
 
 enum AttributeModMode
 {
@@ -185,8 +187,9 @@ enum
 	WeaponSlot_Misc2
 };
 
-WeaponConfigList g_Weapons;
+Cookie g_CookieActivatorOptOut;
 
+#include "deathrun/config.sp"
 #include "deathrun/convars.sp"
 #include "deathrun/dhooks.sp"
 #include "deathrun/events.sp"
@@ -203,6 +206,7 @@ public Plugin pluginInfo =  {
 
 public void OnPluginStart()
 {
+	Config_Init();
 	ConVars_Init();
 	Event_Init();
 	
@@ -213,19 +217,9 @@ public void OnPluginStart()
 	DHooks_Init(gamedata);
 	SDKCalls_Init(gamedata);
 	
-	g_Weapons = new WeaponConfigList();
-	
-	char path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), CONFIG_FILE);
-	KeyValues kv = new KeyValues("Weapons");
-	if (kv.ImportFromFile(path))
-	{
-		g_Weapons.ReadConfig(kv);
-		kv.GoBack();
-	}
-	delete kv;
-	
 	AddCommandListener(CommandListener_Build, "build");
+	
+	g_CookieActivatorOptOut = new Cookie("DR_ActivatorOptOut", "Whether the client wants to opt-out of becoming the activator", CookieAccess_Protected);
 	
 	ConVars_Enable();
 	
@@ -234,12 +228,20 @@ public void OnPluginStart()
 	{
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);
+			
+		if (AreClientCookiesCached(client))
+			OnClientCookiesCached(client);
 	}
 }
 
 public void OnPluginEnd()
 {
 	ConVars_Disable();
+}
+
+public void OnClientCookiesCached(int client)
+{
+	// TODO: Read cookie value and save in local array
 }
 
 int GetActivator()

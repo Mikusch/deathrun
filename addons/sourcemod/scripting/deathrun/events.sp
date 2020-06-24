@@ -16,7 +16,7 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 			int defindex = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
 			
 			WeaponConfig config;
-			if (g_Weapons.GetByDefIndex(defindex, config) > 0)
+			if (Config_GetWeaponByDefIndex(defindex, config))
 			{
 				//Handle primary attack
 				if (config.blockPrimaryAttack)

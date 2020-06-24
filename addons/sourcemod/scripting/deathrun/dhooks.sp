@@ -59,7 +59,7 @@ public MRESReturn DHookCallback_GiveNamedItem_Pre(int client, Handle returnVal, 
 	
 	//Remove weapon if specified in config
 	WeaponConfig config;
-	if (g_Weapons.GetByDefIndex(defindex, config) > 0 && config.remove)
+	if (Config_GetWeaponByDefIndex(defindex, config) && config.remove)
 	{
 		DHookSetReturn(returnVal, 0);
 		return MRES_Override;
