@@ -30,10 +30,15 @@ stock int TF2_GetItemInSlot(int client, int slot)
 	if (!IsValidEntity(weapon))
 	{
 		// If no weapon was found in the slot, check if it is a wearable
-		int wearable = SDK_GetEquippedWearable(client, slot);
+		int wearable = SDKCalls_GetEquippedWearableForLoadoutSlot(client, slot);
 		if (IsValidEntity(wearable))
 			weapon = wearable;
 	}
 	
 	return weapon;
+}
+
+stock int TF2_GetMaxHealth(int client)
+{
+	return GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, client);
 }

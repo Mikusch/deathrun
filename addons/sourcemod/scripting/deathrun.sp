@@ -166,25 +166,26 @@ methodmap WeaponConfigList < ArrayList
 
 enum
 {
-	WeaponSlot_Primary = 0,
-	WeaponSlot_Secondary,
-	WeaponSlot_Melee,
-	WeaponSlot_PDABuild,
-	WeaponSlot_PDADisguise = 3,
-	WeaponSlot_PDADestroy,
-	WeaponSlot_InvisWatch = 4,
-	WeaponSlot_BuilderEngie,
-	WeaponSlot_Unknown1,
-	WeaponSlot_Head,
-	WeaponSlot_Misc1,
-	WeaponSlot_Action,
+	WeaponSlot_Primary = 0, 
+	WeaponSlot_Secondary, 
+	WeaponSlot_Melee, 
+	WeaponSlot_PDABuild, 
+	WeaponSlot_PDADisguise = 3, 
+	WeaponSlot_PDADestroy, 
+	WeaponSlot_InvisWatch = 4, 
+	WeaponSlot_BuilderEngie, 
+	WeaponSlot_Unknown1, 
+	WeaponSlot_Head, 
+	WeaponSlot_Misc1, 
+	WeaponSlot_Action, 
 	WeaponSlot_Misc2
 };
 
 WeaponConfigList g_Weapons;
 
-#include "deathrun/event.sp"
-#include "deathrun/sdk.sp"
+#include "deathrun/dhooks.sp"
+#include "deathrun/events.sp"
+#include "deathrun/sdkcalls.sp"
 #include "deathrun/stocks.sp"
 
 public Plugin pluginInfo =  {
@@ -198,7 +199,13 @@ public Plugin pluginInfo =  {
 public void OnPluginStart()
 {
 	Event_Init();
-	SDK_Init();
+	
+	GameData gamedata = new GameData("deathrun");
+	if (gamedata == null)
+		SetFailState("Could not find deathrun gamedata");
+	
+	DHooks_Init(gamedata);
+	SDKCalls_Init(gamedata);
 	
 	g_Weapons = new WeaponConfigList();
 	
@@ -222,6 +229,18 @@ public void OnPluginStart()
 	}
 }
 
+int GetActivator()
+{
+	//TODO: this is for testing purposes only
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsClientInGame(i) && TF2_GetClientTeam(i) == TFTeam_Blue)
+			return i;
+	}
+	
+	return -1;
+}
+
 public Action CommandListener_Build(int client, const char[] command, int argc)
 {
 	return Plugin_Handled;
@@ -229,5 +248,5 @@ public Action CommandListener_Build(int client, const char[] command, int argc)
 
 public void OnClientPutInServer(int client)
 {
-	DHook_HookGiveNamedItem(client);
+	DHooks_OnClientPutInServer(client);
 }
