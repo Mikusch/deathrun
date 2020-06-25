@@ -1,3 +1,8 @@
+stock bool IsValidClient(int client)
+{
+	return 0 < client <= MaxClients && IsClientInGame(client);
+}
+
 stock void StringToVector(const char[] buffer, float vec[3], float defvalue[3] =  { 0.0, 0.0, 0.0 } )
 {
 	if (strlen(buffer) == 0)

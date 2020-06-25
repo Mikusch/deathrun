@@ -6,13 +6,21 @@
 #include <tf2_stocks>
 #include <tf2attributes>
 #include <clientprefs>
+#include <morecolors>
 
 #pragma newdecls required
+
+#define PLUGIN_NAME			"Deathrun"
+#define PLUGIN_AUTHOR		"Mikusch"
+#define PLUGIN_DESCRIPTION	"Good old Deathrun"
+#define PLUGIN_VERSION		"1.0"
+#define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
+
+#define DEATHRUN_TAG		"[{orange}DR{default}]"
 
 #define TF_MAXPLAYERS		33
 #define INTEGER_MAX_VALUE	0x7FFFFFFF
 
-#define MAIN_CONFIG_FILE		"configs/deathrun/deathrun.cfg"
 #define WEAPON_CONFIG_FILE		"configs/deathrun/weapons.cfg"
 
 enum AttributeModMode
@@ -204,11 +212,11 @@ int g_CurrentActivator = -1;
 #include "deathrun/stocks.sp"
 
 public Plugin pluginInfo =  {
-	name = "Deathrun", 
-	author = "Mikusch", 
-	description = "Deathrun", 
-	version = "1.0", 
-	url = "https://github.com/Mikusch/deathrun"
+	name = PLUGIN_NAME,
+	author = PLUGIN_AUTHOR,
+	description = PLUGIN_DESCRIPTION,
+	version = PLUGIN_VERSION,
+	url = PLUGIN_URL
 };
 
 public void OnPluginStart()
@@ -253,20 +261,16 @@ public void OnClientCookiesCached(int client)
 
 stock void BalanceTeams()
 {
-	int activator = GetActivator();
-	if (activator == -1)
-		return;
-	
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
 		{
 			TFTeam team = TF2_GetClientTeam(client);
-			if (team > TFTeam_Spectator)	//Don't do 
+			if (team > TFTeam_Spectator)	//Don't switch teams for spectators/unassigned
 			{
-				if (client == activator && team != TFTeam_Blue)
+				if (DRPlayer(client).IsActivator() && team != TFTeam_Blue)
 					TF2_ChangeClientTeam(client, TFTeam_Blue);
-				else if (client != activator && team != TFTeam_Red)
+				else if (!DRPlayer(client).IsActivator() && team != TFTeam_Red)
 					TF2_ChangeClientTeam(client, TFTeam_Red);
 				
 				//Respawn only if the team was changed

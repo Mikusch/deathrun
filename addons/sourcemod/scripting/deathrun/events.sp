@@ -82,20 +82,34 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 
 public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = Queue_GetPlayerInQueue(0);
-	Queue_ResetPlayer(client);
-	SetActivator(client);
-	
-	BalanceTeams();
+	int client = Queue_GetPlayerInQueuePos(1);
+	if (IsValidClient(client))
+	{
+		DRPlayer(client).QueuePoints = 0;
+		SetActivator(client);
+		BalanceTeams();
+	}
 }
 
 public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
 {
+	TFTeam team = view_as<TFTeam>(event.GetInt("team"));
+	
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && GetActivator() != client)
+		DRPlayer player = DRPlayer(client);
+		if (IsClientInGame(client))
 		{
-			Queue_AddPlayerPoints(client, 15);
+			if (team == TFTeam_Blue)
+				CPrintToChat(client, DEATHRUN_TAG..." The {blue}Activator {default}wins!");
+			else if (team == TFTeam_Red)
+				CPrintToChat(client, DEATHRUN_TAG..." The {red}Runners {default}win!");
+			
+			if (!player.IsActivator())
+			{
+				player.QueuePoints += 15;
+				CPrintToChat(client, DEATHRUN_TAG..." You have been awarded {green}%d {default}queue points (Total: {green}%d{default}).", 15, player.QueuePoints);
+			}
 		}
 	}
 }
@@ -104,9 +118,44 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 {
 	int activator = GetActivator();
 	
-	char activatorName[MAX_NAME_LENGTH];
-	GetClientName(activator, activatorName, sizeof(activatorName));
-	PrintToChatAll("%s has become the activator!", activatorName);	//TODO: HUD text
-	
-	BalanceTeams();
+	if (IsClientInGame(activator))
+	{
+		char activatorName[MAX_NAME_LENGTH];
+		GetClientName(activator, activatorName, sizeof(activatorName));
+		
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (IsClientInGame(client))
+			{
+				if (DRPlayer(client).IsActivator())
+				{
+					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 0);
+					ShowHudText(client, -1, "You became the Activator!\nKill all runners by activating traps\nand emerge victorious over the enemy!", activatorName);
+				}
+				else
+				{
+					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 0);
+					ShowHudText(client, -1, "%s became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!", activatorName);
+				}
+				
+				SetHudTextParams(-1.0, 0.375, 10.0, 255, 255, 0, 0);
+				ShowHudText(client, -1, PLUGIN_URL);
+				
+				CPrintToChat(client, DEATHRUN_TAG..." %s became the {blue}Activator{default}!", activatorName);
+			}
+		}
+		
+		BalanceTeams(); //Some cheeky players like to switch
+	}
+	else
+	{
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (IsClientInGame(client))
+			{
+				SetHudTextParams(-1.0, 0.25, FindConVar("mp_bonusroundtime").FloatValue, 0, 255, 255, 0);
+				ShowHudText(client, -1, "The activator has disconnected!\nRestarting the round!");
+			}
+		}
+	}
 }

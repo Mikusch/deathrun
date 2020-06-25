@@ -1,4 +1,4 @@
-int Queue_GetPlayerInQueue(int index)
+int Queue_GetPlayerInQueuePos(int pos)
 {
 	ArrayList queue = new ArrayList(2, MaxClients);
 	int length = 0;
@@ -13,15 +13,35 @@ int Queue_GetPlayerInQueue(int index)
 		}
 	}
 	
-	if (index >= length || length < 0)
+	if (pos > length || pos < 1)
 		return -1;
 	
 	queue.Resize(length);
 	queue.Sort(Sort_Descending, Sort_Integer);
-	int client = queue.Get(index, 1);
+	int client = queue.Get(pos - 1, 1);
 	delete queue;
 	
 	return client;
+}
+
+ArrayList Queue_GetQueueList()
+{
+	ArrayList queue = new ArrayList(2, MaxClients);
+	int length = 0;
+	
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (Queue_IsClientAllowed(client))
+		{
+			queue.Set(length, DRPlayer(client).QueuePoints, 0); //block 0 gets sorted
+			queue.Set(length, client, 1);
+			length++;
+		}
+	}
+	
+	queue.Resize(length);
+	queue.Sort(Sort_Descending, Sort_Integer);
+	return queue;
 }
 
 bool Queue_IsClientAllowed(int iClient)
@@ -38,31 +58,4 @@ bool Queue_IsClientAllowed(int iClient)
 	{
 		return false;
 	}
-}
-
-void Queue_AddPlayerPoints(int client, int points)
-{
-	DRPlayer player = DRPlayer(client);
-	
-	if (player.QueuePoints == -1)
-	{
-		PrintToChat(client, "Your queue points seem to be not loaded...");
-		return;
-	}
-	
-	player.QueuePoints += points;
-	Cookies_SaveQueue(client, player.QueuePoints);
-	
-	PrintToChat(client, "You have been awarded %d queue points! (Total: %d)", points, player.QueuePoints);
-}
-
-void Queue_ResetPlayer(int client)
-{
-	DRPlayer player = DRPlayer(client);
-	
-	if (player.QueuePoints == -1)
-		return;
-	
-	player.QueuePoints = 0;
-	Cookies_SaveQueue(client, player.QueuePoints);
 }
