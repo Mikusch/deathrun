@@ -2,6 +2,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <sdkhooks>
 #include <dhooks>
 #include <tf2_stocks>
 #include <tf2attributes>
