@@ -196,6 +196,8 @@ enum
 	WeaponSlot_Misc2
 };
 
+ConVar dr_queue_points;
+
 int g_CurrentActivator = -1;
 
 #include "deathrun/player.sp"
