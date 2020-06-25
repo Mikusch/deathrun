@@ -256,6 +256,13 @@ public void OnPluginEnd()
 	ConVars_Disable();
 }
 
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	//TODO: Instead, block attack/secondary attack on newly picked up weapons
+	if (StrEqual(classname, "tf_dropped_weapon"))
+		RemoveEntity(entity);
+}
+
 public void OnClientCookiesCached(int client)
 {
 	// TODO: Read cookie value and save in local array

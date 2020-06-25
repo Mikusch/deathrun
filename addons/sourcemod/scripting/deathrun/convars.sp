@@ -20,7 +20,6 @@ void ConVars_Init()
 	ConVars_Add("tf_arena_use_queue", 0.0);
 	ConVars_Add("tf_avoidteammates_pushaway", 0.0);
 	ConVars_Add("tf_scout_air_dash_count", 0.0);
-	ConVars_Add("tf_dropped_weapon_lifetime", 0.0);	//TODO: Instead, block attack/secondary attack on newly picked up weapons
 }
 
 void ConVars_Add(const char[] name, float value, bool enforce = true)
