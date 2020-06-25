@@ -23,8 +23,3 @@ bool Settings_Set(int client, ClientSetting setting, bool enable)
 	
 	return true;
 }
-
-void Settings_SetAll(int client, int value)
-{
-	DRPlayer(client).Settings = value;
-}

@@ -27,44 +27,34 @@ void Cookies_Refresh()
 
 void Cookies_RefreshQueue(int client)
 {
-	char cookieValue[16];
-	g_CookieQueuePoints.Get(client, cookieValue, sizeof(cookieValue));
-	
-	int value = StringToInt(cookieValue);
-	if (value > 0)
-		DRPlayer(client).QueuePoints = value;
-	else
-		DRPlayer(client).QueuePoints = 0;
+	char value[16];
+	g_CookieQueuePoints.Get(client, value, sizeof(value));
+	DRPlayer(client).QueuePoints = StringToInt(value);
 }
 
 void Cookies_SaveQueue(int client, int value)
 {
-	if (client <= 0 || client > MaxClients || !IsClientInGame(client) || IsFakeClient(client))
-		return;
-	
-	char cookieValue[16];
-	IntToString(value, cookieValue, sizeof(cookieValue));
-	g_CookieQueuePoints.Set(client, cookieValue);
+	if (IsValidClient(client) && !IsFakeClient(client))
+	{
+		char value[16];
+		IntToString(value, value, sizeof(value));
+		g_CookieQueuePoints.Set(client, value);
+	}
 }
 
 void Cookies_RefreshSettings(int client)
 {
-	int value;
-	char cookieValue[16];
-	g_CookieSettings.Get(client, cookieValue, sizeof(cookieValue));
-	
-	if (StringToIntEx(cookieValue, value) > 0)
-		Settings_SetAll(client, value);
-	else
-		Settings_SetAll(client, 0);
+	char value[16];
+	g_CookieSettings.Get(client, value, sizeof(value));
+	DRPlayer(client).Settings = StringToInt(value);
 }
 
 void Cookies_SaveSettings(int client, int value)
 {
-	if (client <= 0 || client > MaxClients || !IsClientInGame(client) || IsFakeClient(client))
-		return;
-	
-	char cookieValue[16];
-	IntToString(value, cookieValue, sizeof(cookieValue));
-	g_CookieSettings.Set(client, cookieValue);
+	if (IsValidClient(client) && !IsFakeClient(client))
+	{
+		char value[16];
+		IntToString(value, value, sizeof(value));
+		g_CookieSettings.Set(client, value);
+	}
 }
