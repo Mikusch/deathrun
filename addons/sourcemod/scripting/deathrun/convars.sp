@@ -18,11 +18,11 @@ void ConVars_Init()
 	ConVars_Add("mp_teams_unbalance_limit", 0.0);
 	ConVars_Add("tf_arena_first_blood", 0.0);
 	ConVars_Add("tf_arena_use_queue", 0.0);
-	ConVars_Add("tf_avoidteammates_pushaway", 0.0, true);
+	ConVars_Add("tf_avoidteammates_pushaway", 0.0);
 	ConVars_Add("tf_scout_air_dash_count", 0.0);
 }
 
-void ConVars_Add(const char[] name, float value, bool enforce = false)
+void ConVars_Add(const char[] name, float value, bool enforce = true)
 {
 	ConVarInfo info;
 	info.convar = FindConVar(name);
