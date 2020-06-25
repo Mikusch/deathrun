@@ -10,6 +10,8 @@ static ArrayList ConVars;
 
 void ConVars_Init()
 {
+	dr_queue_points = CreateConVar("dr_queue_points", "5", "Amount of queue points awarded at the end of each round");
+	
 	ConVars = new ArrayList(sizeof(ConVarInfo));
 	
 	ConVars_Add("mp_autoteambalance", 0.0);
