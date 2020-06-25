@@ -249,8 +249,6 @@ public void OnPluginStart()
 	DHooks_Init(gamedata);
 	SDKCalls_Init(gamedata);
 	
-	AddCommandListener(CommandListener_Build, "build");
-	
 	ConVars_Enable();
 	
 	// Late load!
@@ -347,11 +345,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	}
 	
 	return changed ? Plugin_Changed : Plugin_Continue;
-}
-
-public Action CommandListener_Build(int client, const char[] command, int argc)
-{
-	return Plugin_Handled;
 }
 
 public void OnClientPutInServer(int client)

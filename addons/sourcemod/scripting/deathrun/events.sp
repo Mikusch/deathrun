@@ -105,7 +105,6 @@ public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBr
 			else
 			{
 				Queue_AddPoints(client, dr_queue_points.IntValue);
-				CPrintToChat(client, DEATHRUN_TAG..." You have been awarded {green}%d {default}queue point(s) (Total: {green}%d{default}).", dr_queue_points.IntValue, player.QueuePoints);
 			}
 		}
 	}

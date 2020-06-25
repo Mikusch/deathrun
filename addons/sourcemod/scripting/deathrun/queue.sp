@@ -55,12 +55,14 @@ void Queue_AddPoints(int client, int points)
 	}
 	else if (!Settings_Get(client, Setting_AvoidActivator))
 	{
-		PrintToChat(client, DEATHRUN_TAG..." You have not been awarded any queue points based on your activator setting.");
+		CPrintToChat(client, DEATHRUN_TAG..." You have not been awarded any queue points based on your activator setting.");
 		return;
 	}
 	
 	player.QueuePoints += points;
 	Cookies_SaveQueue(client, player.QueuePoints);
+	
+	CPrintToChat(client, DEATHRUN_TAG..." You have been awarded {green}%d {default}queue point(s) (Total: {green}%d{default}).", dr_queue_points.IntValue, player.QueuePoints);
 }
 
 void Queue_SetPoints(int client, int points)
