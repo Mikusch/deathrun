@@ -24,6 +24,13 @@
 
 #define WEAPON_CONFIG_FILE		"configs/deathrun/weapons.cfg"
 
+// m_lifeState values
+#define LIFE_ALIVE				0 // alive
+#define LIFE_DYING				1 // playing death animation or still falling off of a ledge waiting to hit ground
+#define LIFE_DEAD				2 // dead. lying still.
+#define LIFE_RESPAWNABLE		3
+#define LIFE_DISCARDBODY		4
+
 enum ClientSetting
 {
 	Setting_AvoidActivator = (1 << 0), 
@@ -284,16 +291,17 @@ stock void BalanceTeams()
 		if (IsClientInGame(client))
 		{
 			TFTeam team = TF2_GetClientTeam(client);
-			if (team > TFTeam_Spectator)	//Don't switch teams for spectators/unassigned
+			DRPlayer player = DRPlayer(client);
+			if (player.IsActivator() || team > TFTeam_Spectator)	//Don't switch teams for spectators/unassigned, unless it is the activator
 			{
-				if (DRPlayer(client).IsActivator() && team != TFTeam_Blue)
-					TF2_ChangeClientTeam(client, TFTeam_Blue);
-				else if (!DRPlayer(client).IsActivator() && team != TFTeam_Red)
-					TF2_ChangeClientTeam(client, TFTeam_Red);
+				if (player.IsActivator() && team != TFTeam_Blue)
+					TF2_RespawnPlayerAlive(client, TFTeam_Blue);
+				else if (!player.IsActivator() && team != TFTeam_Red)
+					TF2_RespawnPlayerAlive(client, TFTeam_Red);
 				
-				//Respawn only if the team was changed
-				if (team != TF2_GetClientTeam(client))
-					TF2_RespawnPlayer(client);
+				//Haven't picked a class yet?
+				if (TF2_GetPlayerClass(client) == TFClass_Unknown)
+					TF2_SetPlayerClass(client, view_as<TFClassType>(GetRandomInt(view_as<int>(TFClass_Scout), view_as<int>(TFClass_Engineer))));
 			}
 		}
 	}

@@ -62,3 +62,14 @@ stock int TF2_GetMaxHealth(int client)
 {
 	return GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, client);
 }
+
+stock void TF2_RespawnPlayerAlive(int client, TFTeam team)
+{
+	if (TF2_GetClientTeam(client) != team)
+	{
+		SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
+		TF2_ChangeClientTeam(client, team);
+		SetEntProp(client, Prop_Send, "m_lifeState", LIFE_ALIVE);
+		TF2_RespawnPlayer(client);
+	}
+}

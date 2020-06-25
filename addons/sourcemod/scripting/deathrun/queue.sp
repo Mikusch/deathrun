@@ -74,7 +74,6 @@ void Queue_SetPoints(int client, int points)
 
 bool Queue_IsClientAllowed(int iClient)
 {
-	// TODO: Check preferences here
 	if (0 < iClient <= MaxClients
 		 && IsClientInGame(iClient)
 		 && TF2_GetClientTeam(iClient) > TFTeam_Spectator //Is client not in spectator
