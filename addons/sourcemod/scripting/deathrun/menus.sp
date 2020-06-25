@@ -19,9 +19,9 @@ void Menus_DisplayQueue(int caller)
 	delete queue;
 	
 	if (DRPlayer(caller).QueuePoints == -1)
-		menu.SetTitle("Queue List");
+		menu.SetTitle("Activator Queue List");
 	else
-		menu.SetTitle("Queue List\nYour queue points: %i", DRPlayer(caller).QueuePoints);
+		menu.SetTitle("Activator Queue List\nYour queue points: %i", DRPlayer(caller).QueuePoints);
 	
 	menu.ExitButton = true;
 	menu.Display(caller, MENU_TIME_FOREVER);

@@ -4,6 +4,7 @@ void Events_Init()
 	HookEvent("arena_round_start", Event_ArenaRoundStart);
 	HookEvent("teamplay_round_start", Event_TeamplayRoundStart);
 	HookEvent("teamplay_round_win", Event_TeamplayRoundWin);
+	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Pre);
 }
 
 public Action Event_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
@@ -158,4 +159,16 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 			}
 		}
 	}
+}
+
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+	int activator = GetActivator();
+	if (GameRules_GetRoundState() == RoundState_Stalemate && IsValidClient(activator))
+	{
+		event.SetInt("attacker", GetClientUserId(activator));
+		return Plugin_Changed;
+	}
+	
+	return Plugin_Continue;
 }
