@@ -106,7 +106,11 @@ public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBr
 			else if (team == TFTeam_Red)
 				CPrintToChat(client, DEATHRUN_TAG..." The {red}Runners {default}win!");
 			
-			if (!player.IsActivator())
+			if (player.IsActivator())
+			{
+				TF2Attrib_RemoveByName(client, "max health additive bonus");
+			}
+			else
 			{
 				player.QueuePoints += dr_queue_points.IntValue;
 				CPrintToChat(client, DEATHRUN_TAG..." You have been awarded {green}%d {default}queue point(s) (Total: {green}%d{default}).", dr_queue_points.IntValue, player.QueuePoints);
@@ -147,6 +151,16 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 		}
 		
 		BalanceTeams(); //Some cheeky players like to switch
+		
+		int maxhealth;
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (IsClientInGame(i) && TF2_GetClientTeam(i) == TFTeam_Red && IsPlayerAlive(i))
+				maxhealth += TF2_GetMaxHealth(i);
+		}
+		
+		TF2Attrib_SetByName(activator, "max health additive bonus", float(maxhealth));
+		SetEntityHealth(activator, TF2_GetMaxHealth(activator) + maxhealth);
 	}
 	else
 	{
