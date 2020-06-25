@@ -1,4 +1,5 @@
 int g_PlayerQueuePoints[TF_MAXPLAYERS] =  { -1, ... };
+int g_PlayerSettings[TF_MAXPLAYERS] =  { -1, ... };
 
 methodmap DRPlayer
 {
@@ -24,7 +25,18 @@ methodmap DRPlayer
 		public set(int val)
 		{
 			g_PlayerQueuePoints[this] = val;
-			Cookies_SaveQueue(this.Client, g_PlayerQueuePoints[this]);
+		}
+	}
+	
+	property int Settings
+	{
+		public get()
+		{
+			return g_PlayerSettings[this];
+		}
+		public set(int val)
+		{
+			g_PlayerSettings[this] = val;
 		}
 	}
 	

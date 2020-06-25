@@ -78,7 +78,7 @@ public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dont
 	int client = Queue_GetPlayerInQueuePos(1);
 	if (IsValidClient(client))
 	{
-		DRPlayer(client).QueuePoints = 0;
+		Queue_SetPoints(client, 0);
 		SetActivator(client);
 		BalanceTeams();
 	}
@@ -104,7 +104,7 @@ public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBr
 			}
 			else
 			{
-				player.QueuePoints += dr_queue_points.IntValue;
+				Queue_AddPoints(client, dr_queue_points.IntValue);
 				CPrintToChat(client, DEATHRUN_TAG..." You have been awarded {green}%d {default}queue point(s) (Total: {green}%d{default}).", dr_queue_points.IntValue, player.QueuePoints);
 			}
 		}

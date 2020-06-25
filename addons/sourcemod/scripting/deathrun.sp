@@ -23,6 +23,12 @@
 
 #define WEAPON_CONFIG_FILE		"configs/deathrun/weapons.cfg"
 
+enum ClientSetting
+{
+	Setting_AvoidActivator = (1 << 0), 
+	Setting_HidePlayers = (1 << 1)
+}
+
 enum AttributeModMode
 {
 	ModMode_Set,		/*< Sets the attribute, overriding any previous value */
@@ -196,6 +202,11 @@ enum
 	WeaponSlot_Misc2
 };
 
+char g_SettingNames[][] =  {
+	"Avoid being chosen as the Activator",
+	"Hide other players as Runner"
+};
+
 ConVar dr_queue_points;
 
 int g_CurrentActivator = -1;
@@ -210,6 +221,7 @@ int g_CurrentActivator = -1;
 #include "deathrun/events.sp"
 #include "deathrun/menus.sp"
 #include "deathrun/queue.sp"
+#include "deathrun/settings.sp"
 #include "deathrun/sdkcalls.sp"
 #include "deathrun/stocks.sp"
 
@@ -256,13 +268,6 @@ public void OnPluginEnd()
 	ConVars_Disable();
 }
 
-public void OnEntityCreated(int entity, const char[] classname)
-{
-	//TODO: Instead, block attack/secondary attack on newly picked up weapons
-	if (StrEqual(classname, "tf_dropped_weapon"))
-		RemoveEntity(entity);
-}
-
 public void OnClientCookiesCached(int client)
 {
 	// TODO: Read cookie value and save in local array
@@ -302,11 +307,27 @@ void SetActivator(int client)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
+	bool changed;
+	
 	int activeWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 	if (activeWeapon == -1)
 		return Plugin_Continue;
 	
-	bool changed;
+	//No weapon firing in preround
+	if (GameRules_GetRoundState() == RoundState_Preround)
+	{
+		if (buttons & IN_ATTACK)
+		{
+			buttons &= ~IN_ATTACK;
+			changed = true;
+		}
+		
+		if (buttons & IN_ATTACK2)
+		{
+			buttons &= ~IN_ATTACK2;
+			changed = true;
+		}
+	}
 	
 	WeaponConfig config;
 	if (Config_GetWeaponByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config))
@@ -336,4 +357,13 @@ public void OnClientPutInServer(int client)
 {
 	DHooks_OnClientPutInServer(client);
 	Cookies_OnClientPutInServer(client);
+	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_SetTransmit);
+}
+
+public Action SDKHookCB_SetTransmit(int entity, int client)
+{
+	if (!Settings_Get(client, Setting_HidePlayers) && client != entity && 0 < entity <= MaxClients && IsPlayerAlive(client))
+		return Plugin_Handled;
+	
+	return Plugin_Continue;
 }
