@@ -231,6 +231,7 @@ int g_CurrentActivator = -1;
 #include "deathrun/queue.sp"
 #include "deathrun/settings.sp"
 #include "deathrun/sdkcalls.sp"
+#include "deathrun/sdkhooks.sp"
 #include "deathrun/stocks.sp"
 
 public Plugin pluginInfo =  {
@@ -364,19 +365,6 @@ public void OnClientPutInServer(int client)
 {
 	DHooks_OnClientPutInServer(client);
 	Cookies_OnClientPutInServer(client);
-	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_SetTransmit);
+	SDKHooks_OnClientPutInServer(client);
 }
 
-public Action SDKHookCB_SetTransmit(int entity, int client)
-{
-	if (!Settings_Get(client, Setting_HidePlayers)
-		 && client != entity
-		 && TF2_GetClientTeam(client) == TFTeam_Red
-		 && 0 < entity <= MaxClients
-		 && IsPlayerAlive(client)
-		 && IsClientInGame(entity)
-		 && TF2_GetClientTeam(entity) != TFTeam_Blue)
-	return Plugin_Handled;
-	
-	return Plugin_Continue;
-}
