@@ -22,14 +22,6 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 			WeaponConfig config;
 			if (Config_GetWeaponByDefIndex(defindex, config))
 			{
-				//Handle primary attack
-				if (config.blockPrimaryAttack)
-					SetEntPropFloat(weapon, Prop_Data, "m_flNextPrimaryAttack", float(INTEGER_MAX_VALUE));
-				
-				//Handle secondary attack
-				if (config.blockSecondaryAttack)
-					SetEntPropFloat(weapon, Prop_Data, "m_flNextSecondaryAttack", float(INTEGER_MAX_VALUE));
-				
 				//Handle attributes
 				for (int i = 0; i < config.attributes.Length; i++)
 				{

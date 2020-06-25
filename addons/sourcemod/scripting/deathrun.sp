@@ -300,6 +300,33 @@ void SetActivator(int client)
 	g_CurrentActivator = client;
 }
 
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+{
+	int activeWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	if (activeWeapon == -1)
+		return Plugin_Continue;
+	
+	bool changed;
+	
+	WeaponConfig config;
+	if (Config_GetWeaponByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config))
+	{
+		if (buttons & IN_ATTACK && config.blockPrimaryAttack)
+		{
+			buttons &= ~IN_ATTACK;
+			changed = true;
+		}
+		
+		if (buttons & IN_ATTACK2 && config.blockSecondaryAttack)
+		{
+			buttons &= ~IN_ATTACK2;
+			changed = true;
+		}
+	}
+	
+	return changed ? Plugin_Changed : Plugin_Continue;
+}
+
 public Action CommandListener_Build(int client, const char[] command, int argc)
 {
 	return Plugin_Handled;
