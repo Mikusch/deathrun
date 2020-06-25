@@ -205,7 +205,7 @@ enum
 
 char g_SettingNames[][] =  {
 	"Avoid being chosen as the Activator",
-	"Hide other players as Runner"
+	"Hide other Runners"
 };
 
 ConVar dr_queue_points;
