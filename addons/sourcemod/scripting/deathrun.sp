@@ -262,6 +262,11 @@ public void OnPluginStart()
 	}
 }
 
+public void OnMapStart()
+{
+	Cookies_Refresh();
+}
+
 public void OnPluginEnd()
 {
 	ConVars_Disable();

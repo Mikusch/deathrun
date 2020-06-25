@@ -13,6 +13,18 @@ void Cookies_OnClientPutInServer(int client)
 	Cookies_RefreshSettings(client);
 }
 
+void Cookies_Refresh()
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && !IsFakeClient(client))
+		{
+			Cookies_RefreshQueue(client);
+			Cookies_RefreshSettings(client);
+		}
+	}
+}
+
 void Cookies_RefreshQueue(int client)
 {
 	char cookieValue[16];
