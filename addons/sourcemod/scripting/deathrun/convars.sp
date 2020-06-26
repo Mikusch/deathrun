@@ -10,8 +10,9 @@ static ArrayList ConVars;
 
 void ConVars_Init()
 {
-	dr_queue_points = CreateConVar("dr_queue_points", "5", "Amount of queue points awarded at the end of each round");
-	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set this to 0 if you use other thirdperson plugins that may conflict.");
+	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to clients at the end of each round");
+	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set this to 0 if you use other thirdperson plugins that may conflict");
+	dr_round_time = CreateConVar("dr_round_time", "0", "Amount of time in seconds runners have to complete the map");
 	
 	HookConVarChange(dr_allow_thirdperson, OnAllowThirdpersonChanged);
 	

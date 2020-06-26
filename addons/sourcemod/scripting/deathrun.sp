@@ -19,6 +19,8 @@
 
 #define DEATHRUN_TAG		"[{orange}DR{default}]"
 
+#define TIMER_EXPLOSION_SOUND	"items/cart_explode.wav"
+
 #define TF_MAXPLAYERS		33
 #define INTEGER_MAX_VALUE	0x7FFFFFFF
 
@@ -217,6 +219,7 @@ char g_PreferenceNames[][] =  {
 
 ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
+ConVar dr_round_time;
 
 int g_CurrentActivator = -1;
 
@@ -233,6 +236,7 @@ int g_CurrentActivator = -1;
 #include "deathrun/sdkcalls.sp"
 #include "deathrun/sdkhooks.sp"
 #include "deathrun/stocks.sp"
+#include "deathrun/timer.sp"
 
 public Plugin pluginInfo =  {
 	name = PLUGIN_NAME,
@@ -249,6 +253,7 @@ public void OnPluginStart()
 	Config_Init();
 	ConVars_Init();
 	Events_Init();
+	Timer_Init();
 	
 	GameData gamedata = new GameData("deathrun");
 	if (gamedata == null)
@@ -260,6 +265,8 @@ public void OnPluginStart()
 	ConVars_Enable();
 	
 	// Late load!
+	OnMapStart();
+	
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
@@ -270,6 +277,11 @@ public void OnPluginStart()
 	}
 }
 
+public void OnMapStart()
+{
+	PrecacheSound(TIMER_EXPLOSION_SOUND);
+}
+
 public void OnConfigsExecuted()
 {
 	Cookies_Refresh();
@@ -278,6 +290,11 @@ public void OnConfigsExecuted()
 public void OnPluginEnd()
 {
 	ConVars_Disable();
+}
+
+public void OnGameFrame()
+{
+	Timer_Think();
 }
 
 stock void BalanceTeams()

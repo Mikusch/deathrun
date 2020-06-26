@@ -139,16 +139,16 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 			{
 				if (DRPlayer(client).IsActivator())
 				{
-					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 0);
+					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
 					ShowHudText(client, -1, "You became the Activator!\nKill all runners by activating traps\nand emerge victorious over the enemy!", activatorName);
 				}
 				else
 				{
-					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 0);
+					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
 					ShowHudText(client, -1, "%s became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!", activatorName);
 				}
 				
-				SetHudTextParams(-1.0, 0.375, 10.0, 255, 255, 0, 0);
+				SetHudTextParams(-1.0, 0.375, 10.0, 255, 255, 0, 255);
 				ShowHudText(client, -1, PLUGIN_URL);
 				
 				CPrintToChat(client, DEATHRUN_TAG..." %s became the {blue}Activator{default}!", activatorName);
@@ -173,11 +173,13 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 		{
 			if (IsClientInGame(client))
 			{
-				SetHudTextParams(-1.0, 0.25, FindConVar("mp_bonusroundtime").FloatValue, 0, 255, 255, 0);
+				SetHudTextParams(-1.0, 0.25, FindConVar("mp_bonusroundtime").FloatValue, 0, 255, 255, 255);
 				ShowHudText(client, -1, "The activator has disconnected!\nRestarting the round!");
 			}
 		}
 	}
+	
+	Timer_OnRoundStart();
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
