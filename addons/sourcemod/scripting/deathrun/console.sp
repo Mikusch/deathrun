@@ -30,6 +30,10 @@ public Action CommandListener_JoinTeam(int client, const char[] command, int arg
 		return Plugin_Continue;
 	}
 	
+	//Check if we have an active activator, otherwise we assume that no round was started
+	if (GetActivator() == -1)
+		return Plugin_Continue;
+	
 	if (DRPlayer(client).IsActivator())
 		TF2_ChangeClientTeam(client, TFTeam_Blue);
 	else
