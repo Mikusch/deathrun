@@ -45,15 +45,15 @@ methodmap DRPlayer
 		return view_as<int>(this) == g_CurrentActivator;
 	}
 	
-	public bool GetPreference(ClientSetting setting)
+	public bool GetPreference(PreferenceType preference)
 	{
 		if (this.Settings == -1)
 			return false;
 		
-		return !(this.Settings & view_as<int>(setting));
+		return !(this.Settings & view_as<int>(preference));
 	}
 	
-	public bool SetPreference(ClientSetting setting, bool enable)
+	public bool SetPreference(PreferenceType preference, bool enable)
 	{
 		if (this.Settings == -1)
 			return false;
@@ -62,9 +62,9 @@ methodmap DRPlayer
 		enable = !enable;
 		
 		if (enable)
-			this.Settings |= view_as<int>(setting);
+			this.Settings |= view_as<int>(preference);
 		else
-			this.Settings &= ~view_as<int>(setting);
+			this.Settings &= ~view_as<int>(preference);
 		
 		Cookies_SaveSettings(this.Client, this.Settings);
 		

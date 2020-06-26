@@ -2,17 +2,28 @@ void Menus_DisplayMainMenu(int client)
 {
 	Menu menu = new Menu(Menus_HandleMainMenu);
 	
-	menu.SetTitle("Deathrun");
-	menu.AddItem("queue", "View Activator Queue");
-	menu.AddItem("preferences", "Change Preferences");
+	menu.SetTitle("%s - %s", PLUGIN_NAME, PLUGIN_VERSION);
+	menu.AddItem("queue", "Activator Queue List (!drnext)");
+	menu.AddItem("preferences", "Preferences (!drsettings)");
 	
-	menu.ExitButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
 int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
 {
-	//TODO
+	switch (action)
+	{
+		case MenuAction_Select:
+		{
+			char info[64];
+			menu.GetItem(param2, info, sizeof(info));
+			
+			if (StrEqual(info, "queue"))
+				Menus_DisplayQueueMenu(param1);
+			else if (StrEqual(info, "preferences"))
+				Menus_DisplayPreferencesMenu(param1);
+		}
+	}
 }
 
 void Menus_DisplayQueueMenu(int client)
@@ -40,7 +51,7 @@ void Menus_DisplayQueueMenu(int client)
 	}
 	delete queue;
 	
-	menu.ExitButton = true;
+	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
@@ -48,6 +59,11 @@ int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
+		case MenuAction_Cancel:
+		{
+			if (param2 == MenuCancel_ExitBack)
+				Menus_DisplayMainMenu(param1);
+		}
 		case MenuAction_End:
 		{
 			delete menu;
@@ -58,24 +74,27 @@ int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
 void Menus_DisplayPreferencesMenu(int client)
 {
 	Menu menu = new Menu(Menus_HandlePreferencesMenu);
-	menu.SetTitle("Client Settings\nSettings can be ■ enabled and □ disabled.");
+	menu.SetTitle("Toggle Preferences");
 	
-	for (int i = 0; i < sizeof(g_SettingNames); i++)
+	for (int i = 0; i < sizeof(g_PreferenceNames); i++)
 	{
-		if (g_SettingNames[i][0] == '\0')
+		if (g_PreferenceNames[i][0] == '\0')
 			continue;
 		
-		ClientSetting settings = view_as<ClientSetting>(RoundToNearest(Pow(2.0, float(i))));
+		PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
 		
 		char display[512];
-		if (DRPlayer(client).GetPreference(settings))
-			Format(display, sizeof(display), "□ %s", g_SettingNames[i]);
+		if (DRPlayer(client).GetPreference(preference))
+			Format(display, sizeof(display), "□ %s", g_PreferenceNames[i]);
 		else
-			Format(display, sizeof(display), "■ %s", g_SettingNames[i]);
+			Format(display, sizeof(display), "■ %s", g_PreferenceNames[i]);
 		
-		menu.AddItem(g_SettingNames[i], display);
+		char info[4];
+		if (IntToString(i, info, sizeof(info)) > 0)
+			menu.AddItem(info, display);
 	}
 	
+	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
@@ -83,27 +102,33 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 {
 	switch (action)
 	{
-		case MenuAction_End:
-		{
-			delete menu;
-		}
 		case MenuAction_Select:
 		{
 			char info[64];
 			menu.GetItem(param2, info, sizeof(info));
 			
-			for (int i = 0; i < sizeof(g_SettingNames); i++)
+			for (int i = 0; i < sizeof(g_PreferenceNames); i++)
 			{
-				ClientSetting settings = view_as<ClientSetting>(RoundToNearest(Pow(2.0, float(i))));
+				PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
 				
-				if (StrEqual(info, g_SettingNames[i]))
+				char str[4];
+				if (IntToString(i, str, sizeof(str)) > 0 && StrEqual(info, str))
 				{
 					DRPlayer player = DRPlayer(param1);
-					player.SetPreference(settings, !player.GetPreference(settings));
-					CPrintToChat(param1, DEATHRUN_TAG..." The setting \"%s\" has been toggled.", g_SettingNames[i]);
-					return;
+					player.SetPreference(preference, !player.GetPreference(preference));
+					CPrintToChat(param1, DEATHRUN_TAG..." The setting \"%s\" has been toggled.", g_PreferenceNames[i]);
+					Menus_DisplayPreferencesMenu(param1);
 				}
 			}
+		}
+		case MenuAction_Cancel:
+		{
+			if (param2 == MenuCancel_ExitBack)
+				Menus_DisplayMainMenu(param1);
+		}
+		case MenuAction_End:
+		{
+			delete menu;
 		}
 	}
 }

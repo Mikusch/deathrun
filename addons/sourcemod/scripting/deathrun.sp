@@ -11,10 +11,10 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME			"Deathrun"
+#define PLUGIN_NAME			"Deathrun Redux"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_DESCRIPTION	"Good old Deathrun"
-#define PLUGIN_VERSION		"1.0"
+#define PLUGIN_VERSION		"Pre-Release Version"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
 #define DEATHRUN_TAG		"[{orange}DR{default}]"
@@ -31,10 +31,10 @@
 #define LIFE_RESPAWNABLE		3
 #define LIFE_DISCARDBODY		4
 
-enum ClientSetting
+enum PreferenceType
 {
-	Setting_AvoidActivator = (1 << 0), 
-	Setting_HidePlayers = (1 << 1)
+	Preference_AvoidBecomingActivator = (1 << 0), 
+	Preference_HidePlayers = (1 << 1)
 }
 
 enum AttributeModMode
@@ -210,7 +210,7 @@ enum
 	WeaponSlot_Misc2
 };
 
-char g_SettingNames[][] =  {
+char g_PreferenceNames[][] =  {
 	"Avoid being chosen as the Activator",
 	"Hide other alive Runners"
 };
