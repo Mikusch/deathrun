@@ -231,8 +231,10 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
+	int victim = GetClientOfUserId(event.GetInt("userid"));
 	int activator = GetActivator();
-	if (GameRules_GetRoundState() == RoundState_Stalemate && IsValidClient(activator))
+	
+	if (GameRules_GetRoundState() == RoundState_Stalemate && IsValidClient(activator) && victim != activator)
 	{
 		event.SetInt("attacker", GetClientUserId(activator));
 		return Plugin_Changed;
