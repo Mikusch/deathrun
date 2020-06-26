@@ -17,23 +17,17 @@ void Timer_OnRoundStart()
 		g_RoundTimer = CreateTimer(g_TimerEndTime - g_TimerStartTime, Timer_ExplodePlayers);
 }
 
-void Timer_Think()
+void Timer_OnClientThink(int client)
 {
 	if (g_TimerEndTime > g_TimerStartTime && g_RoundTimer != null)
 	{
 		float timeLeft = g_TimerEndTime - GetGameTime();
 		if (timeLeft >= 0)
 		{
-			for (int client = 1; client <= MaxClients; client++)
-			{
-				if (IsClientInGame(client))
-				{
-					int mins = (RoundToFloor(timeLeft) / 60) % 60;
-					int secs = RoundToFloor(timeLeft) % 60;
-					ShowSyncHudText(client, g_RoundTimerHudSync, "Round time left: %02d:%02d", mins, secs);
-					SetHudTextParams(-1.0, 0.925, 0.1, 0, 255, 255, 255);
-				}
-			}
+			int mins = RoundToFloor(timeLeft) / 60 % 60;
+			int secs = RoundToFloor(timeLeft) % 60;
+			ShowSyncHudText(client, g_RoundTimerHudSync, "Round time left: %02d:%02d", mins, secs);
+			SetHudTextParams(-1.0, 0.925, 0.1, 0, 255, 255, 255);
 		}
 	}
 }

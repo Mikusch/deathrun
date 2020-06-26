@@ -296,11 +296,6 @@ public void OnPluginEnd()
 	ConVars_Disable();
 }
 
-public void OnGameFrame()
-{
-	Timer_Think();
-}
-
 void RequestFrameCallback_VerifyTeam(int userid)
 {
 	int client = GetClientOfUserId(userid);

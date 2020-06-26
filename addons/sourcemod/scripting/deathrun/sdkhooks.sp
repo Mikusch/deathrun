@@ -1,9 +1,10 @@
 void SDKHooks_OnClientPutInServer(int client)
 {
-	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_SetTransmit);
+	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_ClientSetTransmit);
+	SDKHook(client, SDKHook_PreThink, SDKHookCB_ClientPreThink);
 }
 
-public Action SDKHookCB_SetTransmit(int entity, int client)
+public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 {
 	if (!DRPlayer(client).GetPreference(Preference_HidePlayers)	//Check if this client wants to hide other players
 		 && TF2_GetClientTeam(client) == TFTeam_Red	//Only runners can hide other players
@@ -14,4 +15,9 @@ public Action SDKHookCB_SetTransmit(int entity, int client)
 	return Plugin_Handled;
 	
 	return Plugin_Continue;
+}
+
+public void SDKHookCB_ClientPreThink(int client)
+{
+	Timer_OnClientThink(client);
 }
