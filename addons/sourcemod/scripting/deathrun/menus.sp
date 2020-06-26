@@ -116,7 +116,7 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 	{
 		case MenuAction_Select:
 		{
-			char info[64];
+			char info[4];
 			menu.GetItem(param2, info, sizeof(info));
 			
 			for (int i = 0; i < sizeof(g_PreferenceNames); i++)
@@ -128,7 +128,7 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 				{
 					DRPlayer player = DRPlayer(param1);
 					player.SetPreference(preference, !player.GetPreference(preference));
-					CPrintToChat(param1, DEATHRUN_TAG..." The setting \"%s\" has been toggled.", g_PreferenceNames[i]);
+					CPrintToChat(param1, DEATHRUN_TAG..." You have toggled the preference \"%s\".", g_PreferenceNames[i]);
 					Menus_DisplayPreferencesMenu(param1);
 				}
 			}
