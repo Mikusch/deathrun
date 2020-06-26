@@ -5,7 +5,7 @@ void SDKHooks_OnClientPutInServer(int client)
 
 public Action SDKHookCB_SetTransmit(int entity, int client)
 {
-	if (!Settings_Get(client, Setting_HidePlayers)	//Check if this client wants to hide other players
+	if (!DRPlayer(client).GetPreference(Setting_HidePlayers)	//Check if this client wants to hide other players
 		 && TF2_GetClientTeam(client) == TFTeam_Red	//Only runners can hide other players
 		 && client != entity	//Don't hide ourself
 		 && 0 < entity <= MaxClients	//Only hide client entities

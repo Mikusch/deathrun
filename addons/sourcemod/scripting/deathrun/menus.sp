@@ -1,33 +1,50 @@
-void Menus_DisplayQueue(int caller)
+void Menus_DisplayMainMenu(int client)
 {
-	Menu menu = new Menu(Menus_HandleQueue);
+	Menu menu = new Menu(Menus_HandleMainMenu);
 	
-	if (DRPlayer(caller).QueuePoints == -1)
+	menu.SetTitle("Deathrun");
+	menu.AddItem("queue", "View Activator Queue");
+	menu.AddItem("preferences", "Change Preferences");
+	
+	menu.ExitButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
+{
+	//TODO
+}
+
+void Menus_DisplayQueueMenu(int client)
+{
+	Menu menu = new Menu(Menus_HandleQueueMenu);
+	
+	if (DRPlayer(client).QueuePoints == -1)
 		menu.SetTitle("Activator Queue List");
 	else
-		menu.SetTitle("Activator Queue List\nYour queue points: %i", DRPlayer(caller).QueuePoints);
+		menu.SetTitle("Activator Queue List\nYour queue points: %i", DRPlayer(client).QueuePoints);
 	
 	ArrayList queue = Queue_GetQueueList();
 	for (int i = 0; i < queue.Length; i++)
 	{
-		int points = queue.Get(i, 0);
-		int client = queue.Get(i, 1);
+		int queuePoints = queue.Get(i, 0);
+		int queueClient = queue.Get(i, 1);
 		
 		char name[MAX_NAME_LENGTH];
-		GetClientName(client, name, sizeof(name));
+		GetClientName(queueClient, name, sizeof(name));
 		
 		char display[256];
-		Format(display, sizeof(display), "%s (%d)", name, points);
+		Format(display, sizeof(display), "%s (%d)", name, queuePoints);
 		
-		menu.AddItem(NULL_STRING, display, ITEMDRAW_DEFAULT);
+		menu.AddItem(NULL_STRING, display);
 	}
 	delete queue;
 	
 	menu.ExitButton = true;
-	menu.Display(caller, MENU_TIME_FOREVER);
+	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-int Menus_HandleQueue(Menu menu, MenuAction action, int param1, int param2)
+int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
@@ -38,9 +55,9 @@ int Menus_HandleQueue(Menu menu, MenuAction action, int param1, int param2)
 	}
 }
 
-void Menus_DisplaySettings(int caller)
+void Menus_DisplayPreferencesMenu(int client)
 {
-	Menu menu = new Menu(Menus_HandleSettings);
+	Menu menu = new Menu(Menus_HandlePreferencesMenu);
 	menu.SetTitle("Client Settings\nSettings can be ■ enabled and □ disabled.");
 	
 	for (int i = 0; i < sizeof(g_SettingNames); i++)
@@ -51,18 +68,18 @@ void Menus_DisplaySettings(int caller)
 		ClientSetting settings = view_as<ClientSetting>(RoundToNearest(Pow(2.0, float(i))));
 		
 		char display[512];
-		if (!Settings_Get(caller, settings))
-			Format(display, sizeof(display), "■ %s", g_SettingNames[i]);
-		else
+		if (DRPlayer(client).GetPreference(settings))
 			Format(display, sizeof(display), "□ %s", g_SettingNames[i]);
+		else
+			Format(display, sizeof(display), "■ %s", g_SettingNames[i]);
 		
 		menu.AddItem(g_SettingNames[i], display);
 	}
 	
-	menu.Display(caller, MENU_TIME_FOREVER);
+	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-int Menus_HandleSettings(Menu menu, MenuAction action, int param1, int param2)
+int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
@@ -81,7 +98,8 @@ int Menus_HandleSettings(Menu menu, MenuAction action, int param1, int param2)
 				
 				if (StrEqual(info, g_SettingNames[i]))
 				{
-					Settings_Set(param1, settings, !Settings_Get(param1, settings));
+					DRPlayer player = DRPlayer(param1);
+					player.SetPreference(settings, !player.GetPreference(settings));
 					CPrintToChat(param1, DEATHRUN_TAG..." The setting \"%s\" has been toggled.", g_SettingNames[i]);
 					return;
 				}

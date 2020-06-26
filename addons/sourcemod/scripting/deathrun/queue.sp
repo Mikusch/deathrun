@@ -53,7 +53,7 @@ void Queue_AddPoints(int client, int points)
 		PrintToChat(client, DEATHRUN_TAG..." An error occured while trying to award you queue points.");
 		return;
 	}
-	else if (!Settings_Get(client, Setting_AvoidActivator))
+	else if (!DRPlayer(client).GetPreference(Setting_AvoidActivator))
 	{
 		CPrintToChat(client, DEATHRUN_TAG..." You have not been awarded any queue points based on your activator setting.");
 		return;
@@ -72,13 +72,13 @@ void Queue_SetPoints(int client, int points)
 	Cookies_SaveQueue(client, player.QueuePoints);
 }
 
-bool Queue_IsClientAllowed(int iClient)
+bool Queue_IsClientAllowed(int client)
 {
-	if (0 < iClient <= MaxClients
-		 && IsClientInGame(iClient)
-		 && TF2_GetClientTeam(iClient) > TFTeam_Spectator //Is client not in spectator
-		 && DRPlayer(iClient).QueuePoints != -1 //Does client have his queue points loaded
-		 && Settings_Get(iClient, Setting_AvoidActivator))
+	if (0 < client <= MaxClients
+		 && IsClientInGame(client)
+		 && TF2_GetClientTeam(client) > TFTeam_Spectator //Is client not in spectator
+		 && DRPlayer(client).QueuePoints != -1 //Does client have his queue points loaded
+		 && DRPlayer(client).GetPreference(Setting_AvoidActivator))
 	{
 		return true;
 	}

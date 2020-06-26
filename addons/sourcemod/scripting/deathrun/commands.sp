@@ -1,13 +1,35 @@
+static char g_CommandPrefixes[][] =  {
+	"dr", 
+	"dr_", 
+	"deathrun", 
+	"deathrun_"
+};
+
 void Commands_Init()
 {
-	RegConsoleCmd("drnext", Command_Queue, "Displays the queue of activators");
-	RegConsoleCmd("drsettings", Command_Settings, "Displays settings");
+	RegConsoleCmd("dr", Command_MainMenu, "Displays the main gamemode menu");
+	RegConsoleCmd("deathrun", Command_MainMenu, "Displays the main gamemode menu");
+	
+	Command_Create("next", Command_QueueMenu, "Displays the queue of activators");
+	Command_Create("queue", Command_QueueMenu, "Displays the queue of activators");
+	Command_Create("preferences", Command_PreferencesMenu, "Displays settings");
+	Command_Create("settings", Command_PreferencesMenu, "Displays settings");
 	
 	AddCommandListener(CommandListener_Build, "build");
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
 }
 
-public Action Command_Queue(int client, int args)
+stock void Command_Create(const char[] cmd, ConCmd callback, const char[] description = "")
+{
+	for (int i = 0; i < sizeof(g_CommandPrefixes); i++)
+	{
+		char buffer[256];
+		Format(buffer, sizeof(buffer), "%s%s", g_CommandPrefixes[i], cmd);
+		RegConsoleCmd(buffer, callback, description);
+	}
+}
+
+public Action Command_MainMenu(int client, int args)
 {
 	if (client == 0)
 	{
@@ -15,11 +37,11 @@ public Action Command_Queue(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	Menus_DisplayQueue(client);
+	Menus_DisplayMainMenu(client);
 	return Plugin_Handled;
 }
 
-public Action Command_Settings(int client, int args)
+public Action Command_QueueMenu(int client, int args)
 {
 	if (client == 0)
 	{
@@ -27,7 +49,19 @@ public Action Command_Settings(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	Menus_DisplaySettings(client);
+	Menus_DisplayQueueMenu(client);
+	return Plugin_Handled;
+}
+
+public Action Command_PreferencesMenu(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "This command can only be used in-game");
+		return Plugin_Handled;
+	}
+	
+	Menus_DisplayPreferencesMenu(client);
 	return Plugin_Handled;
 }
 
@@ -47,4 +81,4 @@ public Action CommandListener_JoinTeam(int client, const char[] command, int arg
 		return Plugin_Handled;
 	
 	return Plugin_Continue;
-}
+} 

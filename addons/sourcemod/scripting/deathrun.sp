@@ -212,7 +212,7 @@ enum
 
 char g_SettingNames[][] =  {
 	"Avoid being chosen as the Activator",
-	"Hide other Runners"
+	"Hide other alive Runners"
 };
 
 ConVar dr_queue_points;
@@ -229,7 +229,6 @@ int g_CurrentActivator = -1;
 #include "deathrun/events.sp"
 #include "deathrun/menus.sp"
 #include "deathrun/queue.sp"
-#include "deathrun/settings.sp"
 #include "deathrun/sdkcalls.sp"
 #include "deathrun/sdkhooks.sp"
 #include "deathrun/stocks.sp"

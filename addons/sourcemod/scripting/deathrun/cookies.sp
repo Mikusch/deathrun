@@ -36,9 +36,9 @@ void Cookies_SaveQueue(int client, int value)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
-		char value[16];
-		IntToString(value, value, sizeof(value));
-		g_CookieQueuePoints.Set(client, value);
+		char strValue[16];
+		IntToString(value, strValue, sizeof(strValue));
+		g_CookieQueuePoints.Set(client, strValue);
 	}
 }
 
@@ -53,8 +53,8 @@ void Cookies_SaveSettings(int client, int value)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
-		char value[16];
-		IntToString(value, value, sizeof(value));
-		g_CookieSettings.Set(client, value);
+		char strValue[16];
+		IntToString(value, strValue, sizeof(strValue));
+		g_CookieSettings.Set(client, strValue);
 	}
 }

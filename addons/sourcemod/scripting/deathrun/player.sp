@@ -44,4 +44,30 @@ methodmap DRPlayer
 	{
 		return view_as<int>(this) == g_CurrentActivator;
 	}
+	
+	public bool GetPreference(ClientSetting setting)
+	{
+		if (this.Settings == -1)
+			return false;
+		
+		return !(this.Settings & view_as<int>(setting));
+	}
+	
+	public bool SetPreference(ClientSetting setting, bool enable)
+	{
+		if (this.Settings == -1)
+			return false;
+		
+		//Since the initial value is 0 to turn on all settings, we set 0 if true, 1 if false
+		enable = !enable;
+		
+		if (enable)
+			this.Settings |= view_as<int>(setting);
+		else
+			this.Settings &= ~view_as<int>(setting);
+		
+		Cookies_SaveSettings(this.Client, this.Settings);
+		
+		return true;
+	}
 }
