@@ -1,5 +1,6 @@
 int g_PlayerQueuePoints[TF_MAXPLAYERS] =  { -1, ... };
 int g_PlayerSettings[TF_MAXPLAYERS] =  { -1, ... };
+bool g_PlayerThirdPersonEnabled[TF_MAXPLAYERS];
 
 methodmap DRPlayer
 {
@@ -37,6 +38,18 @@ methodmap DRPlayer
 		public set(int val)
 		{
 			g_PlayerSettings[this] = val;
+		}
+	}
+	
+	property bool ThirdPersonEnabled
+	{
+		public get()
+		{
+			return g_PlayerThirdPersonEnabled[this];
+		}
+		public set(bool val)
+		{
+			g_PlayerThirdPersonEnabled[this] = val;
 		}
 	}
 	

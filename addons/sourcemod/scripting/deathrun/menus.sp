@@ -5,6 +5,7 @@ void Menus_DisplayMainMenu(int client)
 	menu.SetTitle("%s - %s", PLUGIN_NAME, PLUGIN_VERSION);
 	menu.AddItem("queue", "Activator Queue List (!drnext)");
 	menu.AddItem("preferences", "Preferences (!drsettings)");
+	menu.AddItem("thirdperson", "Toggle Thirdperson Mode (!drthirdperson)");
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }
@@ -19,9 +20,18 @@ int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
 			menu.GetItem(param2, info, sizeof(info));
 			
 			if (StrEqual(info, "queue"))
+			{
 				Menus_DisplayQueueMenu(param1);
+			}
 			else if (StrEqual(info, "preferences"))
+			{
 				Menus_DisplayPreferencesMenu(param1);
+			}
+			else if (StrEqual(info, "thirdperson"))
+			{
+				FakeClientCommand(param1, "dr_thirdperson");
+				Menus_DisplayMainMenu(param1);
+			}
 		}
 	}
 }

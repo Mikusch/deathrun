@@ -15,6 +15,9 @@ void Commands_Init()
 	Command_Create("preferences", Command_PreferencesMenu, "Displays settings");
 	Command_Create("settings", Command_PreferencesMenu, "Displays settings");
 	
+	Command_Create("tp", Command_Thirdperson, "Toggles Thirdperson mode");
+	Command_Create("thirdperson", Command_Thirdperson, "Toggles Thirdperson mode");
+	
 	AddCommandListener(CommandListener_Build, "build");
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
 }
@@ -62,6 +65,33 @@ public Action Command_PreferencesMenu(int client, int args)
 	}
 	
 	Menus_DisplayPreferencesMenu(client);
+	return Plugin_Handled;
+}
+
+public Action Command_Thirdperson(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "This command can only be used in-game");
+		return Plugin_Handled;
+	}
+	
+	DRPlayer player = DRPlayer(client);
+	if (player.ThirdPersonEnabled)
+	{
+		SetVariantInt(0);
+		AcceptEntityInput(client, "SetForcedTauntCam");
+		CPrintToChat(client, DEATHRUN_TAG..." You have disabled thirdperson mode.");
+	}
+	else
+	{
+		SetVariantInt(1);
+		AcceptEntityInput(client, "SetForcedTauntCam");
+		CPrintToChat(client, DEATHRUN_TAG..." You have enabled thirdperson mode.");
+	}
+	
+	player.ThirdPersonEnabled = !player.ThirdPersonEnabled;
+	
 	return Plugin_Handled;
 }
 

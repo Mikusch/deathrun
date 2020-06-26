@@ -9,7 +9,8 @@ void Events_Init()
 
 public Action Event_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(event.GetInt("userid"));
+	int userid = event.GetInt("userid");
+	int client = GetClientOfUserId(userid);
 	
 	for (int slot = 0; slot <= WeaponSlot_InvisWatch; slot++)
 	{
@@ -70,6 +71,19 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 				}
 			}
 		}
+	}
+	
+	if (DRPlayer(client).ThirdPersonEnabled)
+		CreateTimer(0.2, Timer_SetThirdperson, userid);
+}
+
+public Action Timer_SetThirdperson(Handle timer, int userid)
+{
+	int client = GetClientOfUserId(userid);
+	if (DRPlayer(client).ThirdPersonEnabled)
+	{
+		SetVariantInt(1);
+		AcceptEntityInput(client, "SetForcedTauntCam");
 	}
 }
 
