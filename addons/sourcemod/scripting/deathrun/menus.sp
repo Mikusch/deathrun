@@ -5,7 +5,9 @@ void Menus_DisplayMainMenu(int client)
 	menu.SetTitle("%s - %s", PLUGIN_NAME, PLUGIN_VERSION);
 	menu.AddItem("queue", "Activator Queue List (!drnext)");
 	menu.AddItem("preferences", "Preferences (!drsettings)");
-	menu.AddItem("thirdperson", "Toggle Thirdperson Mode (!drthirdperson)");
+	
+	if (dr_allow_thirdperson.BoolValue)
+		menu.AddItem("thirdperson", "Toggle Thirdperson Mode (!drthirdperson)");
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }

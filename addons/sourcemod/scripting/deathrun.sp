@@ -216,6 +216,7 @@ char g_PreferenceNames[][] =  {
 };
 
 ConVar dr_queue_points;
+ConVar dr_allow_thirdperson;
 
 int g_CurrentActivator = -1;
 

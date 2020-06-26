@@ -76,6 +76,12 @@ public Action Command_Thirdperson(int client, int args)
 		return Plugin_Handled;
 	}
 	
+	if (!dr_allow_thirdperson.BoolValue)
+	{
+		CPrintToChat(client, DEATHRUN_TAG..." The server operator has disabled this command.");
+		return Plugin_Handled;
+	}
+	
 	DRPlayer player = DRPlayer(client);
 	if (player.ThirdPersonEnabled)
 	{

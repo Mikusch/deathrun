@@ -11,6 +11,7 @@ static ArrayList ConVars;
 void ConVars_Init()
 {
 	dr_queue_points = CreateConVar("dr_queue_points", "5", "Amount of queue points awarded at the end of each round");
+	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set this to 0 if you use other thirdperson plugins that may conflict.");
 	
 	ConVars = new ArrayList(sizeof(ConVarInfo));
 	
