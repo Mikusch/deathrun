@@ -1,6 +1,6 @@
 int g_PlayerQueuePoints[TF_MAXPLAYERS] =  { -1, ... };
 int g_PlayerSettings[TF_MAXPLAYERS] =  { -1, ... };
-bool g_PlayerThirdPersonEnabled[TF_MAXPLAYERS];
+bool g_PlayerThirdpersonEnabled[TF_MAXPLAYERS];
 
 methodmap DRPlayer
 {
@@ -41,16 +41,21 @@ methodmap DRPlayer
 		}
 	}
 	
-	property bool ThirdPersonEnabled
+	property bool ThirdpersonEnabled
 	{
 		public get()
 		{
-			return g_PlayerThirdPersonEnabled[this];
+			return g_PlayerThirdpersonEnabled[this];
 		}
 		public set(bool val)
 		{
-			g_PlayerThirdPersonEnabled[this] = val;
+			g_PlayerThirdpersonEnabled[this] = val;
 		}
+	}
+	
+	public void Reset()
+	{
+		this.ThirdpersonEnabled = false;
 	}
 	
 	public bool IsActivator()

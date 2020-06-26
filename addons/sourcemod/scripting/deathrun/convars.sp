@@ -13,6 +13,8 @@ void ConVars_Init()
 	dr_queue_points = CreateConVar("dr_queue_points", "5", "Amount of queue points awarded at the end of each round");
 	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set this to 0 if you use other thirdperson plugins that may conflict.");
 	
+	HookConVarChange(dr_allow_thirdperson, OnAllowThirdpersonChanged);
+	
 	ConVars = new ArrayList(sizeof(ConVarInfo));
 	
 	ConVars_Add("mp_autoteambalance", 0.0);
@@ -55,6 +57,23 @@ void ConVars_Disable()
 		
 		info.convar.RemoveChangeHook(ConVars_OnChanged);
 		info.convar.SetFloat(info.defaultValue);
+	}
+}
+
+void OnAllowThirdpersonChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (!StringToInt(newValue))
+	{
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (IsClientInGame(client) && DRPlayer(client).ThirdpersonEnabled)
+			{
+				DRPlayer(client).ThirdpersonEnabled = false;
+				SetVariantInt(0);
+				AcceptEntityInput(client, "SetForcedTauntCam");
+				CPrintToChat(client, DEATHRUN_TAG..." Your thirdperson mode has been disabled by the server operator.");
+			}
+		}
 	}
 }
 

@@ -83,7 +83,7 @@ public Action Command_Thirdperson(int client, int args)
 	}
 	
 	DRPlayer player = DRPlayer(client);
-	if (player.ThirdPersonEnabled)
+	if (player.ThirdpersonEnabled)
 	{
 		SetVariantInt(0);
 		AcceptEntityInput(client, "SetForcedTauntCam");
@@ -96,7 +96,7 @@ public Action Command_Thirdperson(int client, int args)
 		CPrintToChat(client, DEATHRUN_TAG..." You have enabled thirdperson mode.");
 	}
 	
-	player.ThirdPersonEnabled = !player.ThirdPersonEnabled;
+	player.ThirdpersonEnabled = !player.ThirdpersonEnabled;
 	
 	return Plugin_Handled;
 }

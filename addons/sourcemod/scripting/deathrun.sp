@@ -361,3 +361,8 @@ public void OnClientPutInServer(int client)
 	DHooks_OnClientPutInServer(client);
 	SDKHooks_OnClientPutInServer(client);
 }
+
+public void OnClientDisconnect(int client)
+{
+	DRPlayer(client).Reset();
+}

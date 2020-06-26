@@ -73,14 +73,14 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 		}
 	}
 	
-	if (DRPlayer(client).ThirdPersonEnabled)
+	if (DRPlayer(client).ThirdpersonEnabled)
 		CreateTimer(0.2, Timer_SetThirdperson, userid);
 }
 
 public Action Timer_SetThirdperson(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
-	if (DRPlayer(client).ThirdPersonEnabled)
+	if (DRPlayer(client).ThirdpersonEnabled)
 	{
 		SetVariantInt(1);
 		AcceptEntityInput(client, "SetForcedTauntCam");
