@@ -189,12 +189,12 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 				if (DRPlayer(client).IsActivator())
 				{
 					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
-					ShowHudText(client, -1, "You became the Activator!\nKill all runners by activating traps\nand emerge victorious over the enemy!", activatorName);
+					ShowHudText(client, -1, "%T", "RoundStart_NewActivator_Activator", LANG_SERVER);
 				}
 				else
 				{
 					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
-					ShowHudText(client, -1, "%s became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!", activatorName);
+					ShowHudText(client, -1, "%T", "RoundStart_NewActivator_Runners", LANG_SERVER, activatorName);
 				}
 				
 				SetHudTextParams(-1.0, 0.375, 10.0, 255, 255, 0, 255);
@@ -221,7 +221,7 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 			if (IsClientInGame(client))
 			{
 				SetHudTextParams(-1.0, 0.25, FindConVar("mp_bonusroundtime").FloatValue, 0, 255, 255, 255);
-				ShowHudText(client, -1, "The activator has disconnected!\nRestarting the round!");
+				ShowHudText(client, -1, "%T", "RoundStart_Activator_Disconnected", LANG_SERVER);
 			}
 		}
 	}

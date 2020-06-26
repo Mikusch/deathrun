@@ -34,6 +34,18 @@
 	{
 		"en"	"%s became the {blue}Activator{default}!"
 	}
+	"RoundStart_NewActivator_Runners"
+	{
+		"en"	"%s became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!"
+	}
+	"RoundStart_NewActivator_Activator"
+	{
+		"en"	"You became the Activator!\nKill all runners by activating traps\nand emerge victorious over the enemy!"
+	}
+	"RoundStart_Activator_Disconnected"
+	{
+		"en"	"The activator has disconnected!\nThe round will restart shortly!"
+	}
 	
 	"Preferences_Enabled"
 	{
