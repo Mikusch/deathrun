@@ -122,6 +122,8 @@ public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBr
 			}
 		}
 	}
+	
+	g_RoundTimer = null;	//Block the big boom
 }
 
 public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)

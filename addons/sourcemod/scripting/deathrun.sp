@@ -223,6 +223,8 @@ ConVar dr_round_time;
 
 int g_CurrentActivator = -1;
 
+Handle g_RoundTimer;
+
 #include "deathrun/player.sp"
 
 #include "deathrun/commands.sp"

@@ -14,12 +14,12 @@ void Timer_OnRoundStart()
 	g_TimerEndTime = g_TimerStartTime + dr_round_time.FloatValue;
 	
 	if (g_TimerEndTime > g_TimerStartTime)
-		CreateTimer(g_TimerEndTime - g_TimerStartTime, Timer_ExplodePlayers);
+		g_RoundTimer = CreateTimer(g_TimerEndTime - g_TimerStartTime, Timer_ExplodePlayers);
 }
 
 void Timer_Think()
 {
-	if (g_TimerEndTime > g_TimerStartTime && GameRules_GetRoundState() == RoundState_Stalemate)
+	if (g_TimerEndTime > g_TimerStartTime && g_RoundTimer != null)
 	{
 		float timeLeft = g_TimerEndTime - GetGameTime();
 		if (timeLeft >= 0)
@@ -40,8 +40,11 @@ void Timer_Think()
 
 Action Timer_ExplodePlayers(Handle timer)
 {
+	if (timer != g_RoundTimer)
+		return;
+	
 	int activator = GetActivator();
-	if (GameRules_GetRoundState() == RoundState_Stalemate && activator != -1)
+	if (activator != -1)
 	{
 		for (int client = 1; client <= MaxClients; client++)
 		{
