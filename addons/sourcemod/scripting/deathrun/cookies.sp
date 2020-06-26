@@ -7,7 +7,7 @@ void Cookies_Init()
 	g_CookieSettings = new Cookie("dr_settings", "Deathrun-specific settings", CookieAccess_Protected);
 }
 
-void Cookies_OnClientPutInServer(int client)
+public void OnClientCookiesCached(int client)
 {
 	Cookies_RefreshQueue(client);
 	Cookies_RefreshSettings(client);
@@ -17,7 +17,7 @@ void Cookies_Refresh()
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && !IsFakeClient(client))
+		if (IsClientInGame(client))
 		{
 			Cookies_RefreshQueue(client);
 			Cookies_RefreshSettings(client);
@@ -34,7 +34,7 @@ void Cookies_RefreshQueue(int client)
 
 void Cookies_SaveQueue(int client, int value)
 {
-	if (IsValidClient(client) && !IsFakeClient(client))
+	if (IsValidClient(client))
 	{
 		char strValue[16];
 		IntToString(value, strValue, sizeof(strValue));
@@ -51,7 +51,7 @@ void Cookies_RefreshSettings(int client)
 
 void Cookies_SaveSettings(int client, int value)
 {
-	if (IsValidClient(client) && !IsFakeClient(client))
+	if (IsValidClient(client))
 	{
 		char strValue[16];
 		IntToString(value, strValue, sizeof(strValue));

@@ -279,11 +279,6 @@ public void OnPluginEnd()
 	ConVars_Disable();
 }
 
-public void OnClientCookiesCached(int client)
-{
-	// TODO: Read cookie value and save in local array
-}
-
 stock void BalanceTeams()
 {
 	for (int client = 1; client <= MaxClients; client++)
@@ -363,7 +358,5 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 public void OnClientPutInServer(int client)
 {
 	DHooks_OnClientPutInServer(client);
-	Cookies_OnClientPutInServer(client);
 	SDKHooks_OnClientPutInServer(client);
 }
-
