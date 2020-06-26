@@ -270,7 +270,7 @@ public void OnPluginStart()
 	}
 }
 
-public void OnMapStart()
+public void OnConfigsExecuted()
 {
 	Cookies_Refresh();
 }
