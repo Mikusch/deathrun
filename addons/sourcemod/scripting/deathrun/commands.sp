@@ -17,9 +17,6 @@ void Commands_Init()
 	
 	Command_Create("tp", Command_Thirdperson, "Toggles Thirdperson mode");
 	Command_Create("thirdperson", Command_Thirdperson, "Toggles Thirdperson mode");
-	
-	AddCommandListener(CommandListener_Build, "build");
-	AddCommandListener(CommandListener_JoinTeam, "jointeam");
 }
 
 stock void Command_Create(const char[] cmd, ConCmd callback, const char[] description = "")
@@ -100,21 +97,3 @@ public Action Command_Thirdperson(int client, int args)
 	
 	return Plugin_Handled;
 }
-
-public Action CommandListener_Build(int client, const char[] command, int argc)
-{
-	//Disallow building
-	return Plugin_Handled;
-}
-
-public Action CommandListener_JoinTeam(int client, const char[] command, int argc)
-{
-	char team[32];
-	GetCmdArg(1, team, sizeof(team));
-	
-	//Disallow joining activator team
-	if (StrEqual(team, "blue", false))
-		return Plugin_Handled;
-	
-	return Plugin_Continue;
-} 

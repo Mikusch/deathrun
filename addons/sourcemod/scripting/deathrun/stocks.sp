@@ -63,13 +63,18 @@ stock int TF2_GetMaxHealth(int client)
 	return GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, client);
 }
 
-stock void TF2_RespawnPlayerAlive(int client, TFTeam team)
+stock void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 {
-	if (TF2_GetClientTeam(client) != team)
+	TFClassType class = TF2_GetPlayerClass(client);
+	if (class == TFClass_Unknown)
 	{
-		SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
-		TF2_ChangeClientTeam(client, team);
-		SetEntProp(client, Prop_Send, "m_lifeState", LIFE_ALIVE);
-		TF2_RespawnPlayer(client);
+		// Player hasn't chosen a class. Choose one for him.
+		TF2_SetPlayerClass(client, view_as<TFClassType>(GetRandomInt(1, 9)));
 	}
+
+	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
+	TF2_ChangeClientTeam(client, team);
+	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_ALIVE);
+
+	TF2_RespawnPlayer(client);
 }

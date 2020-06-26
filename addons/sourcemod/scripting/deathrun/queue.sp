@@ -24,6 +24,17 @@ int Queue_GetPlayerInQueuePos(int pos)
 	return client;
 }
 
+void Queue_SetNextActivator()
+{
+	int client = Queue_GetPlayerInQueuePos(1);
+	if (IsValidClient(client))
+	{
+		g_CurrentActivator = client;
+		Queue_SetPoints(client, 0);
+		TF2_ChangeClientTeamAlive(client, TFTeam_Blue);
+	}
+}
+
 ArrayList Queue_GetQueueList()
 {
 	ArrayList queue = new ArrayList(2, MaxClients);

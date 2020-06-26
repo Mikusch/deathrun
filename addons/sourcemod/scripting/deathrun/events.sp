@@ -75,6 +75,8 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 	
 	if (DRPlayer(client).ThirdpersonEnabled)
 		CreateTimer(0.2, Timer_SetThirdperson, userid);
+	
+	RequestFrame(RequestFrameCallback_VerifyTeam, userid);
 }
 
 public Action Timer_SetThirdperson(Handle timer, int userid)
@@ -89,13 +91,58 @@ public Action Timer_SetThirdperson(Handle timer, int userid)
 
 public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = Queue_GetPlayerInQueuePos(1);
-	if (IsValidClient(client))
+	//Arena has a very dumb logic, if all players from a team leave the round will end and then restart without reseting the game state
+	//Catch that issue and don't run our logic!
+	int red, blue;
+	for (int client = 1; client <= MaxClients; client++)
 	{
-		Queue_SetPoints(client, 0);
-		SetActivator(client);
-		BalanceTeams();
+		if (IsClientInGame(client))
+		{
+			switch (TF2_GetClientTeam(client))
+			{
+				case TFTeam_Red: red++;
+				case TFTeam_Blue: blue++;
+			}
+		}
 	}
+	
+	//Both teams must have at least one player
+	if (red == 0 || blue == 0)
+	{
+		if (red + blue >= 2)	//If we have atleast 2 players in red or blue, force one person to the other team and try again
+		{
+			for (int client = 1; client <= MaxClients; client++)
+			{
+				if (IsClientInGame(client))
+				{
+					//Once we found someone who is in red or blue, swap their team
+					TFTeam team = TF2_GetClientTeam(client);
+					if (team == TFTeam_Red)
+					{
+						TF2_ChangeClientTeamAlive(client, TFTeam_Blue);
+						return;
+					}
+					else if (team == TFTeam_Blue)
+					{
+						TF2_ChangeClientTeamAlive(client, TFTeam_Red);
+						return;
+					}
+				}
+			}
+		}
+		//If we reach this part, either nobody is in the server or everyone is spectating
+		return;
+	}
+	
+	//New round has begun
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		//Put every player in the same team and pick the activator later
+		if (IsClientInGame(client) && TF2_GetClientTeam(client) > TFTeam_Spectator)
+			TF2_ChangeClientTeamAlive(client, TFTeam_Red);
+	}
+	
+	Queue_SetNextActivator();
 }
 
 public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
@@ -156,8 +203,6 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 				CPrintToChat(client, DEATHRUN_TAG..." %s became the {blue}Activator{default}!", activatorName);
 			}
 		}
-		
-		BalanceTeams(); //Some cheeky players like to switch
 		
 		int maxhealth;
 		for (int i = 1; i <= MaxClients; i++)

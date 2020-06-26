@@ -228,6 +228,7 @@ Handle g_RoundTimer;
 #include "deathrun/player.sp"
 
 #include "deathrun/commands.sp"
+#include "deathrun/console.sp"
 #include "deathrun/config.sp"
 #include "deathrun/cookies.sp"
 #include "deathrun/convars.sp"
@@ -251,6 +252,7 @@ public Plugin pluginInfo =  {
 public void OnPluginStart()
 {
 	Commands_Init();
+	Console_Init();
 	Cookies_Init();
 	Config_Init();
 	ConVars_Init();
@@ -299,24 +301,29 @@ public void OnGameFrame()
 	Timer_Think();
 }
 
-stock void BalanceTeams()
+void RequestFrameCallback_VerifyTeam(int userid)
 {
-	for (int client = 1; client <= MaxClients; client++)
+	int client = GetClientOfUserId(userid);
+	if (IsValidClient(client) && IsClientInGame(client))
 	{
-		if (IsClientInGame(client))
+		
+		TFTeam team = TF2_GetClientTeam(client);
+		if (team <= TFTeam_Spectator)return;
+		
+		if (DRPlayer(client).IsActivator())
 		{
-			TFTeam team = TF2_GetClientTeam(client);
-			DRPlayer player = DRPlayer(client);
-			if (player.IsActivator() || team > TFTeam_Spectator)	//Don't switch teams for spectators/unassigned, unless it is the activator
+			if (team == TFTeam_Red) //Check if player is in the runner team, if so put them back to the activator team
 			{
-				if (player.IsActivator() && team != TFTeam_Blue)
-					TF2_RespawnPlayerAlive(client, TFTeam_Blue);
-				else if (!player.IsActivator() && team != TFTeam_Red)
-					TF2_RespawnPlayerAlive(client, TFTeam_Red);
-				
-				//Haven't picked a class yet?
-				if (TF2_GetPlayerClass(client) == TFClass_Unknown)
-					TF2_SetPlayerClass(client, view_as<TFClassType>(GetRandomInt(view_as<int>(TFClass_Scout), view_as<int>(TFClass_Engineer))));
+				TF2_ChangeClientTeam(client, TFTeam_Blue);
+				TF2_RespawnPlayer(client);
+			}
+		}
+		else
+		{
+			if (team == TFTeam_Blue) //Check if player is in the activator team, if so put them back to the runner team
+			{
+				TF2_ChangeClientTeam(client, TFTeam_Red);
+				TF2_RespawnPlayer(client);
 			}
 		}
 	}
@@ -325,11 +332,6 @@ stock void BalanceTeams()
 int GetActivator()
 {
 	return g_CurrentActivator;
-}
-
-void SetActivator(int client)
-{
-	g_CurrentActivator = client;
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
