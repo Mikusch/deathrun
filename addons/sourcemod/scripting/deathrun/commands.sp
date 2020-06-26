@@ -7,25 +7,25 @@ static char g_CommandPrefixes[][] =  {
 
 void Commands_Init()
 {
-	RegConsoleCmd("dr", Command_MainMenu, "Displays the main gamemode menu");
-	RegConsoleCmd("deathrun", Command_MainMenu, "Displays the main gamemode menu");
+	RegConsoleCmd("dr", Command_MainMenu);
+	RegConsoleCmd("deathrun", Command_MainMenu);
 	
-	Command_Create("next", Command_QueueMenu, "Displays the queue of activators");
-	Command_Create("queue", Command_QueueMenu, "Displays the queue of activators");
-	Command_Create("preferences", Command_PreferencesMenu, "Displays settings");
-	Command_Create("settings", Command_PreferencesMenu, "Displays settings");
+	Command_Create("next", Command_QueueMenu);
+	Command_Create("queue", Command_QueueMenu);
+	Command_Create("preferences", Command_PreferencesMenu);
+	Command_Create("settings", Command_PreferencesMenu);
 	
-	Command_Create("tp", Command_Thirdperson, "Toggles Thirdperson mode");
-	Command_Create("thirdperson", Command_Thirdperson, "Toggles Thirdperson mode");
+	Command_Create("tp", Command_Thirdperson);
+	Command_Create("thirdperson", Command_Thirdperson);
 }
 
-stock void Command_Create(const char[] cmd, ConCmd callback, const char[] description = "")
+stock void Command_Create(const char[] cmd, ConCmd callback)
 {
 	for (int i = 0; i < sizeof(g_CommandPrefixes); i++)
 	{
 		char buffer[256];
 		Format(buffer, sizeof(buffer), "%s%s", g_CommandPrefixes[i], cmd);
-		RegConsoleCmd(buffer, callback, description);
+		RegConsoleCmd(buffer, callback);
 	}
 }
 
@@ -33,7 +33,7 @@ public Action Command_MainMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "This command can only be used in-game");
+		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
 		return Plugin_Handled;
 	}
 	
@@ -45,7 +45,7 @@ public Action Command_QueueMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "This command can only be used in-game");
+		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
 		return Plugin_Handled;
 	}
 	
@@ -57,7 +57,7 @@ public Action Command_PreferencesMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "This command can only be used in-game");
+		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
 		return Plugin_Handled;
 	}
 	
@@ -69,31 +69,31 @@ public Action Command_Thirdperson(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "This command can only be used in-game");
+		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
 		return Plugin_Handled;
 	}
 	
 	if (!dr_allow_thirdperson.BoolValue)
 	{
-		CPrintToChat(client, DEATHRUN_TAG..." The server operator has disabled this command.");
+		PrintLocalizedMessage(client, "%T", "Command_Disabled", LANG_SERVER);
 		return Plugin_Handled;
 	}
 	
 	DRPlayer player = DRPlayer(client);
-	if (player.ThirdpersonEnabled)
+	if (player.InThirdPerson)
 	{
 		SetVariantInt(0);
 		AcceptEntityInput(client, "SetForcedTauntCam");
-		CPrintToChat(client, DEATHRUN_TAG..." You have disabled thirdperson mode.");
+		PrintHintText(client, "%T", "Command_ThirdPerson_Disabled", LANG_SERVER);
 	}
 	else
 	{
 		SetVariantInt(1);
 		AcceptEntityInput(client, "SetForcedTauntCam");
-		CPrintToChat(client, DEATHRUN_TAG..." You have enabled thirdperson mode.");
+		PrintHintText(client, "%T", "Command_ThirdPerson_Enabled", LANG_SERVER);
 	}
 	
-	player.ThirdpersonEnabled = !player.ThirdpersonEnabled;
+	player.InThirdPerson = !player.InThirdPerson;
 	
 	return Plugin_Handled;
 }

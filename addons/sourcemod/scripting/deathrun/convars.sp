@@ -67,12 +67,12 @@ void OnAllowThirdpersonChanged(ConVar convar, const char[] oldValue, const char[
 	{
 		for (int client = 1; client <= MaxClients; client++)
 		{
-			if (IsClientInGame(client) && DRPlayer(client).ThirdpersonEnabled)
+			if (IsClientInGame(client) && DRPlayer(client).InThirdPerson)
 			{
-				DRPlayer(client).ThirdpersonEnabled = false;
+				DRPlayer(client).InThirdPerson = false;
 				SetVariantInt(0);
 				AcceptEntityInput(client, "SetForcedTauntCam");
-				CPrintToChat(client, DEATHRUN_TAG..." Your thirdperson mode has been disabled by the server operator.");
+				PrintLocalizedMessage(client, "%T", "Thirdperson_ForceDisable", LANG_SERVER);
 			}
 		}
 	}

@@ -42,10 +42,7 @@ void Menus_DisplayQueueMenu(int client)
 {
 	Menu menu = new Menu(Menus_HandleQueueMenu);
 	
-	if (DRPlayer(client).QueuePoints == -1)
-		menu.SetTitle("Activator Queue List");
-	else
-		menu.SetTitle("Activator Queue List\nYour queue points: %i", DRPlayer(client).QueuePoints);
+	menu.SetTitle("%T", "Menu_Queue_Title", LANG_SERVER, DRPlayer(client).QueuePoints);
 	
 	ArrayList queue = Queue_GetQueueList();
 	for (int i = 0; i < queue.Length; i++)
@@ -86,13 +83,10 @@ int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
 void Menus_DisplayPreferencesMenu(int client)
 {
 	Menu menu = new Menu(Menus_HandlePreferencesMenu);
-	menu.SetTitle("Toggle Preferences");
+	menu.SetTitle("%T", "Menu_Preferences_Title", LANG_SERVER);
 	
 	for (int i = 0; i < sizeof(g_PreferenceNames); i++)
 	{
-		if (g_PreferenceNames[i][0] == '\0')
-			continue;
-		
 		PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
 		
 		char display[512];
@@ -119,19 +113,21 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 			char info[4];
 			menu.GetItem(param2, info, sizeof(info));
 			
-			for (int i = 0; i < sizeof(g_PreferenceNames); i++)
-			{
-				PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
-				
-				char str[4];
-				if (IntToString(i, str, sizeof(str)) > 0 && StrEqual(info, str))
-				{
-					DRPlayer player = DRPlayer(param1);
-					player.SetPreference(preference, !player.GetPreference(preference));
-					CPrintToChat(param1, DEATHRUN_TAG..." You have toggled the preference \"%s\".", g_PreferenceNames[i]);
-					Menus_DisplayPreferencesMenu(param1);
-				}
-			}
+			int i = StringToInt(info);
+			PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
+			
+			DRPlayer player = DRPlayer(param1);
+			player.SetPreference(preference, !player.GetPreference(preference));
+			
+			char preferenceName[256];
+			Format(preferenceName, sizeof(preferenceName), "%T", g_PreferenceNames[i], LANG_SERVER);
+			
+			if (!player.GetPreference(preference))
+				PrintLocalizedMessage(param1, "%T", "Preferences_Enabled", LANG_SERVER, preferenceName);
+			else
+				PrintLocalizedMessage(param1, "%T", "Preferences_Disabled", LANG_SERVER, preferenceName);
+			
+			Menus_DisplayPreferencesMenu(param1);
 		}
 		case MenuAction_Cancel:
 		{
@@ -142,5 +138,18 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 		{
 			delete menu;
 		}
+		case MenuAction_DisplayItem:
+		{
+			char info[4];
+			menu.GetItem(param2, info, sizeof(info));
+			
+			int i = StringToInt(info);
+			
+			char display[64];
+			Format(display, sizeof(display), "%T", g_PreferenceNames[i]);
+			return RedrawMenuItem(display);
+		}
 	}
+	
+	return 0;
 }

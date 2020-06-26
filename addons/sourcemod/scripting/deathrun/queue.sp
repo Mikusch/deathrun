@@ -61,19 +61,19 @@ void Queue_AddPoints(int client, int points)
 	
 	if (player.QueuePoints == -1)
 	{
-		PrintToChat(client, DEATHRUN_TAG..." An error occured while trying to award you queue points.");
+		PrintLocalizedMessage(client, "%T", "Queue_NoPointsAwarded_Error", LANG_SERVER);
 		return;
 	}
 	else if (!DRPlayer(client).GetPreference(Preference_AvoidBecomingActivator))
 	{
-		CPrintToChat(client, DEATHRUN_TAG..." You have not been awarded any queue points based on your activator preferences.");
+		PrintLocalizedMessage(client, "%T", "Queue_NoPointsAwarded_Preferences", LANG_SERVER);
 		return;
 	}
 	
 	player.QueuePoints += points;
 	Cookies_SaveQueue(client, player.QueuePoints);
 	
-	CPrintToChat(client, DEATHRUN_TAG..." You have been awarded {green}%d {default}queue point(s) (Total: {green}%d{default}).", dr_queue_points.IntValue, player.QueuePoints);
+	PrintLocalizedMessage(client, "%T", "Queue_PointsAwarded", LANG_SERVER, dr_queue_points.IntValue, player.QueuePoints);
 }
 
 void Queue_SetPoints(int client, int points)

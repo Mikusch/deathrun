@@ -17,8 +17,6 @@
 #define PLUGIN_VERSION		"Pre-Release Version"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
-#define DEATHRUN_TAG		"[{orange}DR{default}]"
-
 #define TIMER_EXPLOSION_SOUND	"items/cart_explode.wav"
 
 #define TF_MAXPLAYERS		33
@@ -213,8 +211,8 @@ enum
 };
 
 char g_PreferenceNames[][] =  {
-	"Avoid being chosen as the Activator",
-	"Hide other alive Runners (experimental)"
+	"Preference_AvoidBecomingActivator",
+	"Preference_HideRunners"
 };
 
 ConVar dr_queue_points;
@@ -251,6 +249,9 @@ public Plugin pluginInfo =  {
 
 public void OnPluginStart()
 {
+	LoadTranslations("common.phrases.txt");
+	LoadTranslations("deathrun.phrases.txt");
+	
 	Commands_Init();
 	Console_Init();
 	Cookies_Init();
@@ -381,4 +382,11 @@ public void OnClientPutInServer(int client)
 public void OnClientDisconnect(int client)
 {
 	DRPlayer(client).Reset();
+}
+
+stock void PrintLocalizedMessage(int client, const char[] format, any ...)
+{
+	char buffer[256];
+	VFormat(buffer, sizeof(buffer), format, 3);
+	CPrintToChat(client, "[{orange}DR{default}] %s", buffer);
 }

@@ -1,0 +1,77 @@
+"Phrases"
+{
+	"Command_NotUsableInConsole"
+	{
+		"en"	"This command can not be used from the console"
+	}
+	"Command_Disabled"
+	{
+		"en"	"The server operator has disabled this command."
+	}
+	"Command_ThirdPerson_Enabled"
+	{
+		"en"	"You have enabled the third-person camera"
+	}
+	"Command_ThirdPerson_Disabled"
+	{
+		"en"	"You have disabled the third-person camera"
+	}
+	
+	"Thirdperson_ForceDisable"
+	{
+		"en"	"Your third-person camera has been disabled by the server operator."
+	}
+	
+	"RoundWin_Activator"
+	{
+		"en"	"The {blue}Activator {default}wins!"
+	}
+	"RoundWin_Runners"
+	{
+		"en"	"The {red}Runners {default}win!"
+	}
+	"RoundStart_NewActivator"
+	{
+		"en"	"%s became the {blue}Activator{default}!"
+	}
+	
+	"Preferences_Enabled"
+	{
+		"en"	"You have successfully enabled the setting \"%s\"."
+	}
+	"Preferences_Disabled"
+	{
+		"en"	"You have successfully disabled the setting \"%s\"."
+	}
+	
+	"Preference_AvoidBecomingActivator"
+	{
+		"en"	"Avoid becoming the Activator"
+	}
+	"Preference_HideRunners"
+	{
+		"en"	"Hide other alive Runners"
+	}
+	
+	"Queue_NoPointsAwarded_Error"
+	{
+		"en"	"An error occured while trying to award you queue points."
+	}
+	"Queue_NoPointsAwarded_Preferences"
+	{
+		"en"	"You have not been awarded any queue points based on your activator preferences."
+	}
+	"Queue_PointsAwarded"
+	{
+		"en"	"You have been awarded {green}%d {default}queue points (Total: {green}%d{default})."
+	}
+	
+	"Menu_Queue_Title"
+	{
+		"en"	"Activator Queue List\nYour queue points: %i"
+	}
+	"Menu_Preferences_Title"
+	{
+		"en"	"Toggle Preferences"
+	}
+}

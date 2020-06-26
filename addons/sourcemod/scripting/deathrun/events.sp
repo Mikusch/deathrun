@@ -73,7 +73,7 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 		}
 	}
 	
-	if (DRPlayer(client).ThirdpersonEnabled)
+	if (DRPlayer(client).InThirdPerson)
 		CreateTimer(0.2, Timer_SetThirdperson, userid);
 	
 	RequestFrame(RequestFrameCallback_VerifyTeam, userid);
@@ -82,7 +82,7 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 public Action Timer_SetThirdperson(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
-	if (DRPlayer(client).ThirdpersonEnabled)
+	if (DRPlayer(client).InThirdPerson)
 	{
 		SetVariantInt(1);
 		AcceptEntityInput(client, "SetForcedTauntCam");
@@ -153,11 +153,11 @@ public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBr
 	{
 		DRPlayer player = DRPlayer(client);
 		if (IsClientInGame(client))
-		{
+		{ 
 			if (team == TFTeam_Blue)
-				CPrintToChat(client, DEATHRUN_TAG..." The {blue}Activator {default}wins!");
+				PrintLocalizedMessage(client, "%T", "RoundWin_Activator", LANG_SERVER);
 			else if (team == TFTeam_Red)
-				CPrintToChat(client, DEATHRUN_TAG..." The {red}Runners {default}win!");
+				PrintLocalizedMessage(client, "%T", "RoundWin_Runners", LANG_SERVER);
 			
 			if (player.IsActivator())
 			{
@@ -200,7 +200,7 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 				SetHudTextParams(-1.0, 0.375, 10.0, 255, 255, 0, 255);
 				ShowHudText(client, -1, PLUGIN_URL);
 				
-				CPrintToChat(client, DEATHRUN_TAG..." %s became the {blue}Activator{default}!", activatorName);
+				PrintLocalizedMessage(client, "%T", "RoundStart_NewActivator", LANG_SERVER, activatorName);
 			}
 		}
 		
