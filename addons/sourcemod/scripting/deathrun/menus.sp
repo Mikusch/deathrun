@@ -91,9 +91,9 @@ void Menus_DisplayPreferencesMenu(int client)
 		
 		char display[512];
 		if (DRPlayer(client).GetPreference(preference))
-			Format(display, sizeof(display), "□ %s", g_PreferenceNames[i]);
+			Format(display, sizeof(display), "□ %T", LANG_SERVER, g_PreferenceNames[i]);
 		else
-			Format(display, sizeof(display), "■ %s", g_PreferenceNames[i]);
+			Format(display, sizeof(display), "■ %T", LANG_SERVER, g_PreferenceNames[i]);
 		
 		char info[4];
 		if (IntToString(i, info, sizeof(info)) > 0)
