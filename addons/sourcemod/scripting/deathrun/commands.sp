@@ -17,6 +17,8 @@ void Commands_Init()
 	
 	Command_Create("tp", Command_Thirdperson);
 	Command_Create("thirdperson", Command_Thirdperson);
+	Command_Create("fp", Command_Firstperson);
+	Command_Create("firstperson", Command_Firstperson);
 }
 
 stock void Command_Create(const char[] cmd, ConCmd callback)
@@ -94,6 +96,31 @@ public Action Command_Thirdperson(int client, int args)
 	}
 	
 	player.InThirdPerson = !player.InThirdPerson;
+	return Plugin_Handled;
+}
+
+public Action Command_Firstperson(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
+		return Plugin_Handled;
+	}
 	
+	if (!dr_allow_thirdperson.BoolValue)
+	{
+		PrintLocalizedMessage(client, "%T", "Command_Disabled", LANG_SERVER);
+		return Plugin_Handled;
+	}
+	
+	DRPlayer player = DRPlayer(client);
+	if (player.InThirdPerson)
+	{
+		SetVariantInt(0);
+		AcceptEntityInput(client, "SetForcedTauntCam");
+		PrintHintText(client, "%T", "Command_ThirdPerson_Disabled", LANG_SERVER);
+	}
+	
+	player.InThirdPerson = false;
 	return Plugin_Handled;
 }
