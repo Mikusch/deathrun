@@ -35,7 +35,7 @@ public Action Command_MainMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
 		return Plugin_Handled;
 	}
 	
@@ -47,7 +47,7 @@ public Action Command_QueueMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
 		return Plugin_Handled;
 	}
 	
@@ -59,7 +59,7 @@ public Action Command_PreferencesMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
 		return Plugin_Handled;
 	}
 	
@@ -71,13 +71,13 @@ public Action Command_Thirdperson(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
 		return Plugin_Handled;
 	}
 	
 	if (!dr_allow_thirdperson.BoolValue)
 	{
-		PrintLocalizedMessage(client, "%T", "Command_Disabled", LANG_SERVER);
+		PrintLocalizedMessage(client, "%t", "Command_Disabled");
 		return Plugin_Handled;
 	}
 	
@@ -86,13 +86,13 @@ public Action Command_Thirdperson(int client, int args)
 	{
 		SetVariantInt(0);
 		AcceptEntityInput(client, "SetForcedTauntCam");
-		PrintHintText(client, "%T", "Command_ThirdPerson_Disabled", LANG_SERVER);
+		PrintHintText(client, "%t", "Command_ThirdPerson_Disabled");
 	}
 	else
 	{
 		SetVariantInt(1);
 		AcceptEntityInput(client, "SetForcedTauntCam");
-		PrintHintText(client, "%T", "Command_ThirdPerson_Enabled", LANG_SERVER);
+		PrintHintText(client, "%t", "Command_ThirdPerson_Enabled");
 	}
 	
 	player.InThirdPerson = !player.InThirdPerson;
@@ -103,13 +103,13 @@ public Action Command_Firstperson(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%T", "Command_NotUsableInConsole", LANG_SERVER);
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
 		return Plugin_Handled;
 	}
 	
 	if (!dr_allow_thirdperson.BoolValue)
 	{
-		PrintLocalizedMessage(client, "%T", "Command_Disabled", LANG_SERVER);
+		PrintLocalizedMessage(client, "%t", "Command_Disabled");
 		return Plugin_Handled;
 	}
 	
@@ -118,7 +118,7 @@ public Action Command_Firstperson(int client, int args)
 	{
 		SetVariantInt(0);
 		AcceptEntityInput(client, "SetForcedTauntCam");
-		PrintHintText(client, "%T", "Command_ThirdPerson_Disabled", LANG_SERVER);
+		PrintHintText(client, "%t", "Command_ThirdPerson_Disabled");
 	}
 	
 	player.InThirdPerson = false;

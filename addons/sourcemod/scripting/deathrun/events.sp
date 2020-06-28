@@ -96,9 +96,9 @@ public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBr
 		if (IsClientInGame(client))
 		{ 
 			if (team == TFTeam_Blue)
-				PrintLocalizedMessage(client, "%T", "RoundWin_Activator", LANG_SERVER);
+				PrintLocalizedMessage(client, "%t", "RoundWin_Activator");
 			else if (team == TFTeam_Red)
-				PrintLocalizedMessage(client, "%T", "RoundWin_Runners", LANG_SERVER);
+				PrintLocalizedMessage(client, "%t", "RoundWin_Runners");
 			
 			if (player.IsActivator())
 			{
@@ -130,19 +130,19 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 				if (DRPlayer(client).IsActivator())
 				{
 					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
-					ShowHudText(client, -1, "%T", "RoundStart_NewActivator_Activator", LANG_SERVER);
+					ShowHudText(client, -1, "%t", "RoundStart_NewActivator_Activator");
 				}
 				else
 				{
 					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
-					ShowHudText(client, -1, "%T", "RoundStart_NewActivator_Runners", LANG_SERVER, activatorName);
+					ShowHudText(client, -1, "%t", "RoundStart_NewActivator_Runners", activatorName);
 					SetEntProp(client, Prop_Send, "m_bGlowEnabled", 1);
 				}
 				
 				SetHudTextParams(-1.0, 0.375, 10.0, 255, 255, 0, 255);
 				ShowHudText(client, -1, PLUGIN_URL);
 				
-				PrintLocalizedMessage(client, "%T", "RoundStart_NewActivator", LANG_SERVER, activatorName);
+				PrintLocalizedMessage(client, "%t", "RoundStart_NewActivator", activatorName);
 			}
 		}
 		
@@ -163,7 +163,7 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 			if (IsClientInGame(client))
 			{
 				SetHudTextParams(-1.0, 0.25, FindConVar("mp_bonusroundtime").FloatValue, 0, 255, 255, 255);
-				ShowHudText(client, -1, "%T", "RoundStart_Activator_Disconnected", LANG_SERVER);
+				ShowHudText(client, -1, "%t", "RoundStart_Activator_Disconnected");
 			}
 		}
 	}

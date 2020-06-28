@@ -83,5 +83,5 @@ stock void RemoveEdictAlwaysFlag(int edict)
 {
 	//Function for allowing transmit hook for entities set to always transmit
 	if (GetEdictFlags(edict) & FL_EDICT_ALWAYS)
-		SetEdictFlags(edict, (GetEdictFlags(edict) & ~FL_EDICT_ALWAYS));
+		SetEdictFlags(edict, GetEdictFlags(edict) & ~FL_EDICT_ALWAYS);
 }

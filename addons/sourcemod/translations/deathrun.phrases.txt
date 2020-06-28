@@ -2,7 +2,7 @@
 {
 	"Command_NotUsableInConsole"
 	{
-		"en"	"This command can not be used from the console"
+		"en"	"This command can not be used from the console."
 	}
 	"Command_Disabled"
 	{
@@ -32,11 +32,13 @@
 	}
 	"RoundStart_NewActivator"
 	{
-		"en"	"%s became the {blue}Activator{default}!"
+		"#format"	"{1:s}"
+		"en"	"{1} became the {blue}Activator{default}!"
 	}
 	"RoundStart_NewActivator_Runners"
 	{
-		"en"	"%s became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!"
+		"#format"	"{1:s}"
+		"en"	"{1} became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!"
 	}
 	"RoundStart_NewActivator_Activator"
 	{
@@ -49,11 +51,13 @@
 	
 	"Preferences_Enabled"
 	{
-		"en"	"You have successfully enabled the setting \"%s\"."
+		"#format"	"{1:s}"
+		"en"		"You have successfully enabled the setting \"{1}\"."
 	}
 	"Preferences_Disabled"
 	{
-		"en"	"You have successfully disabled the setting \"%s\"."
+		"#format"	"{1:s}"
+		"en"	"You have successfully disabled the setting \"{1}\"."
 	}
 	
 	"Preference_AvoidBecomingActivator"
@@ -75,7 +79,8 @@
 	}
 	"Queue_PointsAwarded"
 	{
-		"en"	"You have been awarded {green}%d {default}queue points (Total: {green}%d{default})."
+		"#format"	"{1:d},{2:d}"
+		"en"	"You have been awarded {green}{1} {default}queue points (Total: {green}{2}{default})."
 	}
 	"Queue_ChosenAsRandomActivator"
 	{
@@ -84,7 +89,8 @@
 	
 	"Menu_Queue_Title"
 	{
-		"en"	"Activator Queue List\nYour queue points: %i"
+		"#format"	"{1:d}"
+		"en"	"Activator Queue List\nYour queue points: {1}"
 	}
 	"Menu_Preferences_Title"
 	{

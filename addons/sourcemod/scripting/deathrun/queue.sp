@@ -48,7 +48,7 @@ void Queue_SetNextActivator()
 		}
 		
 		activator = clients[GetRandomInt(0, numClients - 1)];
-		PrintLocalizedMessage(activator, "%T", "Queue_ChosenAsRandomActivator", LANG_SERVER);
+		PrintLocalizedMessage(activator, "%t", "Queue_ChosenAsRandomActivator");
 	}
 	
 	g_CurrentActivator = activator;
@@ -81,19 +81,19 @@ void Queue_AddPoints(int client, int points)
 	
 	if (player.QueuePoints == -1)
 	{
-		PrintLocalizedMessage(client, "%T", "Queue_NoPointsAwarded_Error", LANG_SERVER);
+		PrintLocalizedMessage(client, "%t", "Queue_NoPointsAwarded_Error");
 		return;
 	}
 	else if (!DRPlayer(client).GetPreference(Preference_AvoidBecomingActivator))
 	{
-		PrintLocalizedMessage(client, "%T", "Queue_NoPointsAwarded_Preferences", LANG_SERVER);
+		PrintLocalizedMessage(client, "%t", "Queue_NoPointsAwarded_Preferences");
 		return;
 	}
 	
 	player.QueuePoints += points;
 	Cookies_SaveQueue(client, player.QueuePoints);
 	
-	PrintLocalizedMessage(client, "%T", "Queue_PointsAwarded", LANG_SERVER, dr_queue_points.IntValue, player.QueuePoints);
+	PrintLocalizedMessage(client, "%t", "Queue_PointsAwarded", dr_queue_points.IntValue, player.QueuePoints);
 }
 
 void Queue_SetPoints(int client, int points)

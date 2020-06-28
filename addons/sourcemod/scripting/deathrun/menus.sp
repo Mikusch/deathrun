@@ -42,7 +42,7 @@ void Menus_DisplayQueueMenu(int client)
 {
 	Menu menu = new Menu(Menus_HandleQueueMenu);
 	
-	menu.SetTitle("%T", "Menu_Queue_Title", LANG_SERVER, DRPlayer(client).QueuePoints);
+	menu.SetTitle("%t", "Menu_Queue_Title", DRPlayer(client).QueuePoints);
 	
 	ArrayList queue = Queue_GetQueueList();
 	for (int i = 0; i < queue.Length; i++)
@@ -83,7 +83,7 @@ int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
 void Menus_DisplayPreferencesMenu(int client)
 {
 	Menu menu = new Menu(Menus_HandlePreferencesMenu);
-	menu.SetTitle("%T", "Menu_Preferences_Title", LANG_SERVER);
+	menu.SetTitle("%t", "Menu_Preferences_Title");
 	
 	for (int i = 0; i < sizeof(g_PreferenceNames); i++)
 	{
@@ -91,9 +91,9 @@ void Menus_DisplayPreferencesMenu(int client)
 		
 		char display[512];
 		if (DRPlayer(client).GetPreference(preference))
-			Format(display, sizeof(display), "□ %T", g_PreferenceNames[i], LANG_SERVER);
+			Format(display, sizeof(display), "□ %t", g_PreferenceNames[i]);
 		else
-			Format(display, sizeof(display), "■ %T", g_PreferenceNames[i], LANG_SERVER);
+			Format(display, sizeof(display), "■ %t", g_PreferenceNames[i]);
 		
 		char info[4];
 		if (IntToString(i, info, sizeof(info)) > 0)
@@ -120,12 +120,12 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 			player.SetPreference(preference, !player.GetPreference(preference));
 			
 			char preferenceName[256];
-			Format(preferenceName, sizeof(preferenceName), "%T", g_PreferenceNames[i], LANG_SERVER);
+			Format(preferenceName, sizeof(preferenceName), "%t", g_PreferenceNames[i]);
 			
 			if (!player.GetPreference(preference))
-				PrintLocalizedMessage(param1, "%T", "Preferences_Enabled", LANG_SERVER, preferenceName);
+				PrintLocalizedMessage(param1, "%t", "Preferences_Enabled", preferenceName);
 			else
-				PrintLocalizedMessage(param1, "%T", "Preferences_Disabled", LANG_SERVER, preferenceName);
+				PrintLocalizedMessage(param1, "%t", "Preferences_Disabled", preferenceName);
 			
 			Menus_DisplayPreferencesMenu(param1);
 		}
@@ -146,7 +146,7 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 			int i = StringToInt(info);
 			
 			char display[64];
-			Format(display, sizeof(display), "%T", g_PreferenceNames[i]);
+			Format(display, sizeof(display), "%t", g_PreferenceNames[i]);
 			return RedrawMenuItem(display);
 		}
 	}
