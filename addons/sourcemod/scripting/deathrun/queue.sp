@@ -26,13 +26,33 @@ int Queue_GetPlayerInQueuePos(int pos)
 
 void Queue_SetNextActivator()
 {
-	int client = Queue_GetPlayerInQueuePos(1);
-	if (IsValidClient(client))
+	//Note: We may fail to f
+	
+	int activator = Queue_GetPlayerInQueuePos(1);
+	if (IsValidClient(activator)) 
 	{
-		g_CurrentActivator = client;
-		Queue_SetPoints(client, 0);
-		TF2_ChangeClientTeamAlive(client, TFTeam_Blue);
+		Queue_SetPoints(activator, 0);
 	}
+	else	//No players with queue points found, just find a random activator regardless of preferences
+	{
+		int[] clients = new int[MaxClients + 1];
+		int numClients = 0;
+		
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (IsClientInGame(client) && TF2_GetClientTeam(client) > TFTeam_Spectator)
+			{
+				clients[numClients] = client;
+				numClients++;
+			}
+		}
+		
+		activator = clients[GetRandomInt(0, numClients - 1)];
+		PrintLocalizedMessage(activator, "%T", "Queue_ChosenAsRandomActivator", LANG_SERVER);
+	}
+	
+	g_CurrentActivator = activator;
+	TF2_ChangeClientTeamAlive(activator, TFTeam_Blue);
 }
 
 ArrayList Queue_GetQueueList()
@@ -85,11 +105,10 @@ void Queue_SetPoints(int client, int points)
 
 bool Queue_IsClientAllowed(int client)
 {
-	if (0 < client <= MaxClients
-		 && IsClientInGame(client)
-		 && TF2_GetClientTeam(client) > TFTeam_Spectator //Is client not in spectator
-		 && DRPlayer(client).QueuePoints != -1 //Does client have his queue points loaded
-		 && DRPlayer(client).GetPreference(Preference_AvoidBecomingActivator))
+	if (IsValidClient(client)
+		 && TF2_GetClientTeam(client) > TFTeam_Spectator	//Is the client not in spectator team?
+		 && DRPlayer(client).QueuePoints != -1	//Does the client have their queue points loaded?
+		 && DRPlayer(client).GetPreference(Preference_AvoidBecomingActivator))	//Does the client want to be the activator?
 	{
 		return true;
 	}

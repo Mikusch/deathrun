@@ -44,7 +44,7 @@
 	}
 	"RoundStart_Activator_Disconnected"
 	{
-		"en"	"The activator has disconnected!\nThe round will restart shortly!"
+		"en"	"The Activator has disconnected!\nThe round will restart shortly!"
 	}
 	
 	"Preferences_Enabled"
@@ -71,11 +71,15 @@
 	}
 	"Queue_NoPointsAwarded_Preferences"
 	{
-		"en"	"You have not been awarded any queue points based on your activator preferences."
+		"en"	"You have not been awarded any queue points based on your Activator preferences."
 	}
 	"Queue_PointsAwarded"
 	{
 		"en"	"You have been awarded {green}%d {default}queue points (Total: {green}%d{default})."
+	}
+	"Queue_ChosenAsRandomActivator"
+	{
+		"en"	"You have been randomly chosen to become the Activator because there were no valid players in the server. Your queue points have not been consumed."
 	}
 	
 	"Menu_Queue_Title"
