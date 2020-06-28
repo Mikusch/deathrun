@@ -2,14 +2,6 @@
 {
 	"tf"
 	{
-		"Offsets"
-		{
-			"CTFPlayer::GiveNamedItem"
-			{
-				"linux"		"483"
-				"windows"	"476"
-			}
-		}
 		"Signatures"
 		{
 			"CTFPlayer::GetEquippedWearableForLoadoutSlot"
@@ -27,32 +19,6 @@
 		}
 		"Functions"
 		{
-			"CTFPlayer::GiveNamedItem"
-			{
-				"offset"	"CTFPlayer::GiveNamedItem"
-				"hooktype"	"entity"
-				"return"	"cbaseentity"
-				"this"		"entity"
-				"arguments"
-				{
-					"pszName"
-					{
-						"type"	"charptr"
-					}
-					"iSubType"
-					{
-						"type"	"int"
-					}
-					"pScriptItem"
-					{
-						"type"	"objectptr"
-					}
-					"bForce"
-					{
-						"type"	"bool"
-					}
-				}
-			}
 			"CTFPlayer::TeamFortress_CalculateMaxSpeed"
 			{
 				"signature"	"CTFPlayer::TeamFortress_CalculateMaxSpeed"

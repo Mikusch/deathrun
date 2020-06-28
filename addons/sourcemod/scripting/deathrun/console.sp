@@ -35,9 +35,9 @@ public Action CommandListener_JoinTeam(int client, const char[] command, int arg
 		return Plugin_Continue;
 	
 	if (DRPlayer(client).IsActivator())
-		TF2_ChangeClientTeam(client, TFTeam_Blue);
+		TF2_ChangeClientTeam(client, TFTeam_Activator);
 	else
-		TF2_ChangeClientTeam(client, TFTeam_Red);
+		TF2_ChangeClientTeam(client, TFTeam_Runners);
 	
 	ShowVGUIPanel(client, TF2_GetClientTeam(client) == TFTeam_Red ? "class_red" : "class_blue");
 	

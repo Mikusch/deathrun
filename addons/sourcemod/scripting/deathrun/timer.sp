@@ -44,7 +44,7 @@ Action Timer_ExplodePlayers(Handle timer)
 		{
 			if (IsClientInGame(client))
 			{
-				if (IsPlayerAlive(client) && TF2_GetClientTeam(client) == TFTeam_Red)
+				if (IsPlayerAlive(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
 					SDKHooks_TakeDamage(client, activator, 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
 			}
 			

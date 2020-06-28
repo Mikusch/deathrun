@@ -1,11 +1,7 @@
-static Handle g_DHookGiveNamedItem;
-
 static int g_DHookCalculateMaxSpeedClient;
 
 void DHooks_Init(GameData gamedata)
 {
-	g_DHookGiveNamedItem = DHooks_CreateVirtual(gamedata, "CTFPlayer::GiveNamedItem");
-	
 	DHooks_CreateDetour(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed", DHookCallback_CalculateMaxSpeed_Pre, DHookCallback_CalculateMaxSpeed_Post);
 }
 
@@ -26,46 +22,6 @@ static void DHooks_CreateDetour(GameData gamedata, const char[] name, DHookCallb
 		
 		delete detour;
 	}
-}
-
-static Handle DHooks_CreateVirtual(GameData gamedata, const char[] name)
-{
-	Handle hook = DHookCreateFromConf(gamedata, name);
-	if (!hook)
-		LogError("Failed to create virtual: %s", name);
-	
-	return hook;
-}
-
-void DHooks_OnClientPutInServer(int client)
-{
-	if (g_DHookGiveNamedItem)
-		DHookEntity(g_DHookGiveNamedItem, false, client, _, DHookCallback_GiveNamedItem_Pre);
-}
-
-
-public MRESReturn DHookCallback_GiveNamedItem_Pre(int client, Handle returnVal, Handle params)
-{
-	//Block if one of the pointers is null
-	if (DHookIsNullParam(params, 1) || DHookIsNullParam(params, 3))
-	{
-		DHookSetReturn(returnVal, 0);
-		return MRES_Override;
-	}
-	
-	char classname[256];
-	DHookGetParamString(params, 1, classname, sizeof(classname));
-	int defindex = DHookGetParamObjectPtrVar(params, 3, 4, ObjectValueType_Int) & 0xFFFF;
-	
-	//Remove weapon if specified in config
-	WeaponConfig config;
-	if (Config_GetWeaponByDefIndex(defindex, config) && config.remove)
-	{
-		DHookSetReturn(returnVal, 0);
-		return MRES_Override;
-	}
-	
-	return MRES_Ignored;
 }
 
 public MRESReturn DHookCallback_CalculateMaxSpeed_Pre(int client, Handle returnVal, Handle params)

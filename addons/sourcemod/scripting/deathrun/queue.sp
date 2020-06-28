@@ -52,7 +52,7 @@ void Queue_SetNextActivator()
 	}
 	
 	g_CurrentActivator = activator;
-	TF2_ChangeClientTeamAlive(activator, TFTeam_Blue);
+	TF2_ChangeClientTeamAlive(activator, TFTeam_Activator);
 }
 
 ArrayList Queue_GetQueueList()
