@@ -193,6 +193,21 @@ methodmap WeaponConfigList < ArrayList
 	}
 }
 
+enum ETFGameType
+{
+	TF_GAMETYPE_UNDEFINED = 0,
+	TF_GAMETYPE_CTF,
+	TF_GAMETYPE_CP,
+	TF_GAMETYPE_ESCORT,
+	TF_GAMETYPE_ARENA,
+	TF_GAMETYPE_MVM,
+	TF_GAMETYPE_RD,
+	TF_GAMETYPE_PASSTIME,
+	TF_GAMETYPE_PD,
+
+	TF_GAMETYPE_COUNT
+};
+
 enum
 {
 	WeaponSlot_Primary = 0, 
@@ -218,6 +233,8 @@ char g_PreferenceNames[][] =  {
 ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
 ConVar dr_round_time;
+
+bool g_ArenaGameType;
 
 int g_CurrentActivator = -1;
 
@@ -269,7 +286,7 @@ public void OnPluginStart()
 	
 	ConVars_Enable();
 	
-	// Late load!
+	//Late load
 	OnMapStart();
 	
 	for (int client = 1; client <= MaxClients; client++)
@@ -285,6 +302,13 @@ public void OnPluginStart()
 public void OnMapStart()
 {
 	PrecacheSound(TIMER_EXPLOSION_SOUND);
+	
+	if (GameRules_GetRoundState() == RoundState_Pregame && view_as<ETFGameType>(GameRules_GetProp("m_nGameType")) == TF_GAMETYPE_ARENA)
+	{
+		//Enable waiting for players
+		g_ArenaGameType = true;
+		GameRules_SetProp("m_nGameType", TF_GAMETYPE_UNDEFINED);
+	}
 }
 
 public void OnConfigsExecuted()
@@ -295,6 +319,24 @@ public void OnConfigsExecuted()
 public void OnPluginEnd()
 {
 	ConVars_Disable();
+	
+	//Restore arena if needed
+	if (g_ArenaGameType)
+		GameRules_SetProp("m_nGameType", TF_GAMETYPE_ARENA);
+}
+
+public void OnGameFrame()
+{
+	//Make sure other plugins are not overriding the gamerules prop
+	if (g_ArenaGameType && view_as<ETFGameType>(GameRules_GetProp("m_nGameType")) != TF_GAMETYPE_UNDEFINED)
+		GameRules_SetProp("m_nGameType", TF_GAMETYPE_UNDEFINED);
+}
+
+public void TF2_OnWaitingForPlayersStart()
+{
+	//Set game type back to arena after waiting for players calculations are done
+	g_ArenaGameType = false;
+	GameRules_SetProp("m_nGameType", TF_GAMETYPE_ARENA);
 }
 
 void RequestFrameCallback_VerifyTeam(int userid)
