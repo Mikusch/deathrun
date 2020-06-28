@@ -27,7 +27,7 @@ public Action SDKHookCB_OwnedEntitySetTransmit(int entity, int client)
 		 && IsPlayerAlive(client))
 	{
 		int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
-		if (IsValidClient(owner) && TF2_GetClientTeam(owner) != TFTeam_Activator)	// Don't hide the activator's items
+		if (owner != client && IsValidClient(owner) && TF2_GetClientTeam(owner) != TFTeam_Activator)	// Don't hide the activator's items
 		{
 			RemoveEdictAlwaysFlag(entity);
 			return Plugin_Handled;
