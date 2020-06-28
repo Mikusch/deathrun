@@ -8,11 +8,31 @@ public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 {
 	if (!DRPlayer(client).GetPreference(Preference_HidePlayers)	//Check if this client wants to hide other players
 		 && TF2_GetClientTeam(client) == TFTeam_Runners	//Only runners can hide other players
-		 && client != entity	//Don't hide ourself
-		 && 0 < entity <= MaxClients	//Only hide client entities
 		 && IsPlayerAlive(client)	//Stop hiding players when dead
-		 && IsClientInGame(entity) && TF2_GetClientTeam(entity) != TFTeam_Activator)	//Do not hide the activator
-	return Plugin_Handled;
+		 && client != entity	//Don't hide ourself
+		 && IsValidClient(entity)	//Only hide client entities
+		 && TF2_GetClientTeam(entity) != TFTeam_Activator)	//Do not hide the activator
+	{
+		RemoveEdictAlwaysFlag(client);
+		return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_OwnedEntitySetTransmit(int entity, int client)
+{
+	if (!DRPlayer(client).GetPreference(Preference_HidePlayers)	//Check if this client wants to hide other player's items
+		 && TF2_GetClientTeam(client) == TFTeam_Runners	//Only runners can hide other player's items
+		 && IsPlayerAlive(client))
+	{
+		int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+		if (IsValidClient(owner) && TF2_GetClientTeam(owner) != TFTeam_Activator)	// Don't hide the activator's items
+		{
+			RemoveEdictAlwaysFlag(entity);
+			return Plugin_Handled;
+		}
+	}
 	
 	return Plugin_Continue;
 }

@@ -77,6 +77,14 @@ char g_PreferenceNames[][] =  {
 	"Preference_HideRunners"
 };
 
+char g_OwnerEntityList[][] =  {
+	"projectile_rocket", 
+	"projectile_energy_ball", 
+	"weapon", 
+	"wearable", 
+	"prop_physics"	//Conch
+};
+
 ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
 ConVar dr_round_time;
@@ -177,6 +185,18 @@ public void OnGameFrame()
 	//Make sure other plugins are not overriding the gamerules prop
 	if (g_ArenaGameType && view_as<ETFGameType>(GameRules_GetProp("m_nGameType")) != TF_GAMETYPE_UNDEFINED)
 		GameRules_SetProp("m_nGameType", TF_GAMETYPE_UNDEFINED);
+}
+
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	for (int i = 0; i < sizeof(g_OwnerEntityList); i++)
+	{
+		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
+		{
+			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
+			break;
+		}
+	}
 }
 
 public void TF2_OnWaitingForPlayersStart()
