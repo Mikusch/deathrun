@@ -136,6 +136,7 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 				{
 					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
 					ShowHudText(client, -1, "%T", "RoundStart_NewActivator_Runners", LANG_SERVER, activatorName);
+					SetEntProp(client, Prop_Send, "m_bGlowEnabled", 1);
 				}
 				
 				SetHudTextParams(-1.0, 0.375, 10.0, 255, 255, 0, 255);
