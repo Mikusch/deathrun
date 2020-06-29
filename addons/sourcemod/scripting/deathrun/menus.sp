@@ -3,11 +3,16 @@ void Menus_DisplayMainMenu(int client)
 	Menu menu = new Menu(Menus_HandleMainMenu);
 	
 	menu.SetTitle("%s - %s", PLUGIN_NAME, PLUGIN_VERSION);
-	menu.AddItem("queue", "Activator Queue List (!drnext)");
-	menu.AddItem("preferences", "Preferences (!drsettings)");
 	
-	if (dr_allow_thirdperson.BoolValue)
-		menu.AddItem("thirdperson", "Toggle Thirdperson Mode (!drthirdperson)");
+	char display[256];
+	Format(display, sizeof(display), "%t", "Menu_Main_Queue");
+	menu.AddItem("queue", display);
+	
+	Format(display, sizeof(display), "%t", "Menu_Main_Preferences");
+	menu.AddItem("preferences", display);
+	
+	Format(display, sizeof(display), "%t", "Menu_Main_ThirdPerson");
+	menu.AddItem("thirdperson", display, dr_allow_thirdperson.BoolValue ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }

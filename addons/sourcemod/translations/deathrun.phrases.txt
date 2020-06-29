@@ -87,6 +87,18 @@
 		"en"	"You have been randomly chosen to become the Activator because there were no valid players in the server. Your queue points have not been consumed."
 	}
 	
+	"Menu_Main_Queue"
+	{
+		"Activator Queue List (!drnext)"
+	}
+	"Menu_Main_Preferences"
+	{
+		"Preferences (!drsettings)"
+	}
+	"Menu_Main_ThirdPerson"
+	{
+		"Toggle Thirdperson Mode (!drthirdperson)"
+	}
 	"Menu_Queue_Title"
 	{
 		"#format"	"{1:d}"
