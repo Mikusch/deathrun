@@ -1,5 +1,5 @@
 int g_PlayerQueuePoints[TF_MAXPLAYERS] =  { -1, ... };
-int g_PlayerSettings[TF_MAXPLAYERS] =  { -1, ... };
+int g_PlayerPreferences[TF_MAXPLAYERS] =  { -1, ... };
 bool g_PlayerInThirdPerson[TF_MAXPLAYERS];
 
 methodmap DRPlayer
@@ -29,15 +29,15 @@ methodmap DRPlayer
 		}
 	}
 	
-	property int Settings
+	property int Preferences
 	{
 		public get()
 		{
-			return g_PlayerSettings[this];
+			return g_PlayerPreferences[this];
 		}
 		public set(int val)
 		{
-			g_PlayerSettings[this] = val;
+			g_PlayerPreferences[this] = val;
 		}
 	}
 	
@@ -63,28 +63,25 @@ methodmap DRPlayer
 		return view_as<int>(this) == g_CurrentActivator;
 	}
 	
-	public bool GetPreference(PreferenceType preference)
+	public bool HasPreference(PreferenceType preference)
 	{
-		if (this.Settings == -1)
+		if (this.Preferences == -1)
 			return false;
 		
-		return !(this.Settings & view_as<int>(preference));
+		return this.Preferences & view_as<int>(preference) != 0;
 	}
 	
 	public bool SetPreference(PreferenceType preference, bool enable)
 	{
-		if (this.Settings == -1)
+		if (this.Preferences == -1)
 			return false;
 		
-		//Since the initial value is 0 to turn on all settings, we set 0 if true, 1 if false
-		enable = !enable;
-		
 		if (enable)
-			this.Settings |= view_as<int>(preference);
+			this.Preferences |= view_as<int>(preference);
 		else
-			this.Settings &= ~view_as<int>(preference);
+			this.Preferences &= ~view_as<int>(preference);
 		
-		Cookies_SaveSettings(this.Client, this.Settings);
+		Cookies_SavePreferences(this.Client, this.Preferences);
 		
 		return true;
 	}

@@ -90,10 +90,10 @@ void Menus_DisplayPreferencesMenu(int client)
 		PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
 		
 		char display[512];
-		if (DRPlayer(client).GetPreference(preference))
-			Format(display, sizeof(display), "□ %t", g_PreferenceNames[i]);
-		else
+		if (DRPlayer(client).HasPreference(preference))
 			Format(display, sizeof(display), "■ %t", g_PreferenceNames[i]);
+		else
+			Format(display, sizeof(display), "□ %t", g_PreferenceNames[i]);
 		
 		char info[4];
 		if (IntToString(i, info, sizeof(info)) > 0)
@@ -117,12 +117,12 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 			PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
 			
 			DRPlayer player = DRPlayer(param1);
-			player.SetPreference(preference, !player.GetPreference(preference));
+			player.SetPreference(preference, !player.HasPreference(preference));
 			
 			char preferenceName[256];
 			Format(preferenceName, sizeof(preferenceName), "%t", g_PreferenceNames[i]);
 			
-			if (!player.GetPreference(preference))
+			if (player.HasPreference(preference))
 				PrintLocalizedMessage(param1, "%t", "Preferences_Enabled", preferenceName);
 			else
 				PrintLocalizedMessage(param1, "%t", "Preferences_Disabled", preferenceName);

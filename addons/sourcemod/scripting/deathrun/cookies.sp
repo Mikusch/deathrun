@@ -46,10 +46,10 @@ void Cookies_RefreshSettings(int client)
 {
 	char value[16];
 	g_CookieSettings.Get(client, value, sizeof(value));
-	DRPlayer(client).Settings = StringToInt(value);
+	DRPlayer(client).Preferences = StringToInt(value);
 }
 
-void Cookies_SaveSettings(int client, int value)
+void Cookies_SavePreferences(int client, int value)
 {
 	if (IsValidClient(client))
 	{
