@@ -146,15 +146,8 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 			}
 		}
 		
-		int maxhealth;
-		for (int i = 1; i <= MaxClients; i++)
-		{
-			if (IsClientInGame(i) && TF2_GetClientTeam(i) == TFTeam_Red && IsPlayerAlive(i))
-				maxhealth += TF2_GetMaxHealth(i);
-		}
-		
-		TF2Attrib_SetByName(activator, "max health additive bonus", float(maxhealth));
-		SetEntityHealth(activator, TF2_GetMaxHealth(activator) + maxhealth);
+		TF2Attrib_SetByName(activator, "max health additive bonus", 1000.0 - TF2_GetMaxHealth(activator));
+		SetEntityHealth(activator, 1000);
 	}
 	else
 	{
