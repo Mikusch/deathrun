@@ -13,6 +13,7 @@ Inspired by the plugins I played many years back that were never made accessible
 ## Dependencies
 * SourceMod 1.10
 * [DHooks with Detour Support](https://forums.alliedmods.net/showpost.php?p=2588686&postcount=589)
+* [TF2Attributes](https://forums.alliedmods.net/showthread.php?t=210221)
 
 ## Configuration
 The weapon configuration found in ``configs/deathrun/weapons.cfg`` allows you to configure weapons as you please. 
