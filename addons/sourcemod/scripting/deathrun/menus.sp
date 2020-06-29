@@ -36,7 +36,7 @@ int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
 			}
 			else if (StrEqual(info, "thirdperson"))
 			{
-				FakeClientCommand(param1, "dr_thirdperson");
+				FakeClientCommand(param1, DRPlayer(param1).InThirdPerson ? "dr_firstperson" : "dr_thirdperson");
 				Menus_DisplayMainMenu(param1);
 			}
 		}
@@ -96,9 +96,9 @@ void Menus_DisplayPreferencesMenu(int client)
 		
 		char display[512];
 		if (DRPlayer(client).HasPreference(preference))
-			Format(display, sizeof(display), "■ %T", client, g_PreferenceNames[i]);
+			Format(display, sizeof(display), "■ %T", g_PreferenceNames[i], client);
 		else
-			Format(display, sizeof(display), "□ %T", client, g_PreferenceNames[i]);
+			Format(display, sizeof(display), "□ %T", g_PreferenceNames[i], client);
 		
 		char info[4];
 		if (IntToString(i, info, sizeof(info)) > 0)
@@ -151,7 +151,7 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 			int i = StringToInt(info);
 			
 			char display[64];
-			Format(display, sizeof(display), "%t", param1, g_PreferenceNames[i]);
+			Format(display, sizeof(display), "%t", g_PreferenceNames[i], param1);
 			return RedrawMenuItem(display);
 		}
 	}
