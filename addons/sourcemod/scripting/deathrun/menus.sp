@@ -5,13 +5,13 @@ void Menus_DisplayMainMenu(int client)
 	menu.SetTitle("%s - %s", PLUGIN_NAME, PLUGIN_VERSION);
 	
 	char display[256];
-	Format(display, sizeof(display), "%t", "Menu_Main_Queue");
+	Format(display, sizeof(display), "%T", "Menu_Main_Queue", client);
 	menu.AddItem("queue", display);
 	
-	Format(display, sizeof(display), "%t", "Menu_Main_Preferences");
+	Format(display, sizeof(display), "%T", "Menu_Main_Preferences", client);
 	menu.AddItem("preferences", display);
 	
-	Format(display, sizeof(display), "%t", "Menu_Main_ThirdPerson");
+	Format(display, sizeof(display), "%T", "Menu_Main_ThirdPerson", client);
 	menu.AddItem("thirdperson", display, dr_allow_thirdperson.BoolValue ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
 	
 	menu.Display(client, MENU_TIME_FOREVER);
