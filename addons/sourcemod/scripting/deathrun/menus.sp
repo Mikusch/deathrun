@@ -125,7 +125,7 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 			player.SetPreference(preference, !player.HasPreference(preference));
 			
 			char preferenceName[256];
-			Format(preferenceName, sizeof(preferenceName), "%T", param1, g_PreferenceNames[i]);
+			Format(preferenceName, sizeof(preferenceName), "%T", g_PreferenceNames[i], param1);
 			
 			if (player.HasPreference(preference))
 				PrintLocalizedMessage(param1, "%t", "Preferences_Enabled", preferenceName);
