@@ -14,7 +14,7 @@
 #define PLUGIN_NAME			"Deathrun Redux"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_DESCRIPTION	"Good old Deathrun"
-#define PLUGIN_VERSION		"Pre-Release Version"
+#define PLUGIN_VERSION		"1.0"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
 #define TIMER_EXPLOSION_SOUND	"items/cart_explode.wav"
