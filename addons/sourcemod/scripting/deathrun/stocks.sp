@@ -79,9 +79,14 @@ stock void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 	TF2_RespawnPlayer(client);
 }
 
-stock void RemoveEdictAlwaysFlag(int edict)
+stock void RemoveEdictAlwaysTransmitFlag(int edict)
 {
-	//Function for allowing transmit hook for entities set to always transmit
-	if (GetEdictFlags(edict) & FL_EDICT_ALWAYS)
-		SetEdictFlags(edict, GetEdictFlags(edict) & ~FL_EDICT_ALWAYS);
+	//Function for allowing transmit hook for edicts set to always transmit
+	if (0 < edict <= 2048)
+	{
+		if (edict > MaxClients)
+			SetEdictFlags(edict, (GetEdictFlags(edict) & ~FL_EDICT_ALWAYS) | FL_EDICT_PVSCHECK);
+		else
+			SetEdictFlags(edict, (GetEdictFlags(edict) & ~FL_EDICT_ALWAYS));
+	}
 }
