@@ -178,20 +178,28 @@ bool Config_GetWeaponByDefIndex(int defindex, WeaponConfig config)
 
 void Config_Apply(int client)
 {
-	for (int slot = 0; slot <= WeaponSlot_InvisWatch; slot++)
+	for (int slot = 0; slot <= WeaponSlot_Misc2; slot++)
 	{
-		int weapon = TF2_GetItemInSlot(client, slot);
+		int item = TF2_GetItemInSlot(client, slot);
 		
-		if (IsValidEntity(weapon))
+		if (IsValidEntity(item))
 		{
-			int defindex = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
+			int defindex = GetEntProp(item, Prop_Send, "m_iItemDefinitionIndex");
 			
 			WeaponConfig config;
 			if (Config_GetWeaponByDefIndex(defindex, config))
 			{
 				//Remove weapon if wanted
 				if (config.remove)
-					RemovePlayerItem(client, weapon);
+				{
+					char classname[256];
+					GetEntityClassname(item, classname, sizeof(classname));
+					
+					if (StrContains(classname, "tf_wearable") != -1)
+						TF2_RemoveWearable(client, item);
+					else
+						RemovePlayerItem(client, item);
+				}
 				
 				//Handle attributes
 				for (int i = 0; i < config.attributes.Length; i++)
@@ -201,25 +209,25 @@ void Config_Apply(int client)
 					{
 						if (attribute.mode == ModMode_Set)
 						{
-							TF2Attrib_SetByName(weapon, attribute.name, attribute.value);
+							TF2Attrib_SetByName(item, attribute.name, attribute.value);
 						}
 						else if (attribute.mode == ModMode_Add)
 						{
-							Address address = TF2Attrib_GetByName(weapon, attribute.name);
+							Address address = TF2Attrib_GetByName(item, attribute.name);
 							TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) + attribute.value);
-							TF2Attrib_ClearCache(weapon);
-							TF2Attrib_ClearCache(GetEntProp(weapon, Prop_Data, "m_hOwnerEntity"));
+							TF2Attrib_ClearCache(item);
+							TF2Attrib_ClearCache(GetEntProp(item, Prop_Data, "m_hOwnerEntity"));
 						}
 						else if (attribute.mode == ModMode_Subtract)
 						{
-							Address address = TF2Attrib_GetByName(weapon, attribute.name);
+							Address address = TF2Attrib_GetByName(item, attribute.name);
 							TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) - attribute.value);
-							TF2Attrib_ClearCache(weapon);
-							TF2Attrib_ClearCache(GetEntProp(weapon, Prop_Data, "m_hOwnerEntity"));
+							TF2Attrib_ClearCache(item);
+							TF2Attrib_ClearCache(GetEntProp(item, Prop_Data, "m_hOwnerEntity"));
 						}
 						else if (attribute.mode == ModMode_Remove)
 						{
-							TF2Attrib_SetByName(weapon, attribute.name, 0.0); //TF2Attrib_RemoveByName can't remove static attributes
+							TF2Attrib_SetByName(item, attribute.name, 0.0); //TF2Attrib_RemoveByName can't remove static attributes
 						}
 					}
 				}
@@ -234,21 +242,21 @@ void Config_Apply(int client)
 						{
 							case PropField_Integer:
 							{
-								SetEntProp(weapon, entprop.type, entprop.name, StringToInt(entprop.value));
+								SetEntProp(item, entprop.type, entprop.name, StringToInt(entprop.value));
 							}
 							case PropField_Float:
 							{
-								SetEntPropFloat(weapon, entprop.type, entprop.name, StringToFloat(entprop.value));
+								SetEntPropFloat(item, entprop.type, entprop.name, StringToFloat(entprop.value));
 							}
 							case PropField_Vector:
 							{
 								float vector[3];
 								StringToVector(entprop.value, vector);
-								SetEntPropVector(weapon, entprop.type, entprop.name, vector);
+								SetEntPropVector(item, entprop.type, entprop.name, vector);
 							}
 							case PropField_String:
 							{
-								SetEntPropString(weapon, entprop.type, entprop.name, entprop.value);
+								SetEntPropString(item, entprop.type, entprop.name, entprop.value);
 							}
 						}
 					}
