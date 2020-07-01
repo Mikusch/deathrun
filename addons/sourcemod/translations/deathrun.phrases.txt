@@ -33,12 +33,12 @@
 	"RoundStart_NewActivator"
 	{
 		"#format"	"{1:s}"
-		"en"	"{1} became the {blue}Activator{default}!"
+		"en"		"{1} became the {blue}Activator{default}!"
 	}
 	"RoundStart_NewActivator_Runners"
 	{
 		"#format"	"{1:s}"
-		"en"	"{1} became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!"
+		"en"		"{1} became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!"
 	}
 	"RoundStart_NewActivator_Activator"
 	{
@@ -57,7 +57,7 @@
 	"Preferences_Disabled"
 	{
 		"#format"	"{1:s}"
-		"en"	"You have successfully disabled the setting \"{1}\"."
+		"en"		"You have successfully disabled the setting \"{1}\"."
 	}
 	
 	"Preference_AvoidBecomingActivator"
@@ -80,7 +80,7 @@
 	"Queue_PointsAwarded"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"	"You have been awarded {green}{1} {default}queue points (Total: {green}{2}{default})."
+		"en"		"You have been awarded {green}{1} {default}queue points (Total: {green}{2}{default})."
 	}
 	"Queue_ChosenAsRandomActivator"
 	{
@@ -101,11 +101,23 @@
 	}
 	"Menu_Queue_Title"
 	{
+		"en"		"Activator Queue List"
+	}
+	"Menu_Queue_Title_QueuePoints"
+	{
 		"#format"	"{1:d}"
-		"en"	"Activator Queue List\nYour queue points: {1}"
+		"en"		"Your queue points: {1}"
+	}
+	"Menu_Queue_NotLoaded"
+	{
+		"en"	"Your queue points are still loading..."
 	}
 	"Menu_Preferences_Title"
 	{
 		"en"	"Toggle Preferences"
+	}
+	"Menu_Preferences_NotLoaded"
+	{
+		"en"	"Your preferences are still loading, please wait a moment..."
 	}
 }

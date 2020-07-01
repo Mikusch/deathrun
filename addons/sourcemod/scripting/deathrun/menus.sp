@@ -45,28 +45,38 @@ int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
 
 void Menus_DisplayQueueMenu(int client)
 {
-	Menu menu = new Menu(Menus_HandleQueueMenu);
-	
-	menu.SetTitle("%T", "Menu_Queue_Title", client, DRPlayer(client).QueuePoints);
-	
 	ArrayList queue = Queue_GetQueueList();
-	for (int i = 0; i < queue.Length; i++)
+	if (queue.Length > 0)
 	{
-		int queuePoints = queue.Get(i, 0);
-		int queueClient = queue.Get(i, 1);
+		Menu menu = new Menu(Menus_HandleQueueMenu);
+		menu.ExitBackButton = true;
 		
-		char name[MAX_NAME_LENGTH];
-		GetClientName(queueClient, name, sizeof(name));
+		if (DRPlayer(client).QueuePoints != -1)
+			menu.SetTitle("%T\n%T", "Menu_Queue_Title", client, "Menu_Queue_Title_QueuePoints", client, DRPlayer(client).QueuePoints);
+		else
+			menu.SetTitle("%T\n%T", "Menu_Queue_Title", client, "Menu_Queue_NotLoaded", client);
 		
-		char display[256];
-		Format(display, sizeof(display), "%s (%d)", name, queuePoints);
+		for (int i = 0; i < queue.Length; i++)
+		{
+			int queuePoints = queue.Get(i, 0);
+			int queueClient = queue.Get(i, 1);
+			
+			char name[MAX_NAME_LENGTH];
+			GetClientName(queueClient, name, sizeof(name));
+			
+			char display[256];
+			Format(display, sizeof(display), "%s (%d)", name, queuePoints);
+			
+			menu.AddItem(NULL_STRING, display, ITEMDRAW_DISABLED);
+		}
 		
-		menu.AddItem(NULL_STRING, display);
+		menu.Display(client, MENU_TIME_FOREVER);
+	}
+	else
+	{
+		PrintHintText(client, "%t", "Menu_Queue_NotLoaded");
 	}
 	delete queue;
-	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
 }
 
 int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
@@ -87,26 +97,33 @@ int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
 
 void Menus_DisplayPreferencesMenu(int client)
 {
-	Menu menu = new Menu(Menus_HandlePreferencesMenu);
-	menu.SetTitle("%T", "Menu_Preferences_Title", client);
-	
-	for (int i = 0; i < sizeof(g_PreferenceNames); i++)
+	if (DRPlayer(client).Preferences != -1)
 	{
-		PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
+		Menu menu = new Menu(Menus_HandlePreferencesMenu);
+		menu.SetTitle("%T", "Menu_Preferences_Title", client);
 		
-		char display[512];
-		if (DRPlayer(client).HasPreference(preference))
-			Format(display, sizeof(display), "■ %T", g_PreferenceNames[i], client);
-		else
-			Format(display, sizeof(display), "□ %T", g_PreferenceNames[i], client);
+		for (int i = 0; i < sizeof(g_PreferenceNames); i++)
+		{
+			PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
+			
+			char display[512];
+			if (DRPlayer(client).HasPreference(preference))
+				Format(display, sizeof(display), "■ %T", g_PreferenceNames[i], client);
+			else
+				Format(display, sizeof(display), "□ %T", g_PreferenceNames[i], client);
+			
+			char info[4];
+			if (IntToString(i, info, sizeof(info)) > 0)
+				menu.AddItem(info, display);
+		}
 		
-		char info[4];
-		if (IntToString(i, info, sizeof(info)) > 0)
-			menu.AddItem(info, display);
+		menu.ExitBackButton = true;
+		menu.Display(client, MENU_TIME_FOREVER);
 	}
-	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
+	else
+	{
+		PrintHintText(client, "%t", "Menu_Preferences_NotLoaded");
+	}
 }
 
 int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int param2)
