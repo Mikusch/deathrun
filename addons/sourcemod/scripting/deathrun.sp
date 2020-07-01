@@ -193,6 +193,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 	{
 		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
 		{
+			RemoveEdictAlwaysTransmitFlag(entity);
 			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
 			break;
 		}
