@@ -3,9 +3,20 @@ static float g_TimerEndTime;
 
 static Handle g_RoundTimerHudSync;
 
+static char g_ChatTips[][] =  {
+	"ChatTip_HideRunners", 
+	"ChatTip_ActivatorWeapons", 
+	"ChatTip_CheckQueue", 
+	"ChatTip_DisableChatTips", 
+	"ChatTip_DisableActivator"
+};
+
 void Timer_Init()
 {
 	g_RoundTimerHudSync = CreateHudSynchronizer();
+	
+	if (dr_chattips_interval.IntValue > 0)
+		CreateTimer(dr_chattips_interval.FloatValue, Timer_PrintChatTip, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
 
 void Timer_OnRoundStart()
@@ -14,7 +25,7 @@ void Timer_OnRoundStart()
 	g_TimerEndTime = g_TimerStartTime + dr_round_time.FloatValue;
 	
 	if (g_TimerEndTime > g_TimerStartTime)
-		g_RoundTimer = CreateTimer(g_TimerEndTime - g_TimerStartTime, Timer_ExplodePlayers);
+		g_RoundTimer = CreateTimer(g_TimerEndTime - g_TimerStartTime, Timer_ExplodePlayers, _, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 void Timer_OnClientThink(int client)
@@ -32,7 +43,7 @@ void Timer_OnClientThink(int client)
 	}
 }
 
-Action Timer_ExplodePlayers(Handle timer)
+public Action Timer_ExplodePlayers(Handle timer)
 {
 	if (timer != g_RoundTimer)
 		return;
@@ -51,5 +62,17 @@ Action Timer_ExplodePlayers(Handle timer)
 			//No, this is not a bug ;)
 			EmitSoundToAll(TIMER_EXPLOSION_SOUND);
 		}
+	}
+}
+
+public Action Timer_PrintChatTip(Handle timer)
+{
+	char tip[MAX_MESSAGE_LENGTH];
+	strcopy(tip, sizeof(tip), g_ChatTips[GetRandomInt(0, sizeof(g_ChatTips) - 1)]);
+	
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && !DRPlayer(client).HasPreference(Preference_HideChatTips))
+			PrintLocalizedMessage(client, "%t", tip);
 	}
 }

@@ -2,7 +2,7 @@ void Menus_DisplayMainMenu(int client)
 {
 	Menu menu = new Menu(Menus_HandleMainMenu);
 	
-	menu.SetTitle("%s - %s", PLUGIN_NAME, PLUGIN_VERSION);
+	menu.SetTitle("%T", "Menu_Main_Title", client, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR, PLUGIN_URL);
 	
 	char display[256];
 	Format(display, sizeof(display), "%T", "Menu_Main_Queue", client);
@@ -13,6 +13,9 @@ void Menus_DisplayMainMenu(int client)
 	
 	Format(display, sizeof(display), "%T", "Menu_Main_ThirdPerson", client);
 	menu.AddItem("thirdperson", display, dr_allow_thirdperson.BoolValue ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
+	
+	Format(display, sizeof(display), "%T", "Menu_Main_HideRunners", client);
+	menu.AddItem("hiderunners", display);
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }
@@ -37,6 +40,11 @@ int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
 			else if (StrEqual(info, "thirdperson"))
 			{
 				FakeClientCommand(param1, DRPlayer(param1).InThirdPerson ? "dr_firstperson" : "dr_thirdperson");
+				Menus_DisplayMainMenu(param1);
+			}
+			else if (StrEqual(info, "hiderunners"))
+			{
+				FakeClientCommand(param1, "dr_hiderunners");
 				Menus_DisplayMainMenu(param1);
 			}
 		}
@@ -75,6 +83,7 @@ void Menus_DisplayQueueMenu(int client)
 	else
 	{
 		PrintHintText(client, "%t", "Menu_Queue_NotLoaded");
+		Menus_DisplayMainMenu(client);
 	}
 	delete queue;
 }
@@ -101,6 +110,7 @@ void Menus_DisplayPreferencesMenu(int client)
 	{
 		Menu menu = new Menu(Menus_HandlePreferencesMenu);
 		menu.SetTitle("%T", "Menu_Preferences_Title", client);
+		menu.ExitBackButton = true;
 		
 		for (int i = 0; i < sizeof(g_PreferenceNames); i++)
 		{
@@ -117,12 +127,12 @@ void Menus_DisplayPreferencesMenu(int client)
 				menu.AddItem(info, display);
 		}
 		
-		menu.ExitBackButton = true;
 		menu.Display(client, MENU_TIME_FOREVER);
 	}
 	else
 	{
 		PrintHintText(client, "%t", "Menu_Preferences_NotLoaded");
+		Menus_DisplayMainMenu(client);
 	}
 }
 

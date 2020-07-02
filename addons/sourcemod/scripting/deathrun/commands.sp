@@ -19,6 +19,10 @@ void Commands_Init()
 	Command_Create("thirdperson", Command_Thirdperson);
 	Command_Create("fp", Command_Firstperson);
 	Command_Create("firstperson", Command_Firstperson);
+	
+	Command_Create("hide", Command_HideRunners);
+	Command_Create("hiderunners", Command_HideRunners);
+	Command_Create("hideplayers", Command_HideRunners);
 }
 
 stock void Command_Create(const char[] cmd, ConCmd callback)
@@ -122,5 +126,23 @@ public Action Command_Firstperson(int client, int args)
 	}
 	
 	player.InThirdPerson = false;
+	return Plugin_Handled;
+}
+
+public Action Command_HideRunners(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		return Plugin_Handled;
+	}
+	
+	DRPlayer player = DRPlayer(client);
+	if (player.IsHidingRunners)
+		PrintHintText(client, "%t", "Command_HideRunners_Disabled");
+	else
+		PrintHintText(client, "%t", "Command_HideRunners_Enabled");
+	
+	player.IsHidingRunners = !player.IsHidingRunners;
 	return Plugin_Handled;
 }

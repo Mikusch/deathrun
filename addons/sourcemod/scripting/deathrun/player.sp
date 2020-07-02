@@ -1,6 +1,7 @@
 int g_PlayerQueuePoints[TF_MAXPLAYERS] =  { -1, ... };
 int g_PlayerPreferences[TF_MAXPLAYERS] =  { -1, ... };
 bool g_PlayerInThirdPerson[TF_MAXPLAYERS];
+bool g_PlayerIsHidingRunners[TF_MAXPLAYERS];
 
 methodmap DRPlayer
 {
@@ -50,6 +51,18 @@ methodmap DRPlayer
 		public set(bool val)
 		{
 			g_PlayerInThirdPerson[this] = val;
+		}
+	}
+	
+	property bool IsHidingRunners
+	{
+		public get()
+		{
+			return g_PlayerIsHidingRunners[this];
+		}
+		public set(bool val)
+		{
+			g_PlayerIsHidingRunners[this] = val;
 		}
 	}
 	

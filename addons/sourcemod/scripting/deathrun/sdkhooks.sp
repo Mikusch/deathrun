@@ -8,7 +8,7 @@ public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 {
 	RemoveEdictAlwaysTransmitFlag(entity);
 	
-	if (DRPlayer(client).HasPreference(Preference_HidePlayers)	//Check if this client wants to hide other players
+	if (DRPlayer(client).IsHidingRunners	//Check if this client wants to hide other players
 		 && TF2_GetClientTeam(client) == TFTeam_Runners	//Only runners can hide other players
 		 && IsPlayerAlive(client)	//Stop hiding players when dead
 		 && client != entity	//Don't hide ourself
@@ -23,7 +23,7 @@ public Action SDKHookCB_OwnedEntitySetTransmit(int entity, int client)
 {
 	RemoveEdictAlwaysTransmitFlag(entity);
 	
-	if (DRPlayer(client).HasPreference(Preference_HidePlayers)	//Check if this client wants to hide other player's items
+	if (DRPlayer(client).IsHidingRunners	//Check if this client wants to hide other player's items
 		 && TF2_GetClientTeam(client) == TFTeam_Runners	//Only runners can hide other player's items
 		 && IsPlayerAlive(client))
 	{

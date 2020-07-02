@@ -11,10 +11,10 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME			"Deathrun Redux"
+#define PLUGIN_NAME			"Deathrun Neue"
 #define PLUGIN_AUTHOR		"Mikusch"
-#define PLUGIN_DESCRIPTION	"Good old Deathrun"
-#define PLUGIN_VERSION		"1.0"
+#define PLUGIN_DESCRIPTION	"Team Fortress 2 Deathrun"
+#define PLUGIN_VERSION		"v1.1"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
 #define TIMER_EXPLOSION_SOUND	"items/cart_explode.wav"
@@ -36,8 +36,8 @@ const TFTeam TFTeam_Activator = TFTeam_Blue;
 
 enum PreferenceType
 {
-	Preference_AvoidBecomingActivator = (1 << 0), 
-	Preference_HidePlayers = (1 << 1)
+	Preference_DontBeActivator = (1 << 0), 
+	Preference_HideChatTips = (1 << 1)
 }
 
 enum
@@ -58,8 +58,8 @@ enum
 };
 
 char g_PreferenceNames[][] =  {
-	"Preference_AvoidBecomingActivator",
-	"Preference_HideRunners"
+	"Preference_DontBeActivator",
+	"Preference_HideChatTips"
 };
 
 char g_OwnerEntityList[][] =  {
@@ -73,6 +73,7 @@ char g_OwnerEntityList[][] =  {
 ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
 ConVar dr_round_time;
+ConVar dr_chattips_interval;
 
 int g_CurrentActivator = -1;
 
@@ -92,7 +93,7 @@ Handle g_RoundTimer;
 #include "deathrun/sdkcalls.sp"
 #include "deathrun/sdkhooks.sp"
 #include "deathrun/stocks.sp"
-#include "deathrun/timer.sp"
+#include "deathrun/timers.sp"
 
 public Plugin pluginInfo =  {
 	name = PLUGIN_NAME,

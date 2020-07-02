@@ -84,7 +84,7 @@ void Queue_AddPoints(int client, int points)
 		PrintLocalizedMessage(client, "%t", "Queue_NoPointsAwarded_Error");
 		return;
 	}
-	else if (DRPlayer(client).HasPreference(Preference_AvoidBecomingActivator))
+	else if (DRPlayer(client).HasPreference(Preference_DontBeActivator))
 	{
 		PrintLocalizedMessage(client, "%t", "Queue_NoPointsAwarded_Preferences");
 		return;
@@ -108,7 +108,7 @@ bool Queue_IsClientAllowed(int client)
 	if (IsValidClient(client)
 		 && TF2_GetClientTeam(client) > TFTeam_Spectator	//Is the client not in spectator team?
 		 && DRPlayer(client).QueuePoints != -1	//Does the client have their queue points loaded?
-		 && !DRPlayer(client).HasPreference(Preference_AvoidBecomingActivator))	//Does the client want to be the activator?
+		 && !DRPlayer(client).HasPreference(Preference_DontBeActivator))	//Does the client want to be the activator?
 	{
 		return true;
 	}

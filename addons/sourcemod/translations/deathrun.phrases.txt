@@ -16,6 +16,35 @@
 	{
 		"en"	"You have disabled the third-person camera"
 	}
+	"Command_HideRunners_Enabled"
+	{
+		"en"	"You are now hiding all other living runners"
+	}
+	"Command_HideRunners_Disabled"
+	{
+		"en"	"All other living runners are visible again"
+	}
+	
+	"ChatTip_HideRunners"
+	{
+		"en"	"{green}PROTIP: {default}As a Runner, you can hide teammates blocking your sight by using {orange}!drhide{default}."
+	}
+	"ChatTip_ActivatorWeapons"
+	{
+		"en"	"{green}PROTIP: {default}As the Activator, utilize ranged weapons to hit traps from far away."
+	}
+	"ChatTip_CheckQueue"
+	{
+		"en"	"{green}PROTIP: {default}You can check the queue of Activators using {orange}!drnext{default}."
+	}
+	"ChatTip_DisableChatTips"
+	{
+		"en"	"{green}PROTIP: {default}You can disable these tips using {orange}!drsettings{default}."
+	}
+	"ChatTip_DisableActivator"
+	{
+		"en"	"{green}PROTIP: {default}Don't want to play as the Activator? Change your Activator preferences using {orange}!drsettings{default}."
+	}
 	
 	"Thirdperson_ForceDisable"
 	{
@@ -60,13 +89,13 @@
 		"en"		"You have successfully disabled the setting \"{1}\"."
 	}
 	
-	"Preference_AvoidBecomingActivator"
+	"Preference_DontBeActivator"
 	{
-		"en"	"Avoid becoming the Activator"
+		"en"	"Avoid being chosen as the Activator"
 	}
-	"Preference_HideRunners"
+	"Preference_HideChatTips"
 	{
-		"en"	"Hide other alive Runners (experimental)"
+		"en"	"Hide occasional chat tips"
 	}
 	
 	"Queue_NoPointsAwarded_Error"
@@ -87,6 +116,10 @@
 		"en"	"You have been randomly chosen to become the Activator because there were no valid players in the server. Your queue points have not been consumed."
 	}
 	
+	"Menu_Main_Title"
+	{
+		"en"	"Welcome to %s %s by %s!\n%s"
+	}
 	"Menu_Main_Queue"
 	{
 		"en"	"Activator Queue List (!drnext)"
@@ -97,7 +130,11 @@
 	}
 	"Menu_Main_ThirdPerson"
 	{
-		"en"	"Toggle Thirdperson Mode (!drthirdperson)"
+		"en"	"Third-Person Camera (!drthirdperson)"
+	}
+	"Menu_Main_HideRunners"
+	{
+		"en"	"Hide Runners (!drhide)"
 	}
 	"Menu_Queue_Title"
 	{
@@ -118,6 +155,6 @@
 	}
 	"Menu_Preferences_NotLoaded"
 	{
-		"en"	"Your preferences are still loading, please wait a moment..."
+		"en"	"Your preferences are still loading..."
 	}
 }
