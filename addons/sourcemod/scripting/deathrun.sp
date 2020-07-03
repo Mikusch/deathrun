@@ -17,7 +17,7 @@
 #define PLUGIN_VERSION		"v1.1"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
-#define TIMER_EXPLOSION_SOUND	"items/cart_explode.wav"
+#define GAMESOUND_EXPLOSION	"MVM.BombExplode"
 
 #define TF_MAXPLAYERS		33
 #define INTEGER_MAX_VALUE	0x7FFFFFFF
@@ -140,7 +140,7 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
-	PrecacheSound(TIMER_EXPLOSION_SOUND);
+	PrecacheScriptSound(GAMESOUND_EXPLOSION);
 }
 
 public void OnConfigsExecuted()

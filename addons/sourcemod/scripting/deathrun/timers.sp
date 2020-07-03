@@ -58,10 +58,9 @@ public Action Timer_ExplodePlayers(Handle timer)
 				if (IsPlayerAlive(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
 					SDKHooks_TakeDamage(client, activator, 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
 			}
-			
-			//No, this is not a bug ;)
-			EmitSoundToAll(TIMER_EXPLOSION_SOUND);
 		}
+		
+		EmitGameSoundToAll(GAMESOUND_EXPLOSION);
 	}
 }
 
