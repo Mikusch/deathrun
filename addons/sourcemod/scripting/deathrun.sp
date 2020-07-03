@@ -17,7 +17,7 @@
 #define PLUGIN_VERSION		"v1.1"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
-#define GAMESOUND_EXPLOSION	"MVM.BombExplode"
+#define GAMESOUND_EXPLOSION	"MVM.BombExplodes"
 
 #define TF_MAXPLAYERS		33
 #define INTEGER_MAX_VALUE	0x7FFFFFFF
