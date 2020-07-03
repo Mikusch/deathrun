@@ -134,7 +134,7 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 				{
 					SetHudTextParams(-1.0, 0.25, 10.0, 162, 86, 73, 255);
 					ShowHudText(client, -1, "%t", "RoundStart_NewActivator_Runners", activatorName);
-					SetEntProp(client, Prop_Send, "m_bGlowEnabled", 1);
+					SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 				}
 				
 				PrintMessage(client, "%t", "RoundStart_NewActivator", activatorName);

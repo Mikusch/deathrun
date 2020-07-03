@@ -14,8 +14,10 @@ void ConVars_Init()
 	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to clients at the end of each round.");
 	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set to 0 if you use other thirdperson plugins that may conflict.");
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "How often in seconds chat tips should be shown to clients. Set to 0 to disable chat tips.");
+	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have an outline.");
 	
 	HookConVarChange(dr_allow_thirdperson, OnAllowThirdpersonChanged);
+	HookConVarChange(dr_runner_glow, OnRunnerGlowChanged);
 	
 	ConVars = new ArrayList(sizeof(ConVarInfo));
 	
@@ -76,6 +78,15 @@ void OnAllowThirdpersonChanged(ConVar convar, const char[] oldValue, const char[
 				PrintMessage(client, "%T", "Thirdperson_ForceDisable", LANG_SERVER);
 			}
 		}
+	}
+}
+
+void OnRunnerGlowChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
+			SetEntProp(client, Prop_Send, "m_bGlowEnabled", StringToInt(newValue));
 	}
 }
 

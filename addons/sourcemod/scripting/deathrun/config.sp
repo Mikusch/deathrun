@@ -1,3 +1,5 @@
+#define WEAPON_CONFIG_FILE		"configs/deathrun/weapons.cfg"
+
 enum AttributeModMode
 {
 	ModMode_Set,		/*< Sets the attribute, adding it if it doesn't exist */
