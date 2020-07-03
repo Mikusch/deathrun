@@ -58,14 +58,14 @@ public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dont
 				{
 					//Once we found someone who is in red or blue, swap their team
 					TFTeam team = TF2_GetClientTeam(client);
-					if (team == TFTeam_Red)
+					if (team == TFTeam_Runners)
 					{
-						TF2_ChangeClientTeamAlive(client, TFTeam_Blue);
+						TF2_ChangeClientTeamAlive(client, TFTeam_Activator);
 						return;
 					}
-					else if (team == TFTeam_Blue)
+					else if (team == TFTeam_Activator)
 					{
-						TF2_ChangeClientTeamAlive(client, TFTeam_Red);
+						TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
 						return;
 					}
 				}
@@ -80,7 +80,7 @@ public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dont
 	{
 		//Put every player in the same team and pick the activator later
 		if (IsClientInGame(client) && TF2_GetClientTeam(client) > TFTeam_Spectator)
-			TF2_ChangeClientTeamAlive(client, TFTeam_Red);
+			TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
 	}
 	
 	Queue_SetNextActivator();
@@ -95,10 +95,10 @@ public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBr
 		DRPlayer player = DRPlayer(client);
 		if (IsClientInGame(client))
 		{ 
-			if (team == TFTeam_Blue)
-				PrintLocalizedMessage(client, "%t", "RoundWin_Activator");
-			else if (team == TFTeam_Red)
-				PrintLocalizedMessage(client, "%t", "RoundWin_Runners");
+			if (team == TFTeam_Activator)
+				PrintMessage(client, "%t", "RoundWin_Activator");
+			else if (team == TFTeam_Runners)
+				PrintMessage(client, "%t", "RoundWin_Runners");
 			
 			if (player.IsActivator())
 			{
@@ -110,8 +110,6 @@ public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBr
 			}
 		}
 	}
-	
-	g_RoundTimer = null;	//Block the big boom
 }
 
 public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
@@ -129,20 +127,17 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 			{
 				if (DRPlayer(client).IsActivator())
 				{
-					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
-					ShowHudText(client, -1, "%t", "RoundStart_NewActivator_Activator");
+					SetHudTextParams(-1.0, 0.25, 10.0, 82, 122, 136, 255);
+					ShowHudText(client, 5, "%t", "RoundStart_NewActivator_Activator");
 				}
 				else
 				{
-					SetHudTextParams(-1.0, 0.25, 10.0, 0, 255, 255, 255);
-					ShowHudText(client, -1, "%t", "RoundStart_NewActivator_Runners", activatorName);
-					SetEntProp(client, Prop_Send, "m_bGlowEnabled", 1);
+					SetHudTextParams(-1.0, 0.25, 10.0, 162, 86, 73, 255);
+					ShowHudText(client, 5, "%t", "RoundStart_NewActivator_Runners", activatorName);
+					SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 				}
 				
-				SetHudTextParams(-1.0, 0.375, 10.0, 255, 255, 0, 255);
-				ShowHudText(client, -1, PLUGIN_URL);
-				
-				PrintLocalizedMessage(client, "%t", "RoundStart_NewActivator", activatorName);
+				PrintMessage(client, "%t", "RoundStart_NewActivator", activatorName);
 			}
 		}
 		
@@ -155,13 +150,11 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 		{
 			if (IsClientInGame(client))
 			{
-				SetHudTextParams(-1.0, 0.25, FindConVar("mp_bonusroundtime").FloatValue, 0, 255, 255, 255);
-				ShowHudText(client, -1, "%t", "RoundStart_Activator_Disconnected");
+				SetHudTextParams(-1.0, 0.25, FindConVar("mp_bonusroundtime").FloatValue, 204, 204, 204, 255);
+				ShowHudText(client, 5, "%t", "RoundStart_Activator_Disconnected");
 			}
 		}
 	}
-	
-	Timer_OnRoundStart();
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)

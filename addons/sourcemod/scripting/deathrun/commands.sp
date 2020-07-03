@@ -81,7 +81,7 @@ public Action Command_Thirdperson(int client, int args)
 	
 	if (!dr_allow_thirdperson.BoolValue)
 	{
-		PrintLocalizedMessage(client, "%t", "Command_Disabled");
+		PrintMessage(client, "%t", "Command_Disabled");
 		return Plugin_Handled;
 	}
 	
@@ -113,7 +113,7 @@ public Action Command_Firstperson(int client, int args)
 	
 	if (!dr_allow_thirdperson.BoolValue)
 	{
-		PrintLocalizedMessage(client, "%t", "Command_Disabled");
+		PrintMessage(client, "%t", "Command_Disabled");
 		return Plugin_Handled;
 	}
 	

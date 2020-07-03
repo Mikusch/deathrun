@@ -155,9 +155,9 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 			Format(preferenceName, sizeof(preferenceName), "%T", g_PreferenceNames[i], param1);
 			
 			if (player.HasPreference(preference))
-				PrintLocalizedMessage(param1, "%t", "Preferences_Enabled", preferenceName);
+				PrintMessage(param1, "%t", "Preferences_Enabled", preferenceName);
 			else
-				PrintLocalizedMessage(param1, "%t", "Preferences_Disabled", preferenceName);
+				PrintMessage(param1, "%t", "Preferences_Disabled", preferenceName);
 			
 			Menus_DisplayPreferencesMenu(param1);
 		}

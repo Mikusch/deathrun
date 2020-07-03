@@ -11,18 +11,16 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME			"Deathrun Neue"
+#define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_DESCRIPTION	"Team Fortress 2 Deathrun"
-#define PLUGIN_VERSION		"v1.1"
+#define PLUGIN_VERSION		"v1.2"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
-#define TIMER_EXPLOSION_SOUND	"items/cart_explode.wav"
+#define GAMESOUND_EXPLOSION	"MVM.BombExplodes"
 
 #define TF_MAXPLAYERS		33
 #define INTEGER_MAX_VALUE	0x7FFFFFFF
-
-#define WEAPON_CONFIG_FILE		"configs/deathrun/weapons.cfg"
 
 // m_lifeState values
 #define LIFE_ALIVE				0 // alive
@@ -57,8 +55,30 @@ enum
 	WeaponSlot_Misc2
 };
 
+// TF2 win reasons (from teamplayroundbased_gamerules.h)
+enum
+{
+	WINREASON_NONE = 0, 
+	WINREASON_ALL_POINTS_CAPTURED, 
+	WINREASON_OPPONENTS_DEAD, 
+	WINREASON_FLAG_CAPTURE_LIMIT, 
+	WINREASON_DEFEND_UNTIL_TIME_LIMIT, 
+	WINREASON_STALEMATE, 
+	WINREASON_TIMELIMIT, 
+	WINREASON_WINLIMIT, 
+	WINREASON_WINDIFFLIMIT, 
+	WINREASON_RD_REACTOR_CAPTURED, 
+	WINREASON_RD_CORES_COLLECTED, 
+	WINREASON_RD_REACTOR_RETURNED, 
+	WINREASON_PD_POINTS, 
+	WINREASON_SCORED, 
+	WINREASON_STOPWATCH_WATCHING_ROUNDS, 
+	WINREASON_STOPWATCH_WATCHING_FINAL_ROUND, 
+	WINREASON_STOPWATCH_PLAYING_ROUNDS
+};
+
 char g_PreferenceNames[][] =  {
-	"Preference_DontBeActivator",
+	"Preference_DontBeActivator", 
 	"Preference_HideChatTips"
 };
 
@@ -67,17 +87,15 @@ char g_OwnerEntityList[][] =  {
 	"projectile_energy_ball", 
 	"weapon", 
 	"wearable", 
-	"prop_physics"	//Conch
+	"prop_physics" //Conch
 };
 
 ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
-ConVar dr_round_time;
 ConVar dr_chattips_interval;
+ConVar dr_runner_glow;
 
 int g_CurrentActivator = -1;
-
-Handle g_RoundTimer;
 
 #include "deathrun/player.sp"
 
@@ -96,10 +114,10 @@ Handle g_RoundTimer;
 #include "deathrun/timers.sp"
 
 public Plugin pluginInfo =  {
-	name = PLUGIN_NAME,
-	author = PLUGIN_AUTHOR,
-	description = PLUGIN_DESCRIPTION,
-	version = PLUGIN_VERSION,
+	name = PLUGIN_NAME, 
+	author = PLUGIN_AUTHOR, 
+	description = PLUGIN_DESCRIPTION, 
+	version = PLUGIN_VERSION, 
 	url = PLUGIN_URL
 };
 
@@ -108,13 +126,16 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases.txt");
 	LoadTranslations("deathrun.phrases.txt");
 	
+	CAddColor("primary", 0xF26C4F);
+	CAddColor("secondary", 0x3A89C9);
+	
 	Commands_Init();
 	Console_Init();
 	Cookies_Init();
 	Config_Init();
 	ConVars_Init();
 	Events_Init();
-	Timer_Init();
+	Timers_Init();
 	
 	GameData gamedata = new GameData("deathrun");
 	if (gamedata == null)
@@ -122,6 +143,8 @@ public void OnPluginStart()
 	
 	DHooks_Init(gamedata);
 	SDKCalls_Init(gamedata);
+	
+	DHooks_HookGamerules();
 	
 	ConVars_Enable();
 	
@@ -132,7 +155,7 @@ public void OnPluginStart()
 	{
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);
-			
+		
 		if (AreClientCookiesCached(client))
 			OnClientCookiesCached(client);
 	}
@@ -140,7 +163,7 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
-	PrecacheSound(TIMER_EXPLOSION_SOUND);
+	PrecacheScriptSound(GAMESOUND_EXPLOSION);
 }
 
 public void OnConfigsExecuted()
@@ -170,13 +193,12 @@ void RequestFrameCallback_VerifyTeam(int userid)
 	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client) && IsClientInGame(client))
 	{
-		
 		TFTeam team = TF2_GetClientTeam(client);
 		if (team <= TFTeam_Spectator)return;
 		
 		if (DRPlayer(client).IsActivator())
 		{
-			if (team == TFTeam_Red) //Check if player is in the runner team, if so put them back to the activator team
+			if (team == TFTeam_Runners) //Check if player is in the runner team, if so put them back to the activator team
 			{
 				TF2_ChangeClientTeam(client, TFTeam_Activator);
 				TF2_RespawnPlayer(client);
@@ -184,9 +206,9 @@ void RequestFrameCallback_VerifyTeam(int userid)
 		}
 		else
 		{
-			if (team == TFTeam_Blue) //Check if player is in the activator team, if so put them back to the runner team
+			if (team == TFTeam_Activator) //Check if player is in the activator team, if so put them back to the runner team
 			{
-				TF2_ChangeClientTeam(client, TFTeam_Red);
+				TF2_ChangeClientTeam(client, TFTeam_Runners);
 				TF2_RespawnPlayer(client);
 			}
 		}
@@ -249,11 +271,4 @@ public void OnClientPutInServer(int client)
 public void OnClientDisconnect(int client)
 {
 	DRPlayer(client).Reset();
-}
-
-stock void PrintLocalizedMessage(int client, const char[] format, any ...)
-{
-	char buffer[256];
-	VFormat(buffer, sizeof(buffer), format, 3);
-	CPrintToChat(client, "[{orange}DR{default}] %s", buffer);
 }

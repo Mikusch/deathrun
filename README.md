@@ -1,4 +1,4 @@
-# Deathrun Neue
+# Deathrun Neu
 I was fed up with the lack of good public Deathrun plugins out there, so I went ahead and made my own.
 
 Inspired by the plugins I played many years back that were never made accessible to the public, this plugin aims to keep player restrictions as little as possible while not ruining the gameplay.

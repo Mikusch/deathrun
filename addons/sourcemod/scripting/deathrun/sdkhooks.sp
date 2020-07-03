@@ -1,7 +1,6 @@
 void SDKHooks_OnClientPutInServer(int client)
 {
 	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_ClientSetTransmit);
-	SDKHook(client, SDKHook_PreThink, SDKHookCB_ClientPreThink);
 }
 
 public Action SDKHookCB_ClientSetTransmit(int entity, int client)
@@ -33,9 +32,4 @@ public Action SDKHookCB_OwnedEntitySetTransmit(int entity, int client)
 	}
 	
 	return Plugin_Continue;
-}
-
-public void SDKHookCB_ClientPreThink(int client)
-{
-	Timer_OnClientThink(client);
 }
