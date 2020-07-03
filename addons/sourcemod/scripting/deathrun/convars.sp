@@ -13,7 +13,6 @@ void ConVars_Init()
 	CreateConVar("dr_version", PLUGIN_VERSION, "Plugin version");
 	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to clients at the end of each round.");
 	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set to 0 if you use other thirdperson plugins that may conflict.");
-	dr_round_time = CreateConVar("dr_round_time", "0", "Amount of time in seconds runners have to complete the map. Set to 0 to disable the round timer.");
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "How often in seconds chat tips should be shown to clients. Set to 0 to disable chat tips.");
 	
 	HookConVarChange(dr_allow_thirdperson, OnAllowThirdpersonChanged);

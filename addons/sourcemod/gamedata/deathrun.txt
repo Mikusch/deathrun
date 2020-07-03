@@ -2,6 +2,14 @@
 {
 	"tf"
 	{
+		"Offsets"
+		{
+			"CTeamplayRoundBasedRules::SetWinningTeam"
+			{
+				"linux"		"161"
+				"windows"	"160"
+			}
+		}
 		"Signatures"
 		{
 			"CTFPlayer::GetEquippedWearableForLoadoutSlot"
@@ -19,6 +27,40 @@
 		}
 		"Functions"
 		{
+			"CTeamplayRoundBasedRules::SetWinningTeam"
+			{
+				"offset"	"CTeamplayRoundBasedRules::SetWinningTeam"
+				"hooktype"	"gamerules"
+				"return"	"void"
+				"this"		"ignore"
+				"arguments"
+				{
+					"team"
+					{
+						"type"	"int"
+					}
+					"iWinReason"
+					{
+						"type"	"int"
+					}
+					"bForceMapReset"
+					{
+						"type"	"bool"
+					}
+					"bSwitchTeams"
+					{
+						"type"	"bool"
+					}
+					"bDontAddScore"
+					{
+						"type"	"bool"
+					}
+					"bFinal"
+					{
+						"type"	"bool"
+					}
+				}
+			}
 			"CTFPlayer::TeamFortress_CalculateMaxSpeed"
 			{
 				"signature"	"CTFPlayer::TeamFortress_CalculateMaxSpeed"

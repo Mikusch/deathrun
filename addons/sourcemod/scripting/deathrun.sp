@@ -57,6 +57,28 @@ enum
 	WeaponSlot_Misc2
 };
 
+// TF2 win reasons (from teamplayroundbased_gamerules.h)
+enum
+{
+	WINREASON_NONE = 0, 
+	WINREASON_ALL_POINTS_CAPTURED, 
+	WINREASON_OPPONENTS_DEAD, 
+	WINREASON_FLAG_CAPTURE_LIMIT, 
+	WINREASON_DEFEND_UNTIL_TIME_LIMIT, 
+	WINREASON_STALEMATE, 
+	WINREASON_TIMELIMIT, 
+	WINREASON_WINLIMIT, 
+	WINREASON_WINDIFFLIMIT, 
+	WINREASON_RD_REACTOR_CAPTURED, 
+	WINREASON_RD_CORES_COLLECTED, 
+	WINREASON_RD_REACTOR_RETURNED, 
+	WINREASON_PD_POINTS, 
+	WINREASON_SCORED, 
+	WINREASON_STOPWATCH_WATCHING_ROUNDS, 
+	WINREASON_STOPWATCH_WATCHING_FINAL_ROUND, 
+	WINREASON_STOPWATCH_PLAYING_ROUNDS
+};
+
 char g_PreferenceNames[][] =  {
 	"Preference_DontBeActivator",
 	"Preference_HideChatTips"
@@ -72,12 +94,9 @@ char g_OwnerEntityList[][] =  {
 
 ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
-ConVar dr_round_time;
 ConVar dr_chattips_interval;
 
 int g_CurrentActivator = -1;
-
-Handle g_RoundTimer;
 
 #include "deathrun/player.sp"
 
@@ -114,7 +133,7 @@ public void OnPluginStart()
 	Config_Init();
 	ConVars_Init();
 	Events_Init();
-	Timer_Init();
+	Timers_Init();
 	
 	GameData gamedata = new GameData("deathrun");
 	if (gamedata == null)
@@ -122,6 +141,8 @@ public void OnPluginStart()
 	
 	DHooks_Init(gamedata);
 	SDKCalls_Init(gamedata);
+	
+	DHooks_HookGamerules();
 	
 	ConVars_Enable();
 	

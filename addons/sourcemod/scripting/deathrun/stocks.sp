@@ -90,3 +90,14 @@ stock void RemoveEdictAlwaysTransmitFlag(int edict)
 			SetEdictFlags(edict, (GetEdictFlags(edict) & ~FL_EDICT_ALWAYS));
 	}
 }
+
+stock int GetAliveClientCount()
+{
+	int count = 0;
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && IsPlayerAlive(client))
+			count++;
+	}
+	return count;
+}
