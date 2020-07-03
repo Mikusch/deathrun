@@ -67,7 +67,7 @@
 	"RoundStart_NewActivator_Runners"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} became the Activator!\nAvoid getting killed by the traps\nand bring your team to the victory!"
+		"en"		"{1} became the Activator!\nAvoid getting killed by the traps\nand bring your team to victory!"
 	}
 	"RoundStart_NewActivator_Activator"
 	{
