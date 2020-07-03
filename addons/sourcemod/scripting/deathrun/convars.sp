@@ -73,7 +73,7 @@ void OnAllowThirdpersonChanged(ConVar convar, const char[] oldValue, const char[
 				DRPlayer(client).InThirdPerson = false;
 				SetVariantInt(0);
 				AcceptEntityInput(client, "SetForcedTauntCam");
-				PrintLocalizedMessage(client, "%T", "Thirdperson_ForceDisable", LANG_SERVER);
+				PrintMessage(client, "%T", "Thirdperson_ForceDisable", LANG_SERVER);
 			}
 		}
 	}

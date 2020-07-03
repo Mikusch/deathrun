@@ -11,7 +11,7 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME			"Deathrun Neue"
+#define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_DESCRIPTION	"Team Fortress 2 Deathrun"
 #define PLUGIN_VERSION		"v1.1"
@@ -80,7 +80,7 @@ enum
 };
 
 char g_PreferenceNames[][] =  {
-	"Preference_DontBeActivator",
+	"Preference_DontBeActivator", 
 	"Preference_HideChatTips"
 };
 
@@ -89,7 +89,7 @@ char g_OwnerEntityList[][] =  {
 	"projectile_energy_ball", 
 	"weapon", 
 	"wearable", 
-	"prop_physics"	//Conch
+	"prop_physics" //Conch
 };
 
 ConVar dr_queue_points;
@@ -115,10 +115,10 @@ int g_CurrentActivator = -1;
 #include "deathrun/timers.sp"
 
 public Plugin pluginInfo =  {
-	name = PLUGIN_NAME,
-	author = PLUGIN_AUTHOR,
-	description = PLUGIN_DESCRIPTION,
-	version = PLUGIN_VERSION,
+	name = PLUGIN_NAME, 
+	author = PLUGIN_AUTHOR, 
+	description = PLUGIN_DESCRIPTION, 
+	version = PLUGIN_VERSION, 
 	url = PLUGIN_URL
 };
 
@@ -126,6 +126,9 @@ public void OnPluginStart()
 {
 	LoadTranslations("common.phrases.txt");
 	LoadTranslations("deathrun.phrases.txt");
+	
+	CAddColor("primary", 0xF26C4F);
+	CAddColor("secondary", 0x3A89C9);
 	
 	Commands_Init();
 	Console_Init();
@@ -153,7 +156,7 @@ public void OnPluginStart()
 	{
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);
-			
+		
 		if (AreClientCookiesCached(client))
 			OnClientCookiesCached(client);
 	}
@@ -196,7 +199,7 @@ void RequestFrameCallback_VerifyTeam(int userid)
 		
 		if (DRPlayer(client).IsActivator())
 		{
-			if (team == TFTeam_Red) //Check if player is in the runner team, if so put them back to the activator team
+			if (team == TFTeam_Runners) //Check if player is in the runner team, if so put them back to the activator team
 			{
 				TF2_ChangeClientTeam(client, TFTeam_Activator);
 				TF2_RespawnPlayer(client);
@@ -204,9 +207,9 @@ void RequestFrameCallback_VerifyTeam(int userid)
 		}
 		else
 		{
-			if (team == TFTeam_Blue) //Check if player is in the activator team, if so put them back to the runner team
+			if (team == TFTeam_Activator) //Check if player is in the activator team, if so put them back to the runner team
 			{
-				TF2_ChangeClientTeam(client, TFTeam_Red);
+				TF2_ChangeClientTeam(client, TFTeam_Runners);
 				TF2_RespawnPlayer(client);
 			}
 		}
@@ -269,11 +272,4 @@ public void OnClientPutInServer(int client)
 public void OnClientDisconnect(int client)
 {
 	DRPlayer(client).Reset();
-}
-
-stock void PrintLocalizedMessage(int client, const char[] format, any ...)
-{
-	char buffer[256];
-	VFormat(buffer, sizeof(buffer), format, 3);
-	CPrintToChat(client, "[{orange}DR{default}] %s", buffer);
 }

@@ -27,23 +27,23 @@
 	
 	"ChatTip_HideRunners"
 	{
-		"en"	"{green}PROTIP: {default}As a Runner, you can hide teammates blocking your sight by using {orange}!drhide{default}."
+		"en"	"{green}PROTIP: {default}As a {red}Runner{default}, you can hide teammates blocking your sight with {secondary}!drhide{default}."
 	}
 	"ChatTip_ActivatorWeapons"
 	{
-		"en"	"{green}PROTIP: {default}As the Activator, utilize ranged weapons to hit traps from far away."
+		"en"	"{green}PROTIP: {default}As the {blue}Activator{default}, utilize ranged weapons to hit traps from far away."
 	}
 	"ChatTip_CheckQueue"
 	{
-		"en"	"{green}PROTIP: {default}You can check the queue of Activators using {orange}!drnext{default}."
+		"en"	"{green}PROTIP: {default}You can check the queue with {secondary}!drnext{default}."
 	}
 	"ChatTip_DisableChatTips"
 	{
-		"en"	"{green}PROTIP: {default}You can disable these tips using {orange}!drsettings{default}."
+		"en"	"{green}PROTIP: {default}You can disable these chat tips with {secondary}!drsettings{default}."
 	}
 	"ChatTip_DisableActivator"
 	{
-		"en"	"{green}PROTIP: {default}Don't want to play as the Activator? Change your Activator preferences using {orange}!drsettings{default}."
+		"en"	"{green}PROTIP: {default}Don't want to play as the {blue}Activator{default}? Change your preferences using {secondary}!drsettings{default}."
 	}
 	
 	"Thirdperson_ForceDisable"
@@ -81,12 +81,12 @@
 	"Preferences_Enabled"
 	{
 		"#format"	"{1:s}"
-		"en"		"You have successfully enabled the setting \"{1}\"."
+		"en"		"You have successfully {green}enabled {default}the setting {secondary}{1}{default}."
 	}
 	"Preferences_Disabled"
 	{
 		"#format"	"{1:s}"
-		"en"		"You have successfully disabled the setting \"{1}\"."
+		"en"		"You have successfully {red}disabled {default}the setting {secondary}{1}{default}."
 	}
 	
 	"Preference_DontBeActivator"

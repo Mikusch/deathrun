@@ -20,6 +20,6 @@ public Action Timer_PrintChatTip(Handle timer)
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client) && !DRPlayer(client).HasPreference(Preference_HideChatTips))
-			PrintLocalizedMessage(client, "%t", tip);
+			PrintMessage(client, "%t", tip);
 	}
 }

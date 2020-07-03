@@ -101,3 +101,11 @@ stock int GetAliveClientCount()
 	}
 	return count;
 }
+
+stock void PrintMessage(int client, const char[] format, any...)
+{
+	char message[256];
+	VFormat(message, sizeof(message), format, 3);
+	Format(message, sizeof(message), "[{primary}"...PLUGIN_NAME..."{default}] %s", message);
+	CPrintToChat(client, message);
+}
