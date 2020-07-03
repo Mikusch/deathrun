@@ -170,7 +170,6 @@ void RequestFrameCallback_VerifyTeam(int userid)
 	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client) && IsClientInGame(client))
 	{
-		
 		TFTeam team = TF2_GetClientTeam(client);
 		if (team <= TFTeam_Spectator)return;
 		

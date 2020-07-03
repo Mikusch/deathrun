@@ -26,8 +26,6 @@ int Queue_GetPlayerInQueuePos(int pos)
 
 void Queue_SetNextActivator()
 {
-	//Note: We may fail to f
-	
 	int activator = Queue_GetPlayerInQueuePos(1);
 	if (IsValidClient(activator)) 
 	{
