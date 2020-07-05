@@ -10,19 +10,19 @@
 	}
 	"Command_ThirdPerson_Enabled"
 	{
-		"en"	"You have enabled the third-person camera"
+		"en"	"You have {green}enabled {default}the third-person camera."
 	}
 	"Command_ThirdPerson_Disabled"
 	{
-		"en"	"You have disabled the third-person camera"
+		"en"	"You have {red}disabled {default}the third-person camera."
 	}
 	"Command_HideRunners_Enabled"
 	{
-		"en"	"You are now hiding all other living runners"
+		"en"	"All other living runners are now {green}invisible {default}for you."
 	}
 	"Command_HideRunners_Disabled"
 	{
-		"en"	"All other living runners are visible again"
+		"en"	"All other living runners are now {red}visible {default}for you."
 	}
 	
 	"ChatTip_HideRunners"

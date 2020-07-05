@@ -85,21 +85,15 @@ public Action Command_Thirdperson(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	DRPlayer player = DRPlayer(client);
-	if (player.InThirdPerson)
+	SetVariantInt(true);
+	if (AcceptEntityInput(client, "SetForcedTauntCam"))
 	{
-		SetVariantInt(0);
-		AcceptEntityInput(client, "SetForcedTauntCam");
-		PrintHintText(client, "%t", "Command_ThirdPerson_Disabled");
-	}
-	else
-	{
-		SetVariantInt(1);
-		AcceptEntityInput(client, "SetForcedTauntCam");
-		PrintHintText(client, "%t", "Command_ThirdPerson_Enabled");
+		DRPlayer(client).InThirdPerson = true;
+		
+		if (!IsPlayerAlive(client))
+			PrintMessage(client, "%t", "Command_ThirdPerson_Enabled");
 	}
 	
-	player.InThirdPerson = !player.InThirdPerson;
 	return Plugin_Handled;
 }
 
@@ -117,15 +111,15 @@ public Action Command_Firstperson(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	DRPlayer player = DRPlayer(client);
-	if (player.InThirdPerson)
+	SetVariantInt(false);
+	if (AcceptEntityInput(client, "SetForcedTauntCam"))
 	{
-		SetVariantInt(0);
-		AcceptEntityInput(client, "SetForcedTauntCam");
-		PrintHintText(client, "%t", "Command_ThirdPerson_Disabled");
+		DRPlayer(client).InThirdPerson = false;
+		
+		if (!IsPlayerAlive(client))
+			PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
 	}
 	
-	player.InThirdPerson = false;
 	return Plugin_Handled;
 }
 
@@ -138,11 +132,10 @@ public Action Command_HideRunners(int client, int args)
 	}
 	
 	DRPlayer player = DRPlayer(client);
-	if (player.IsHidingRunners)
-		PrintHintText(client, "%t", "Command_HideRunners_Disabled");
-	else
-		PrintHintText(client, "%t", "Command_HideRunners_Enabled");
-	
 	player.IsHidingRunners = !player.IsHidingRunners;
+	
+	if (!IsPlayerAlive(client))
+		PrintMessage(client, "%t", player.IsHidingRunners ? "Command_HideRunners_Enabled" : "Command_HideRunners_Disabled");
+	
 	return Plugin_Handled;
 }
