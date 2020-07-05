@@ -69,19 +69,17 @@ methodmap DRPlayer
 	public void Reset()
 	{
 		this.InThirdPerson = false;
+		this.IsHidingRunners = false;
 	}
 	
 	public bool IsActivator()
 	{
-		return view_as<int>(this) == g_CurrentActivator;
+		return this.Client == g_CurrentActivator;
 	}
 	
 	public bool HasPreference(PreferenceType preference)
 	{
-		if (this.Preferences == -1)
-			return false;
-		
-		return this.Preferences & view_as<int>(preference) != 0;
+		return this.Preferences != -1 && this.Preferences & view_as<int>(preference) != 0;
 	}
 	
 	public bool SetPreference(PreferenceType preference, bool enable)
