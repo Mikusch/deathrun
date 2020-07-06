@@ -82,13 +82,6 @@ char g_PreferenceNames[][] =  {
 	"Preference_HideChatTips"
 };
 
-char g_OwnerEntityList[][] =  {
-	"weapon", 
-	"wearable", 
-	"prop_physics",	//Concheror
-	"tf_projectile"
-};
-
 ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
@@ -177,17 +170,7 @@ public void OnPluginEnd()
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	for (int i = 0; i < sizeof(g_OwnerEntityList); i++)
-	{
-		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
-		{
-			if (HasEntProp(entity, Prop_Send, "m_hThrower"))
-				SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ThrownEntitySetTransmit);
-			else
-				SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
-			break;
-		}
-	}
+	SDKHooks_OnEntityCreated(entity, classname);
 }
 
 void RequestFrameCallback_VerifyTeam(int userid)
