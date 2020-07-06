@@ -104,7 +104,7 @@ stock int GetAliveClientCount()
 
 stock void PrintMessage(int client, const char[] format, any...)
 {
-	char message[256];
+	char message[192];
 	VFormat(message, sizeof(message), format, 3);
 	Format(message, sizeof(message), "[{primary}DR{default}] %s", message);
 	CPrintToChat(client, message);

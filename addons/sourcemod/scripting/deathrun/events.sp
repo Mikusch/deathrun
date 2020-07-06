@@ -128,12 +128,12 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 				if (DRPlayer(client).IsActivator())
 				{
 					SetHudTextParams(-1.0, 0.25, 10.0, 82, 122, 136, 255);
-					ShowHudText(client, -1, "%t", "RoundStart_NewActivator_Activator");
+					ShowHudText(client, 5, "%t", "RoundStart_NewActivator_Activator");
 				}
 				else
 				{
 					SetHudTextParams(-1.0, 0.25, 10.0, 162, 86, 73, 255);
-					ShowHudText(client, -1, "%t", "RoundStart_NewActivator_Runners", activatorName);
+					ShowHudText(client, 5, "%t", "RoundStart_NewActivator_Runners", activatorName);
 					SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 				}
 				
@@ -151,7 +151,7 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 			if (IsClientInGame(client))
 			{
 				SetHudTextParams(-1.0, 0.25, FindConVar("mp_bonusroundtime").FloatValue, 204, 204, 204, 255);
-				ShowHudText(client, -1, "%t", "RoundStart_Activator_Disconnected");
+				ShowHudText(client, 5, "%t", "RoundStart_Activator_Disconnected");
 			}
 		}
 	}
