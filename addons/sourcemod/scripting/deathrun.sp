@@ -83,11 +83,10 @@ char g_PreferenceNames[][] =  {
 };
 
 char g_OwnerEntityList[][] =  {
-	"projectile_rocket", 
-	"projectile_energy_ball", 
 	"weapon", 
 	"wearable", 
-	"prop_physics" //Conch
+	"prop_physics",	//Concheror
+	"tf_projectile"
 };
 
 ConVar dr_queue_points;
@@ -182,7 +181,10 @@ public void OnEntityCreated(int entity, const char[] classname)
 	{
 		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
 		{
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
+			if (HasEntProp(entity, Prop_Send, "m_hThrower"))
+				SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ThrownEntitySetTransmit);
+			else
+				SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
 			break;
 		}
 	}

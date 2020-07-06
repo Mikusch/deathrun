@@ -79,7 +79,7 @@ stock void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 	TF2_RespawnPlayer(client);
 }
 
-stock void RemoveEdictAlwaysTransmitFlag(int edict)
+stock void RemoveAlwaysTransmit(int edict)
 {
 	//Function for allowing transmit hook for edicts set to always transmit
 	if (0 < edict <= 2048)
@@ -106,6 +106,6 @@ stock void PrintMessage(int client, const char[] format, any...)
 {
 	char message[256];
 	VFormat(message, sizeof(message), format, 3);
-	Format(message, sizeof(message), "[{primary}"...PLUGIN_NAME..."{default}] %s", message);
+	Format(message, sizeof(message), "[{primary}DR{default}] %s", message);
 	CPrintToChat(client, message);
 }
