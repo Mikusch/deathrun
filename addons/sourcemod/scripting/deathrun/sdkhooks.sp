@@ -78,7 +78,7 @@ public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
 	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsClientConnected(i) && GetSteamAccountID(i) == accountID && DRPlayer(client).CanHideClient(i))
+		if (IsClientConnected(i) && GetSteamAccountID(i, false) == accountID && DRPlayer(client).CanHideClient(i))
 			return Plugin_Handled;
 	}
 	
