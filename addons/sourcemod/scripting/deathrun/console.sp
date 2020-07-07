@@ -120,9 +120,7 @@ public Action ConCmd_FirstPerson(int client, int args)
 	if (AcceptEntityInput(client, "SetForcedTauntCam"))
 	{
 		DRPlayer(client).InThirdPerson = false;
-		
-		if (!IsPlayerAlive(client))
-			PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
+		PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
 	}
 	
 	return Plugin_Handled;
@@ -139,8 +137,7 @@ public Action ConCmd_HideRunners(int client, int args)
 	DRPlayer player = DRPlayer(client);
 	player.IsHidingRunners = !player.IsHidingRunners;
 	
-	if (!IsPlayerAlive(client))
-		PrintMessage(client, "%t", player.IsHidingRunners ? "Command_HideRunners_Enabled" : "Command_HideRunners_Disabled");
+	PrintMessage(client, "%t", player.IsHidingRunners ? "Command_HideRunners_Enabled" : "Command_HideRunners_Disabled");
 	
 	return Plugin_Handled;
 }
