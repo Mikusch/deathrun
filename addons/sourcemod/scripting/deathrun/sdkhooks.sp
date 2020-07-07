@@ -1,12 +1,12 @@
 static char g_OwnerEntityList[][] =  {
+	"env_sniperdot", 
 	"halloween_souls_pack", 
 	"item_healthkit", 
 	"tf_ammo_pack", 
 	"tf_bonus_duck_pickup", 
 	"tf_dropped_weapon", 
-	"tf_flame", 	//TODO: Verify if this is needed
+	"tf_flame", 
 	"tf_halloween_pickup", 
-	"tf_ragdoll", 
 	"tf_weapon", 
 	"tf_wearable"
 };
@@ -22,6 +22,7 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 	{
 		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
 		{
+			RemoveAlwaysTransmit(entity);
 			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
 		}
 	}
@@ -29,14 +30,14 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 	//Thrown projectiles have m_hThrower instead of m_hOwnerEntity
 	if (StrContains(classname, "tf_projectile") != -1)
 	{
-		if (HasEntProp(entity, Prop_Send, "m_hThrower"))
-		{
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ThrownEntitySetTransmit);
-		}
-		else
-		{
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
-		}
+		RemoveAlwaysTransmit(entity);
+		SDKHook(entity, SDKHook_SetTransmit, HasEntProp(entity, Prop_Send, "m_hThrower") ? SDKHookCB_ThrownEntitySetTransmit : SDKHookCB_OwnedEntitySetTransmit);
+	}
+	
+	//Dropped weapons use m_iAccountID
+	if (StrContains(classname, "tf_dropped_weapon") != -1)
+	{
+		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_DroppedWeaponSetTransmit);
 	}
 }
 
@@ -68,6 +69,18 @@ public Action SDKHookCB_OwnedEntitySetTransmit(int entity, int client)
 	int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 	if (IsValidClient(owner) && DRPlayer(client).CanHideClient(owner))
 		return Plugin_Handled;
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
+{
+	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsClientConnected(i) && GetSteamAccountID(i) == accountID && DRPlayer(client).CanHideClient(i))
+			return Plugin_Handled;
+	}
 	
 	return Plugin_Continue;
 }
