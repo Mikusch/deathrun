@@ -27,17 +27,15 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 		}
 	}
 	
-	//Thrown projectiles have m_hThrower instead of m_hOwnerEntity
 	if (StrContains(classname, "tf_projectile") != -1)
 	{
 		RemoveAlwaysTransmit(entity);
 		SDKHook(entity, SDKHook_SetTransmit, HasEntProp(entity, Prop_Send, "m_hThrower") ? SDKHookCB_ThrownEntitySetTransmit : SDKHookCB_OwnedEntitySetTransmit);
 	}
 	
-	//Dropped weapons use m_iAccountID
-	if (StrContains(classname, "tf_dropped_weapon") != -1)
+	if (StrContains(classname, "tf_ragdoll") != -1)
 	{
-		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_DroppedWeaponSetTransmit);
+		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_RagdollSetTransmit);
 	}
 }
 
@@ -73,13 +71,14 @@ public Action SDKHookCB_OwnedEntitySetTransmit(int entity, int client)
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
+public Action SDKHookCB_RagdollSetTransmit(int entity, int client)
 {
-	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
-	for (int i = 1; i <= MaxClients; i++)
+	int playerIndex = GetEntProp(entity, Prop_Send, "m_iPlayerIndex");
+	if (IsValidClient(playerIndex) && DRPlayer(client).CanHideClient(playerIndex))
 	{
-		if (IsClientConnected(i) && GetSteamAccountID(i, false) == accountID && DRPlayer(client).CanHideClient(i))
-			return Plugin_Handled;
+		//We need to remove the flag here instead because otherwise no ragdolls get created for anyone
+		RemoveAlwaysTransmit(entity);
+		return Plugin_Handled;
 	}
 	
 	return Plugin_Continue;
