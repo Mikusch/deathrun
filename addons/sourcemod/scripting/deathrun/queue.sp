@@ -79,7 +79,7 @@ void Queue_AddPoints(int client, int points)
 	
 	if (player.QueuePoints == -1)
 	{
-		PrintMessage(client, "%t", "Queue_NoPointsAwarded_Error");
+		PrintMessage(client, "%t", "Queue_NoPointsAwarded_NotLoaded");
 		return;
 	}
 	else if (DRPlayer(client).HasPreference(Preference_DontBeActivator))

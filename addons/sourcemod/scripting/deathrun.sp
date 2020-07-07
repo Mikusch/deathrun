@@ -19,8 +19,9 @@
 
 #define GAMESOUND_EXPLOSION	"MVM.BombExplodes"
 
-#define TF_MAXPLAYERS		33
-#define INTEGER_MAX_VALUE	0x7FFFFFFF
+#define TF_MAXPLAYERS			33
+#define INTEGER_MAX_VALUE		0x7FFFFFFF
+#define MAX_CHATMESSAGE_LENGTH	192
 
 // m_lifeState values
 #define LIFE_ALIVE				0 // alive
@@ -118,8 +119,10 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases.txt");
 	LoadTranslations("deathrun.phrases.txt");
 	
-	CAddColor("primary", 0xF26C4F);
-	CAddColor("secondary", 0x3A89C9);
+	CAddColor("primary", 0x4285F4);
+	CAddColor("secondary", 0xAA66CC);
+	CAddColor("success", 0x00C851);
+	CAddColor("danger", 0xFF4444);
 	
 	Commands_Init();
 	Console_Init();
