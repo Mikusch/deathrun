@@ -1,26 +1,31 @@
+#define QUEUE		"queue"
+#define PREFERENCES	"preferences"
+#define THIRDPERSON	"thirdperson"
+#define HIDERUNNERS	"hiderunners"
+
 void Menus_DisplayMainMenu(int client)
 {
-	Menu menu = new Menu(Menus_HandleMainMenu);
+	Menu menu = new Menu(MenuHandler_MainMenu);
 	
 	menu.SetTitle("%T", "Menu_Main_Title", client, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR, PLUGIN_URL);
 	
 	char display[256];
 	Format(display, sizeof(display), "%T", "Menu_Main_Queue", client);
-	menu.AddItem("queue", display);
+	menu.AddItem(QUEUE, display);
 	
 	Format(display, sizeof(display), "%T", "Menu_Main_Preferences", client);
-	menu.AddItem("preferences", display);
+	menu.AddItem(PREFERENCES, display);
 	
 	Format(display, sizeof(display), "%T", "Menu_Main_ThirdPerson", client);
-	menu.AddItem("thirdperson", display, dr_allow_thirdperson.BoolValue ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
+	menu.AddItem(THIRDPERSON, display, dr_allow_thirdperson.BoolValue ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
 	
 	Format(display, sizeof(display), "%T", "Menu_Main_HideRunners", client);
-	menu.AddItem("hiderunners", display);
+	menu.AddItem(HIDERUNNERS, display);
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
+public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
@@ -29,20 +34,20 @@ int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
 			char info[64];
 			menu.GetItem(param2, info, sizeof(info));
 			
-			if (StrEqual(info, "queue"))
+			if (StrEqual(info, QUEUE))
 			{
 				Menus_DisplayQueueMenu(param1);
 			}
-			else if (StrEqual(info, "preferences"))
+			else if (StrEqual(info, PREFERENCES))
 			{
 				Menus_DisplayPreferencesMenu(param1);
 			}
-			else if (StrEqual(info, "thirdperson"))
+			else if (StrEqual(info, THIRDPERSON))
 			{
 				FakeClientCommand(param1, DRPlayer(param1).InThirdPerson ? "dr_firstperson" : "dr_thirdperson");
 				Menus_DisplayMainMenu(param1);
 			}
-			else if (StrEqual(info, "hiderunners"))
+			else if (StrEqual(info, HIDERUNNERS))
 			{
 				FakeClientCommand(param1, "dr_hiderunners");
 				Menus_DisplayMainMenu(param1);
@@ -56,7 +61,7 @@ void Menus_DisplayQueueMenu(int client)
 	ArrayList queue = Queue_GetQueueList();
 	if (queue.Length > 0)
 	{
-		Menu menu = new Menu(Menus_HandleQueueMenu);
+		Menu menu = new Menu(MenuHandler_QueueMenu);
 		menu.ExitBackButton = true;
 		
 		if (DRPlayer(client).QueuePoints != -1)
@@ -88,7 +93,7 @@ void Menus_DisplayQueueMenu(int client)
 	delete queue;
 }
 
-int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
+public int MenuHandler_QueueMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
@@ -108,7 +113,7 @@ void Menus_DisplayPreferencesMenu(int client)
 {
 	if (DRPlayer(client).Preferences != -1)
 	{
-		Menu menu = new Menu(Menus_HandlePreferencesMenu);
+		Menu menu = new Menu(MenuHandler_PreferencesMenu);
 		menu.SetTitle("%T", "Menu_Preferences_Title", client);
 		menu.ExitBackButton = true;
 		
@@ -136,7 +141,7 @@ void Menus_DisplayPreferencesMenu(int client)
 	}
 }
 
-int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int param2)
+public int MenuHandler_PreferencesMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{

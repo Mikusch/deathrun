@@ -1,12 +1,31 @@
+/*
+ * Copyright © 2020 Mikusch and the Deathrun Neu contributors
+ *
+ * This file is part of Deathrun Neu.
+ * 
+ * Deathrun Neu is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Deathrun Neu is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Deathrun Neu.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #pragma semicolon 1 
 
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <dhooks>
-#include <tf2_stocks>
-#include <tf2attributes>
 #include <clientprefs>
+#include <tf2_stocks>
+#include <dhooks>
+#include <tf2attributes>
 #include <morecolors>
 
 #pragma newdecls required
@@ -17,7 +36,7 @@
 #define PLUGIN_VERSION		"v1.2"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
-#define GAMESOUND_EXPLOSION	"MVM.BombExplodes"
+#define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
 
 #define TF_MAXPLAYERS			33
 #define INTEGER_MAX_VALUE		0x7FFFFFFF
@@ -32,12 +51,6 @@
 
 const TFTeam TFTeam_Runners = TFTeam_Red;
 const TFTeam TFTeam_Activator = TFTeam_Blue;
-
-enum PreferenceType
-{
-	Preference_DontBeActivator = (1 << 0), 
-	Preference_HideChatTips = (1 << 1)
-}
 
 enum
 {
@@ -78,6 +91,12 @@ enum
 	WINREASON_STOPWATCH_PLAYING_ROUNDS
 };
 
+enum PreferenceType
+{
+	Preference_DontBeActivator = (1 << 0), 
+	Preference_HideChatTips = (1 << 1)
+}
+
 char g_PreferenceNames[][] =  {
 	"Preference_DontBeActivator", 
 	"Preference_HideChatTips"
@@ -88,7 +107,7 @@ ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
 
-int g_CurrentActivator = -1;
+static int g_Activator = -1;
 
 #include "deathrun/player.sp"
 
@@ -135,9 +154,9 @@ public void OnPluginStart()
 	GameData gamedata = new GameData("deathrun");
 	if (gamedata == null)
 		SetFailState("Could not find deathrun gamedata");
-	
 	DHooks_Init(gamedata);
 	SDKCalls_Init(gamedata);
+	delete gamedata;
 	
 	DHooks_HookGamerules();
 	
@@ -156,6 +175,11 @@ public void OnPluginStart()
 	}
 }
 
+public void OnPluginEnd()
+{
+	ConVars_Disable();
+}
+
 public void OnMapStart()
 {
 	PrecacheScriptSound(GAMESOUND_EXPLOSION);
@@ -166,46 +190,25 @@ public void OnConfigsExecuted()
 	Cookies_Refresh();
 }
 
-public void OnPluginEnd()
+public void OnClientPutInServer(int client)
 {
-	ConVars_Disable();
+	SDKHooks_OnClientPutInServer(client);
+}
+
+public void OnClientCookiesCached(int client)
+{
+	Cookies_RefreshQueue(client);
+	Cookies_RefreshSettings(client);
+}
+
+public void OnClientDisconnect(int client)
+{
+	DRPlayer(client).Reset();
 }
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
 	SDKHooks_OnEntityCreated(entity, classname);
-}
-
-void RequestFrameCallback_VerifyTeam(int userid)
-{
-	int client = GetClientOfUserId(userid);
-	if (IsValidClient(client) && IsClientInGame(client))
-	{
-		TFTeam team = TF2_GetClientTeam(client);
-		if (team <= TFTeam_Spectator)return;
-		
-		if (DRPlayer(client).IsActivator())
-		{
-			if (team == TFTeam_Runners) //Check if player is in the runner team, if so put them back to the activator team
-			{
-				TF2_ChangeClientTeam(client, TFTeam_Activator);
-				TF2_RespawnPlayer(client);
-			}
-		}
-		else
-		{
-			if (team == TFTeam_Activator) //Check if player is in the activator team, if so put them back to the runner team
-			{
-				TF2_ChangeClientTeam(client, TFTeam_Runners);
-				TF2_RespawnPlayer(client);
-			}
-		}
-	}
-}
-
-int GetActivator()
-{
-	return g_CurrentActivator;
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
@@ -251,12 +254,12 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	return changed ? Plugin_Changed : Plugin_Continue;
 }
 
-public void OnClientPutInServer(int client)
+int GetActivator()
 {
-	SDKHooks_OnClientPutInServer(client);
+	return g_Activator;
 }
 
-public void OnClientDisconnect(int client)
+int SetActivator(int activator)
 {
-	DRPlayer(client).Reset();
+	g_Activator = activator;
 }

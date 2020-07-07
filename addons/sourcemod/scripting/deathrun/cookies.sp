@@ -7,12 +7,6 @@ void Cookies_Init()
 	g_CookieSettings = new Cookie("dr_settings", "Deathrun-specific settings", CookieAccess_Protected);
 }
 
-public void OnClientCookiesCached(int client)
-{
-	Cookies_RefreshQueue(client);
-	Cookies_RefreshSettings(client);
-}
-
 void Cookies_Refresh()
 {
 	for (int client = 1; client <= MaxClients; client++)

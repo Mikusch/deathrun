@@ -49,7 +49,7 @@ void Queue_SetNextActivator()
 		PrintMessage(activator, "%t", "Queue_ChosenAsRandomActivator");
 	}
 	
-	g_CurrentActivator = activator;
+	SetActivator(activator);
 	TF2_ChangeClientTeamAlive(activator, TFTeam_Activator);
 }
 
