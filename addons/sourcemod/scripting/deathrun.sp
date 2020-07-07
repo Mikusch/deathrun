@@ -142,6 +142,8 @@ public void OnPluginStart()
 	CAddColor("success", 0x00C851);
 	CAddColor("danger", 0xFF4444);
 	
+	AddNormalSoundHook(OnSoundPlayed);
+	
 	Console_Init();
 	Cookies_Init();
 	Config_Init();
@@ -250,6 +252,31 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	}
 	
 	return changed ? Plugin_Changed : Plugin_Continue;
+}
+
+public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
+{
+	if (IsValidClient(entity))
+	{
+		for (int i = 0; i < numClients; i++)
+		{
+			int client = clients[i];
+			if (DRPlayer(client).CanHideClient(entity))
+			{
+				for (int j = i; j < numClients - 1; j++)
+				{
+					clients[j] = clients[j + 1];
+				}
+				
+				numClients--;
+				i--;
+			}
+		}
+		
+		return Plugin_Changed;
+	}
+	
+	return Plugin_Continue;
 }
 
 int GetActivator()
