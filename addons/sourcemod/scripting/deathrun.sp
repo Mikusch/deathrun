@@ -111,7 +111,6 @@ static int g_Activator = -1;
 
 #include "deathrun/player.sp"
 
-#include "deathrun/commands.sp"
 #include "deathrun/console.sp"
 #include "deathrun/config.sp"
 #include "deathrun/cookies.sp"
@@ -143,7 +142,6 @@ public void OnPluginStart()
 	CAddColor("success", 0x00C851);
 	CAddColor("danger", 0xFF4444);
 	
-	Commands_Init();
 	Console_Init();
 	Cookies_Init();
 	Config_Init();

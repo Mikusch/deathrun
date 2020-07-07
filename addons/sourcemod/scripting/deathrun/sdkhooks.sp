@@ -16,7 +16,7 @@ void SDKHooks_OnClientPutInServer(int client)
 	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_ClientSetTransmit);
 }
 
-public void SDKHooks_OnEntityCreated(int entity, const char[] classname)
+void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 {
 	for (int i = 0; i < sizeof(g_OwnerEntityList); i++)
 	{

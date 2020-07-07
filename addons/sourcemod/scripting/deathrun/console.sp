@@ -1,9 +1,148 @@
+static char g_CommandPrefixes[][] =  {
+	"dr", 
+	"dr_", 
+	"deathrun", 
+	"deathrun_"
+};
+
 void Console_Init()
 {
+	RegConsoleCmd("dr", ConCmd_DeathrunMenu);
+	RegConsoleCmd("deathrun", ConCmd_DeathrunMenu);
+	
+	RegConsoleCmd2("next", ConCmd_QueueMenu);
+	RegConsoleCmd2("queue", ConCmd_QueueMenu);
+	RegConsoleCmd2("preferences", ConCmd_PreferencesMenu);
+	RegConsoleCmd2("settings", ConCmd_PreferencesMenu);
+	
+	RegConsoleCmd2("tp", ConCmd_ThirdPerson);
+	RegConsoleCmd2("thirdperson", ConCmd_ThirdPerson);
+	RegConsoleCmd2("fp", ConCmd_FirstPerson);
+	RegConsoleCmd2("firstperson", ConCmd_FirstPerson);
+	
+	RegConsoleCmd2("hide", ConCmd_HideRunners);
+	RegConsoleCmd2("hiderunners", ConCmd_HideRunners);
+	RegConsoleCmd2("hideplayers", ConCmd_HideRunners);
+	
 	AddCommandListener(CommandListener_Build, "build");
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
 	AddCommandListener(CommandListener_JoinTeam, "autoteam");
 	AddCommandListener(CommandListener_JoinTeam, "spectate");
+}
+
+stock void RegConsoleCmd2(const char[] cmd, ConCmd callback)
+{
+	for (int i = 0; i < sizeof(g_CommandPrefixes); i++)
+	{
+		char buffer[256];
+		Format(buffer, sizeof(buffer), "%s%s", g_CommandPrefixes[i], cmd);
+		RegConsoleCmd(buffer, callback);
+	}
+}
+
+public Action ConCmd_DeathrunMenu(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		return Plugin_Handled;
+	}
+	
+	Menus_DisplayMainMenu(client);
+	return Plugin_Handled;
+}
+
+public Action ConCmd_QueueMenu(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		return Plugin_Handled;
+	}
+	
+	Menus_DisplayQueueMenu(client);
+	return Plugin_Handled;
+}
+
+public Action ConCmd_PreferencesMenu(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		return Plugin_Handled;
+	}
+	
+	Menus_DisplayPreferencesMenu(client);
+	return Plugin_Handled;
+}
+
+public Action ConCmd_ThirdPerson(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		return Plugin_Handled;
+	}
+	
+	if (!dr_allow_thirdperson.BoolValue)
+	{
+		PrintMessage(client, "%t", "Command_Disabled");
+		return Plugin_Handled;
+	}
+	
+	SetVariantInt(true);
+	if (AcceptEntityInput(client, "SetForcedTauntCam"))
+	{
+		DRPlayer(client).InThirdPerson = true;
+		
+		if (!IsPlayerAlive(client))
+			PrintMessage(client, "%t", "Command_ThirdPerson_Enabled");
+	}
+	
+	return Plugin_Handled;
+}
+
+public Action ConCmd_FirstPerson(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		return Plugin_Handled;
+	}
+	
+	if (!dr_allow_thirdperson.BoolValue)
+	{
+		PrintMessage(client, "%t", "Command_Disabled");
+		return Plugin_Handled;
+	}
+	
+	SetVariantInt(false);
+	if (AcceptEntityInput(client, "SetForcedTauntCam"))
+	{
+		DRPlayer(client).InThirdPerson = false;
+		
+		if (!IsPlayerAlive(client))
+			PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
+	}
+	
+	return Plugin_Handled;
+}
+
+public Action ConCmd_HideRunners(int client, int args)
+{
+	if (client == 0)
+	{
+		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		return Plugin_Handled;
+	}
+	
+	DRPlayer player = DRPlayer(client);
+	player.IsHidingRunners = !player.IsHidingRunners;
+	
+	if (!IsPlayerAlive(client))
+		PrintMessage(client, "%t", player.IsHidingRunners ? "Command_HideRunners_Enabled" : "Command_HideRunners_Disabled");
+	
+	return Plugin_Handled;
 }
 
 public Action CommandListener_Build(int client, const char[] command, int argc)

@@ -1,13 +1,13 @@
 void Events_Init()
 {
-	HookEvent("arena_round_start", Event_ArenaRoundStart);
-	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Pre);
-	HookEvent("post_inventory_application", Event_PostInventoryApplication);
-	HookEvent("teamplay_round_start", Event_TeamplayRoundStart);
-	HookEvent("teamplay_round_win", Event_TeamplayRoundWin);
+	HookEvent("arena_round_start", EventHook_ArenaRoundStart);
+	HookEvent("player_death", EventHook_PlayerDeath_Pre, EventHookMode_Pre);
+	HookEvent("post_inventory_application", EventHook_PostInventoryApplication);
+	HookEvent("teamplay_round_start", EventHook_TeamplayRoundStart);
+	HookEvent("teamplay_round_win", EventHook_TeamplayRoundWin);
 }
 
-public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
+public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	int activator = GetActivator();
 	
@@ -41,7 +41,7 @@ public Action Event_ArenaRoundStart(Event event, const char[] name, bool dontBro
 	}
 }
 
-public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	int activator = GetActivator();
@@ -55,7 +55,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	return Plugin_Continue;
 }
 
-public Action Event_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
+public Action EventHook_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
 {
 	int userid = event.GetInt("userid");
 	int client = GetClientOfUserId(userid);
@@ -68,7 +68,7 @@ public Action Event_PostInventoryApplication(Event event, const char[] name, boo
 	RequestFrame(RequestFrameCallback_VerifyTeam, userid);
 }
 
-public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
+public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	//Arena has a very dumb logic, if all players from a team leave the round will end and then restart without reseting the game state
 	//Catch that issue and don't run our logic!
@@ -124,7 +124,7 @@ public Action Event_TeamplayRoundStart(Event event, const char[] name, bool dont
 	Queue_SetNextActivator();
 }
 
-public Action Event_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
+public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
 {
 	TFTeam team = view_as<TFTeam>(event.GetInt("team"));
 	
