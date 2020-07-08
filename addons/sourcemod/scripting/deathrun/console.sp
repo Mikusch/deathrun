@@ -120,7 +120,9 @@ public Action ConCmd_FirstPerson(int client, int args)
 	if (AcceptEntityInput(client, "SetForcedTauntCam"))
 	{
 		DRPlayer(client).InThirdPerson = false;
-		PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
+		
+		if (!IsPlayerAlive(client))
+			PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
 	}
 	
 	return Plugin_Handled;

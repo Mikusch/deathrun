@@ -18,11 +18,11 @@
 	}
 	"Command_HideRunners_Enabled"
 	{
-		"en"	"All other players are now {secondary}invisible {default}to you as a living Runner."
+		"en"	"All other Runners are now {secondary}invisible {default}to you."
 	}
 	"Command_HideRunners_Disabled"
 	{
-		"en"	"All other players are now {secondary}visible {default}to you as a living Runner."
+		"en"	"All other Runners are now {secondary}visible {default}to you."
 	}
 	
 	"ChatTip_Deathrun"

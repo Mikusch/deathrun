@@ -145,7 +145,7 @@ public void OnPluginStart()
 	
 	AddNormalSoundHook(OnSoundPlayed);
 	
-	g_CurrentActivators = new ArrayList(1, MaxClients);
+	g_CurrentActivators = new ArrayList();
 	
 	Console_Init();
 	Cookies_Init();
@@ -291,7 +291,10 @@ int GetRandomAliveActivator()
 	ArrayList clone = g_CurrentActivators.Clone();
 	
 	for (int i = 0; i < clone.Length; i++)
-		clone.Erase(i--);
+	{
+		if (!IsPlayerAlive(clone.Get(i)))
+			clone.Erase(i--);
+	}
 	
 	int activator = clone.Get(GetRandomInt(0, clone.Length - 1));
 	delete clone;

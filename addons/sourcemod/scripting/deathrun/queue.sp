@@ -20,6 +20,8 @@ ArrayList Queue_GetQueueList()
 
 void Queue_SetNextActivatorsFromQueue()
 {
+	g_CurrentActivators.Clear();
+	
 	ArrayList queue = Queue_GetQueueList();
 	
 	for (int i = 0; i < dr_num_activators.IntValue; i++)
