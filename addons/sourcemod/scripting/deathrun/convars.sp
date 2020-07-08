@@ -14,6 +14,7 @@ void ConVars_Init()
 	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set to 0 if you use other thirdperson plugins that may conflict.");
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "How often in seconds chat tips should be shown to clients. Set to 0 to disable chat tips.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have a glowing outline.");
+	dr_num_activators = CreateConVar("dr_num_activators", "1", "How many activators there should be.", _, true, 1.0, true, float(MaxClients - 1));
 	
 	HookConVarChange(dr_allow_thirdperson, ConVarChanged_AllowThirdPerson);
 	HookConVarChange(dr_runner_glow, ConVarChanged_RunnerGlow);

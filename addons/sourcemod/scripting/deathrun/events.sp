@@ -9,10 +9,45 @@ void Events_Init()
 
 public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	int activator = GetActivator();
+	int numActivators;
 	
-	if (IsClientInGame(activator))
+	//Iterate all chosen activators and check if they are still in-game
+	for (int i = 0; i < g_CurrentActivators.Length; i++)
 	{
+		int activator = g_CurrentActivators.Get(i);
+		if (IsClientInGame(activator))
+		{
+			TF2Attrib_SetByName(activator, "max health additive bonus", 1000.0 - TF2_GetMaxHealth(activator));
+			SetEntityHealth(activator, 1000);
+			numActivators++;
+		}
+	}
+	
+	if (numActivators > 1)	//Multiple activators
+	{
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (IsClientInGame(client))
+			{
+				if (DRPlayer(client).IsActivator())
+				{
+					PrintMessage(client, "%t", "RoundStart_MultipleActivators_Activator");
+				}
+				else
+				{
+					PrintMessage(client, "%t", "RoundStart_MultipleActivators_Runners");
+					SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
+				}
+			}
+		}
+	}
+	else if (numActivators < 1)	//No activators
+	{
+		PrintMessageToAll("%t", "RoundStart_Activator_Disconnected", FindConVar("tf_bonusroundtime").IntValue);
+	}
+	else	//One activator
+	{
+		int activator = g_CurrentActivators.Get(0);	//Should be safe
 		char activatorName[MAX_NAME_LENGTH];
 		GetClientName(activator, activatorName, sizeof(activatorName));
 		
@@ -20,36 +55,32 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 		{
 			if (IsClientInGame(client))
 			{
-				if (DRPlayer(client).IsActivator())
+				if (client == activator)
 				{
 					PrintMessage(client, "%t", "RoundStart_NewActivator_Activator");
 				}
 				else
 				{
 					PrintMessage(client, "%t", "RoundStart_NewActivator_Runners", activatorName);
-					SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 				}
 			}
 		}
-		
-		TF2Attrib_SetByName(activator, "max health additive bonus", 1000.0 - TF2_GetMaxHealth(activator));
-		SetEntityHealth(activator, 1000);
-	}
-	else
-	{
-		PrintMessageToAll("%t", "RoundStart_Activator_Disconnected", FindConVar("tf_bonusroundtime").IntValue);
 	}
 }
 
 public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
-	int activator = GetActivator();
 	
-	if (GameRules_GetRoundState() == RoundState_Stalemate && IsValidClient(activator) && victim != activator)
+	if (GameRules_GetRoundState() == RoundState_Stalemate)
 	{
-		event.SetInt("attacker", GetClientUserId(activator));
-		return Plugin_Changed;
+		int activator = GetRandomAliveActivator();
+		
+		if (victim != activator)
+		{
+			event.SetInt("attacker", GetClientUserId(activator));
+			return Plugin_Changed;
+		}
 	}
 	
 	return Plugin_Continue;
@@ -80,7 +111,7 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 			switch (TF2_GetClientTeam(client))
 			{
 				case TFTeam_Runners:red++;
-				case TFTeam_Activator:blue++;
+				case TFTeam_Activators:blue++;
 			}
 		}
 	}
@@ -88,7 +119,7 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 	//Both teams must have at least one player
 	if (red == 0 || blue == 0)
 	{
-		if (red + blue >= 2)	//If we have atleast 2 players in red or blue, force one person to the other team and try again
+		if (red + blue >= 2) //If we have atleast 2 players in red or blue, force one person to the other team and try again
 		{
 			for (int client = 1; client <= MaxClients; client++)
 			{
@@ -98,10 +129,10 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 					TFTeam team = TF2_GetClientTeam(client);
 					if (team == TFTeam_Runners)
 					{
-						TF2_ChangeClientTeamAlive(client, TFTeam_Activator);
+						TF2_ChangeClientTeamAlive(client, TFTeam_Activators);
 						return;
 					}
-					else if (team == TFTeam_Activator)
+					else if (team == TFTeam_Activators)
 					{
 						TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
 						return;
@@ -121,7 +152,7 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 			TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
 	}
 	
-	Queue_SetNextActivator();
+	Queue_SetNextActivatorsFromQueue();
 }
 
 public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
@@ -133,7 +164,7 @@ public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool do
 		DRPlayer player = DRPlayer(client);
 		if (IsClientInGame(client))
 		{
-			if (team == TFTeam_Activator)
+			if (team == TFTeam_Activators)
 				PrintMessage(client, "%t", "RoundWin_Activator");
 			else if (team == TFTeam_Runners)
 				PrintMessage(client, "%t", "RoundWin_Runners");
@@ -160,15 +191,15 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 		
 		if (DRPlayer(client).IsActivator())
 		{
-			if (team == TFTeam_Runners)	//Check if player is in the runner team, if so put them back to the activator team
+			if (team == TFTeam_Runners) //Check if player is in the runner team, if so put them back to the activator team
 			{
-				TF2_ChangeClientTeam(client, TFTeam_Activator);
+				TF2_ChangeClientTeam(client, TFTeam_Activators);
 				TF2_RespawnPlayer(client);
 			}
 		}
 		else
 		{
-			if (team == TFTeam_Activator)	//Check if player is in the activator team, if so put them back to the runner team
+			if (team == TFTeam_Activators) //Check if player is in the activator team, if so put them back to the runner team
 			{
 				TF2_ChangeClientTeam(client, TFTeam_Runners);
 				TF2_RespawnPlayer(client);

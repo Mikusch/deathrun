@@ -72,6 +72,14 @@
 	{
 		"en"	"You became the {blue}Activator{default}! Press the buttons to activate traps and emerge victorious over the enemy team!"
 	}
+	"RoundStart_MultipleActivators_Activator"
+	{
+		"en"	"You became an {blue}Activator{default}! Work together with your teammates to stop the Runners!"
+	}
+	"RoundStart_MultipleActivators_Runners"
+	{
+		"en"	"Multiple players became the {blue}Activator{default}! Avoid getting killed by the traps and bring your team to victory!"
+	}
 	"RoundStart_Activator_Disconnected"
 	{
 		"#format"	"{1:d}"

@@ -74,7 +74,7 @@ methodmap DRPlayer
 	
 	public bool IsActivator()
 	{
-		return this.Client == GetActivator();
+		return g_CurrentActivators.FindValue(this.Client) != -1;
 	}
 	
 	public bool HasPreference(PreferenceType preference)

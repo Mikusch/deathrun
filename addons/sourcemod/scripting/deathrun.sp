@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mikusch and the Deathrun Neu contributors
+ * Copyright © 2020 Mikusch and the Deathrun Neu contributors.
  *
  * This file is part of Deathrun Neu.
  * 
@@ -50,7 +50,7 @@
 #define LIFE_DISCARDBODY		4
 
 const TFTeam TFTeam_Runners = TFTeam_Red;
-const TFTeam TFTeam_Activator = TFTeam_Blue;
+const TFTeam TFTeam_Activators = TFTeam_Blue;
 
 enum
 {
@@ -106,8 +106,9 @@ ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
+ConVar dr_num_activators;
 
-static int g_Activator = -1;
+ArrayList g_CurrentActivators;
 
 #include "deathrun/player.sp"
 
@@ -143,6 +144,8 @@ public void OnPluginStart()
 	CAddColor("danger", 0xFF4444);
 	
 	AddNormalSoundHook(OnSoundPlayed);
+	
+	g_CurrentActivators = new ArrayList(1, MaxClients);
 	
 	Console_Init();
 	Cookies_Init();
@@ -203,6 +206,10 @@ public void OnClientCookiesCached(int client)
 
 public void OnClientDisconnect(int client)
 {
+	int index = g_CurrentActivators.FindValue(client);
+	if (index != -1)
+		g_CurrentActivators.Erase(index);
+	
 	DRPlayer(client).Reset();
 }
 
@@ -279,12 +286,14 @@ public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sampl
 	return Plugin_Continue;
 }
 
-int GetActivator()
+int GetRandomAliveActivator()
 {
-	return g_Activator;
-}
-
-int SetActivator(int activator)
-{
-	g_Activator = activator;
+	ArrayList clone = g_CurrentActivators.Clone();
+	
+	for (int i = 0; i < clone.Length; i++)
+		clone.Erase(i--);
+	
+	int activator = clone.Get(GetRandomInt(0, clone.Length - 1));
+	delete clone;
+	return activator;
 }
