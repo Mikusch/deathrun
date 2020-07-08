@@ -72,7 +72,7 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	
-	if (GameRules_GetRoundState() == RoundState_Stalemate)
+	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
 	{
 		int activator = GetRandomAliveActivator();
 		
