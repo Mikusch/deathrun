@@ -1,5 +1,5 @@
 static char g_ChatTips[][] =  {
-	"ChatTip_Deathrun",
+	"ChatTip_Deathrun", 
 	"ChatTip_HideRunners", 
 	"ChatTip_ActivatorWeapons", 
 	"ChatTip_CheckQueue", 

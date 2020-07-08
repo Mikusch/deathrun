@@ -99,10 +99,10 @@ methodmap DRPlayer
 	
 	public bool CanHideClient(int client)
 	{
-		return this.IsHidingRunners	//Is the client in hide mode?
-		 && TF2_GetClientTeam(this.Client) == TFTeam_Runners	//Only hide as runner
-		 && IsPlayerAlive(this.Client)	//Only hide when alive
-		 && TF2_GetClientTeam(client) == TFTeam_Runners	//Only hide other runners, never the activator
-		 && client != this.Client;	//Don't hide ourself
+		return this.IsHidingRunners //Is this client hiding other runners?
+		 && TF2_GetClientTeam(this.Client) == TFTeam_Runners //Only hide as runner
+		 && IsPlayerAlive(this.Client) //Only hide when alive
+		 && TF2_GetClientTeam(client) == TFTeam_Runners //Only hide other runners, never the activator
+		 && client != this.Client; //Don't hide ourself
 	}
 }

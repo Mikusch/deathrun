@@ -23,7 +23,7 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 		}
 	}
 	
-	if (numActivators > 1)	//Multiple activators
+	if (numActivators > 1) //Multiple activators
 	{
 		for (int client = 1; client <= MaxClients; client++)
 		{
@@ -41,13 +41,13 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 			}
 		}
 	}
-	else if (numActivators < 1)	//No activators
+	else if (numActivators < 1) //No activators
 	{
 		PrintMessageToAll("%t", "RoundStart_Activator_Disconnected", FindConVar("tf_bonusroundtime").IntValue);
 	}
-	else	//One activator
+	else //One activator
 	{
-		int activator = g_CurrentActivators.Get(0);	//Should be safe
+		int activator = g_CurrentActivators.Get(0); //Should be safe
 		char activatorName[MAX_NAME_LENGTH];
 		GetClientName(activator, activatorName, sizeof(activatorName));
 		

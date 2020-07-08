@@ -71,11 +71,11 @@ stock void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 		// Player hasn't chosen a class. Choose one for him.
 		TF2_SetPlayerClass(client, view_as<TFClassType>(GetRandomInt(1, 9)));
 	}
-
+	
 	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
 	TF2_ChangeClientTeam(client, team);
 	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_ALIVE);
-
+	
 	TF2_RespawnPlayer(client);
 }
 
