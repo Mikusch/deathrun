@@ -265,10 +265,40 @@ public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sampl
 {
 	if (IsValidClient(entity))
 	{
+		return OnClientSoundPlayed(clients, numClients, entity);
+	}
+	else if (HasEntProp(entity, Prop_Send, "m_hBuilder"))
+	{
+		int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
+		if (IsValidClient(builder))
+			return OnClientSoundPlayed(clients, numClients, builder);
+	}
+	else if (HasEntProp(entity, Prop_Send, "m_hThrower"))
+	{
+		int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
+		if (IsValidClient(thrower))
+			return OnClientSoundPlayed(clients, numClients, thrower);
+	}
+	else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
+	{
+		int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+		if (IsValidClient(owner))
+			return OnClientSoundPlayed(clients, numClients, owner);
+	}
+	
+	return Plugin_Continue;
+}
+
+static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int client)
+{
+	Action action = Plugin_Continue;
+	
+	if (DRPlayer(client).IsActivator())
+	{
+		//Iterate all clients this sound is played to and remove them from the array if they are hiding other runners
 		for (int i = 0; i < numClients; i++)
 		{
-			int client = clients[i];
-			if (DRPlayer(client).CanHideClient(entity))
+			if (DRPlayer(clients[i]).CanHideClient(client))
 			{
 				for (int j = i; j < numClients - 1; j++)
 				{
@@ -277,11 +307,10 @@ public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sampl
 				
 				numClients--;
 				i--;
+				action = Plugin_Changed;
 			}
 		}
-		
-		return Plugin_Changed;
 	}
 	
-	return Plugin_Continue;
+	return action;
 }
