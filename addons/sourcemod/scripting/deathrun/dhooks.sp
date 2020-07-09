@@ -49,23 +49,21 @@ public MRESReturn DHook_SetWinningTeam_Pre(Handle params)
 	//The arena timer has no assigned targetname and doesn't fire its OnFinished output before the round ends, making this the only way to detect the timer stalemate
 	if (FindConVar("tf_arena_round_time").IntValue > 0 && winReason == WINREASON_STALEMATE && GetAliveClientCount() > 0)
 	{
-		int activator = GetActivator();
-		if (activator != -1)
+		for (int client = 1; client <= MaxClients; client++)
 		{
-			for (int client = 1; client <= MaxClients; client++)
+			if (IsClientInGame(client) && IsPlayerAlive(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
 			{
-				if (IsClientInGame(client))
-				{
-					if (IsPlayerAlive(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
-						SDKHooks_TakeDamage(client, activator, 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
-				}
+				if (g_CurrentActivators.Length == 1)
+					SDKHooks_TakeDamage(client, g_CurrentActivators.Get(0), 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
+				else
+					SDKHooks_TakeDamage(client, 0, 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
 			}
-			
-			EmitGameSoundToAll(GAMESOUND_EXPLOSION);
 		}
 		
-		DHookSetParam(params, 1, TFTeam_Activator);	//team
-		DHookSetParam(params, 2, WINREASON_TIMELIMIT);	//iWinReason
+		EmitGameSoundToAll(GAMESOUND_EXPLOSION);
+		
+		DHookSetParam(params, 1, TFTeam_Activators); //team
+		DHookSetParam(params, 2, WINREASON_TIMELIMIT); //iWinReason
 		return MRES_ChangedOverride;
 	}
 	

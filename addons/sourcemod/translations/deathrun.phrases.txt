@@ -2,7 +2,7 @@
 {
 	"Command_NotUsableInConsole"
 	{
-		"en"	"This command can not be used from the console."
+		"en"	"This command can not be used from the server console."
 	}
 	"Command_Disabled"
 	{
@@ -10,40 +10,44 @@
 	}
 	"Command_ThirdPerson_Enabled"
 	{
-		"en"	"You have {green}enabled {default}the third-person camera."
+		"en"	"You have {success}enabled {default}the third-person camera."
 	}
 	"Command_ThirdPerson_Disabled"
 	{
-		"en"	"You have {red}disabled {default}the third-person camera."
+		"en"	"You have {danger}disabled {default}the third-person camera."
 	}
-	"Command_HideRunners_Enabled"
+	"Command_HideTeammates_Enabled"
 	{
-		"en"	"All other living runners are now {green}invisible {default}for you."
+		"en"	"Your teammates are now {secondary}invisible {default}to you."
 	}
-	"Command_HideRunners_Disabled"
+	"Command_HideTeammates_Disabled"
 	{
-		"en"	"All other living runners are now {red}visible {default}for you."
+		"en"	"Your teammates are now {secondary}visible {default}to you."
 	}
 	
-	"ChatTip_HideRunners"
+	"ChatTip_Deathrun"
 	{
-		"en"	"{green}PROTIP: {default}As a {red}Runner{default}, you can hide teammates blocking your sight with {secondary}!drhide{default}."
+		"en"	"{success}PROTIP: {default}You can get an overview of all features and commands with {secondary}/deathrun{default} or {secondary}/dr{default}."
+	}
+	"ChatTip_HideTeammates"
+	{
+		"en"	"{success}PROTIP: {default}Can't see in crowded areas? You can hide teammates blocking your sight with {secondary}/drhide{default}."
 	}
 	"ChatTip_ActivatorWeapons"
 	{
-		"en"	"{green}PROTIP: {default}As the {blue}Activator{default}, utilize ranged weapons to hit traps from far away."
+		"en"	"{success}PROTIP: {default}As the {blue}Activator{default}, utilize ranged weapons from your loadout to hit traps from far away."
 	}
 	"ChatTip_CheckQueue"
 	{
-		"en"	"{green}PROTIP: {default}You can check the queue with {secondary}!drnext{default}."
+		"en"	"{success}PROTIP: {default}You can check the Activator queue with {secondary}/drnext{default}."
 	}
 	"ChatTip_DisableChatTips"
 	{
-		"en"	"{green}PROTIP: {default}You can disable these chat tips with {secondary}!drsettings{default}."
+		"en"	"{success}PROTIP: {default}You can disable these chat tips by changing your user preferences with {secondary}/drsettings{default}."
 	}
 	"ChatTip_DisableActivator"
 	{
-		"en"	"{green}PROTIP: {default}Don't want to play as the {blue}Activator{default}? Change your preferences using {secondary}!drsettings{default}."
+		"en"	"{success}PROTIP: {default}Don't want to play as the {blue}Activator{default}? Change your user preferences with {secondary}/drsettings{default}."
 	}
 	
 	"Thirdperson_ForceDisable"
@@ -59,61 +63,65 @@
 	{
 		"en"	"The {red}Runners {default}win!"
 	}
-	"RoundStart_NewActivator"
-	{
-		"#format"	"{1:s}"
-		"en"		"{1} became the {blue}Activator{default}!"
-	}
 	"RoundStart_NewActivator_Runners"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} became the Activator!\nAvoid getting killed by the traps\nand bring your team to victory!"
+		"en"		"{1} became the {blue}Activator{default}! Avoid getting killed by the traps and bring your team to victory!"
 	}
 	"RoundStart_NewActivator_Activator"
 	{
-		"en"	"You became the Activator!\nKill all runners by activating traps\nand emerge victorious over the enemy!"
+		"en"	"You became the {blue}Activator{default}! Press the buttons to activate traps and emerge victorious over the enemy team!"
+	}
+	"RoundStart_MultipleActivators_Activator"
+	{
+		"en"	"You became an {blue}Activator{default}! Work together with your teammates to stop the Runners!"
+	}
+	"RoundStart_MultipleActivators_Runners"
+	{
+		"en"	"Multiple players became the {blue}Activator{default}! Avoid getting killed by the traps and bring your team to victory!"
 	}
 	"RoundStart_Activator_Disconnected"
 	{
-		"en"	"The Activator has disconnected!\nThe round will restart shortly!"
+		"#format"	"{1:d}"
+		"en"		"The {blue}Activator {default}has disconnected! The round will restart in {secondary}{1} {default}seconds!"
 	}
 	
 	"Preferences_Enabled"
 	{
 		"#format"	"{1:s}"
-		"en"		"You have successfully {green}enabled {default}the setting {secondary}{1}{default}."
+		"en"		"You have successfully {success}enabled {default}the preference {secondary}{1}{default}."
 	}
 	"Preferences_Disabled"
 	{
 		"#format"	"{1:s}"
-		"en"		"You have successfully {red}disabled {default}the setting {secondary}{1}{default}."
+		"en"		"You have successfully {danger}disabled {default}the preference {secondary}{1}{default}."
 	}
 	
 	"Preference_DontBeActivator"
 	{
-		"en"	"Avoid being chosen as the Activator"
+		"en"	"Don't select me as the Activator"
 	}
 	"Preference_HideChatTips"
 	{
 		"en"	"Hide occasional chat tips"
 	}
 	
-	"Queue_NoPointsAwarded_Error"
+	"Queue_NoPointsAwarded_NotLoaded"
 	{
-		"en"	"An error occured while trying to award you queue points."
+		"en"	"You have not been awarded any queue points because the server failed to load your queue points."
 	}
 	"Queue_NoPointsAwarded_Preferences"
 	{
-		"en"	"You have not been awarded any queue points based on your Activator preferences."
+		"en"	"You have not been awarded any queue points based on your preferences."
 	}
 	"Queue_PointsAwarded"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"You have been awarded {green}{1} {default}queue points (Total: {green}{2}{default})."
+		"en"		"You have been awarded {success}{1} {default}queue points (Total: {success}{2}{default})."
 	}
 	"Queue_ChosenAsRandomActivator"
 	{
-		"en"	"You have been randomly chosen to become the Activator because there were no valid players in the server. Your queue points have not been consumed."
+		"en"	"You have been randomly chosen to become the {blue}Activator {default}because there were no other valid players in the server. Your queue points have not been consumed."
 	}
 	
 	"Menu_Main_Title"
@@ -122,23 +130,23 @@
 	}
 	"Menu_Main_Queue"
 	{
-		"en"	"Activator Queue List (!drnext)"
+		"en"	"View Activator Queue (/drnext)"
 	}
 	"Menu_Main_Preferences"
 	{
-		"en"	"Preferences (!drsettings)"
+		"en"	"Change User Preferences (/drsettings)"
 	}
 	"Menu_Main_ThirdPerson"
 	{
-		"en"	"Third-Person Camera (!drthirdperson)"
+		"en"	"Toggle Third-Person Camera (/drthirdperson)"
 	}
-	"Menu_Main_HideRunners"
+	"Menu_Main_HideTeammates"
 	{
-		"en"	"Hide Runners (!drhide)"
+		"en"	"Hide Teammates (/drhide)"
 	}
 	"Menu_Queue_Title"
 	{
-		"en"		"Activator Queue List"
+		"en"	"Activator Queue"
 	}
 	"Menu_Queue_Title_QueuePoints"
 	{
@@ -147,14 +155,14 @@
 	}
 	"Menu_Queue_NotLoaded"
 	{
-		"en"	"Your queue points are still loading..."
+		"en"	"Your queue points are still loading, please wait a moment."
 	}
 	"Menu_Preferences_Title"
 	{
-		"en"	"Toggle Preferences"
+		"en"	"User Preferences"
 	}
 	"Menu_Preferences_NotLoaded"
 	{
-		"en"	"Your preferences are still loading..."
+		"en"	"Your preferences are still loading, please wait a moment."
 	}
 }

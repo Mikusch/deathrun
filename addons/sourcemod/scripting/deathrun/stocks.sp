@@ -71,15 +71,15 @@ stock void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 		// Player hasn't chosen a class. Choose one for him.
 		TF2_SetPlayerClass(client, view_as<TFClassType>(GetRandomInt(1, 9)));
 	}
-
+	
 	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
 	TF2_ChangeClientTeam(client, team);
 	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_ALIVE);
-
+	
 	TF2_RespawnPlayer(client);
 }
 
-stock void RemoveEdictAlwaysTransmitFlag(int edict)
+stock void RemoveAlwaysTransmit(int edict)
 {
 	//Function for allowing transmit hook for edicts set to always transmit
 	if (0 < edict <= 2048)
@@ -104,8 +104,16 @@ stock int GetAliveClientCount()
 
 stock void PrintMessage(int client, const char[] format, any...)
 {
-	char message[256];
+	char message[MAX_CHATMESSAGE_LENGTH];
 	VFormat(message, sizeof(message), format, 3);
-	Format(message, sizeof(message), "[{primary}"...PLUGIN_NAME..."{default}] %s", message);
+	Format(message, sizeof(message), "[{primary}DR{default}] %s", message);
 	CPrintToChat(client, message);
+}
+
+stock void PrintMessageToAll(const char[] format, any...)
+{
+	char message[MAX_CHATMESSAGE_LENGTH];
+	VFormat(message, sizeof(message), format, 2);
+	Format(message, sizeof(message), "[{primary}DR{default}] %s", message);
+	CPrintToChatAll(message);
 }

@@ -1,26 +1,23 @@
+#define INFO_QUEUE			"queue"
+#define INFO_PREFERENCES	"preferences"
+#define INFO_THIRDPERSON	"thirdperson"
+#define INFO_HIDETEAMMATES	"hideteammates"
+
 void Menus_DisplayMainMenu(int client)
 {
-	Menu menu = new Menu(Menus_HandleMainMenu);
+	Menu menu = new Menu(MenuHandler_MainMenu, MenuAction_Select | MenuAction_End | MenuAction_DrawItem | MenuAction_DisplayItem);
 	
 	menu.SetTitle("%T", "Menu_Main_Title", client, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR, PLUGIN_URL);
 	
-	char display[256];
-	Format(display, sizeof(display), "%T", "Menu_Main_Queue", client);
-	menu.AddItem("queue", display);
-	
-	Format(display, sizeof(display), "%T", "Menu_Main_Preferences", client);
-	menu.AddItem("preferences", display);
-	
-	Format(display, sizeof(display), "%T", "Menu_Main_ThirdPerson", client);
-	menu.AddItem("thirdperson", display, dr_allow_thirdperson.BoolValue ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
-	
-	Format(display, sizeof(display), "%T", "Menu_Main_HideRunners", client);
-	menu.AddItem("hiderunners", display);
+	menu.AddItem(INFO_QUEUE, "Menu_Main_Queue");
+	menu.AddItem(INFO_PREFERENCES, "Menu_Main_Preferences");
+	menu.AddItem(INFO_THIRDPERSON, "Menu_Main_ThirdPerson");
+	menu.AddItem(INFO_HIDETEAMMATES, "Menu_Main_HideTeammates");
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
+public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
@@ -29,26 +26,51 @@ int Menus_HandleMainMenu(Menu menu, MenuAction action, int param1, int param2)
 			char info[64];
 			menu.GetItem(param2, info, sizeof(info));
 			
-			if (StrEqual(info, "queue"))
+			if (StrEqual(info, INFO_QUEUE))
 			{
 				Menus_DisplayQueueMenu(param1);
 			}
-			else if (StrEqual(info, "preferences"))
+			else if (StrEqual(info, INFO_PREFERENCES))
 			{
 				Menus_DisplayPreferencesMenu(param1);
 			}
-			else if (StrEqual(info, "thirdperson"))
+			else if (StrEqual(info, INFO_THIRDPERSON))
 			{
 				FakeClientCommand(param1, DRPlayer(param1).InThirdPerson ? "dr_firstperson" : "dr_thirdperson");
 				Menus_DisplayMainMenu(param1);
 			}
-			else if (StrEqual(info, "hiderunners"))
+			else if (StrEqual(info, INFO_HIDETEAMMATES))
 			{
-				FakeClientCommand(param1, "dr_hiderunners");
+				FakeClientCommand(param1, "dr_hideteammates");
 				Menus_DisplayMainMenu(param1);
 			}
 		}
+		case MenuAction_End:
+		{
+			delete menu;
+		}
+		case MenuAction_DrawItem:
+		{
+			int style;
+			char info[64];
+			menu.GetItem(param2, info, sizeof(info), style);
+			
+			if (StrEqual(info, INFO_THIRDPERSON) && !dr_allow_thirdperson.BoolValue)
+				return ITEMDRAW_DISABLED;
+			
+			return style;
+		}
+		case MenuAction_DisplayItem:
+		{
+			char info[64], display[64];
+			menu.GetItem(param2, info, sizeof(info), _, display, sizeof(display));
+			
+			Format(display, sizeof(display), "%T", display, param1);
+			return RedrawMenuItem(display);
+		}
 	}
+	
+	return 0;
 }
 
 void Menus_DisplayQueueMenu(int client)
@@ -56,7 +78,7 @@ void Menus_DisplayQueueMenu(int client)
 	ArrayList queue = Queue_GetQueueList();
 	if (queue.Length > 0)
 	{
-		Menu menu = new Menu(Menus_HandleQueueMenu);
+		Menu menu = new Menu(MenuHandler_QueueMenu, MenuAction_Cancel | MenuAction_End);
 		menu.ExitBackButton = true;
 		
 		if (DRPlayer(client).QueuePoints != -1)
@@ -72,7 +94,7 @@ void Menus_DisplayQueueMenu(int client)
 			char name[MAX_NAME_LENGTH];
 			GetClientName(queueClient, name, sizeof(name));
 			
-			char display[256];
+			char display[64];
 			Format(display, sizeof(display), "%s (%d)", name, queuePoints);
 			
 			menu.AddItem(NULL_STRING, display, ITEMDRAW_DISABLED);
@@ -88,7 +110,7 @@ void Menus_DisplayQueueMenu(int client)
 	delete queue;
 }
 
-int Menus_HandleQueueMenu(Menu menu, MenuAction action, int param1, int param2)
+public int MenuHandler_QueueMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
@@ -108,23 +130,15 @@ void Menus_DisplayPreferencesMenu(int client)
 {
 	if (DRPlayer(client).Preferences != -1)
 	{
-		Menu menu = new Menu(Menus_HandlePreferencesMenu);
+		Menu menu = new Menu(MenuHandler_PreferencesMenu, MenuAction_Select | MenuAction_Cancel | MenuAction_End | MenuAction_DisplayItem);
 		menu.SetTitle("%T", "Menu_Preferences_Title", client);
 		menu.ExitBackButton = true;
 		
 		for (int i = 0; i < sizeof(g_PreferenceNames); i++)
 		{
-			PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
-			
-			char display[512];
-			if (DRPlayer(client).HasPreference(preference))
-				Format(display, sizeof(display), "■ %T", g_PreferenceNames[i], client);
-			else
-				Format(display, sizeof(display), "□ %T", g_PreferenceNames[i], client);
-			
 			char info[4];
 			if (IntToString(i, info, sizeof(info)) > 0)
-				menu.AddItem(info, display);
+				menu.AddItem(info, g_PreferenceNames[i]);
 		}
 		
 		menu.Display(client, MENU_TIME_FOREVER);
@@ -136,7 +150,7 @@ void Menus_DisplayPreferencesMenu(int client)
 	}
 }
 
-int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int param2)
+public int MenuHandler_PreferencesMenu(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
@@ -151,13 +165,13 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 			DRPlayer player = DRPlayer(param1);
 			player.SetPreference(preference, !player.HasPreference(preference));
 			
-			char preferenceName[256];
-			Format(preferenceName, sizeof(preferenceName), "%T", g_PreferenceNames[i], param1);
+			char name[64];
+			Format(name, sizeof(name), "%T", g_PreferenceNames[i], param1);
 			
 			if (player.HasPreference(preference))
-				PrintMessage(param1, "%t", "Preferences_Enabled", preferenceName);
+				PrintMessage(param1, "%t", "Preferences_Enabled", name);
 			else
-				PrintMessage(param1, "%t", "Preferences_Disabled", preferenceName);
+				PrintMessage(param1, "%t", "Preferences_Disabled", name);
 			
 			Menus_DisplayPreferencesMenu(param1);
 		}
@@ -172,13 +186,17 @@ int Menus_HandlePreferencesMenu(Menu menu, MenuAction action, int param1, int pa
 		}
 		case MenuAction_DisplayItem:
 		{
-			char info[4];
-			menu.GetItem(param2, info, sizeof(info));
+			char info[4], display[64];
+			menu.GetItem(param2, info, sizeof(info), _, display, sizeof(display));
 			
 			int i = StringToInt(info);
+			PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
 			
-			char display[64];
-			Format(display, sizeof(display), "%t", g_PreferenceNames[i], param1);
+			if (DRPlayer(param1).HasPreference(preference))
+				Format(display, sizeof(display), "■ %T", g_PreferenceNames[i], param1);
+			else
+				Format(display, sizeof(display), "□ %T", g_PreferenceNames[i], param1);
+			
 			return RedrawMenuItem(display);
 		}
 	}

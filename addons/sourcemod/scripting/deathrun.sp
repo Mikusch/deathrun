@@ -1,12 +1,31 @@
+/*
+ * Copyright © 2020 Mikusch and the Deathrun Neu contributors.
+ *
+ * This file is part of Deathrun Neu.
+ * 
+ * Deathrun Neu is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Deathrun Neu is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Deathrun Neu.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #pragma semicolon 1 
 
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <dhooks>
-#include <tf2_stocks>
-#include <tf2attributes>
 #include <clientprefs>
+#include <tf2_stocks>
+#include <dhooks>
+#include <tf2attributes>
 #include <morecolors>
 
 #pragma newdecls required
@@ -14,13 +33,14 @@
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_DESCRIPTION	"Team Fortress 2 Deathrun"
-#define PLUGIN_VERSION		"v1.2"
+#define PLUGIN_VERSION		"1.3.0"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
-#define GAMESOUND_EXPLOSION	"MVM.BombExplodes"
+#define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
 
-#define TF_MAXPLAYERS		33
-#define INTEGER_MAX_VALUE	0x7FFFFFFF
+#define TF_MAXPLAYERS			33
+#define INTEGER_MAX_VALUE		0x7FFFFFFF
+#define MAX_CHATMESSAGE_LENGTH	192
 
 // m_lifeState values
 #define LIFE_ALIVE				0 // alive
@@ -30,13 +50,7 @@
 #define LIFE_DISCARDBODY		4
 
 const TFTeam TFTeam_Runners = TFTeam_Red;
-const TFTeam TFTeam_Activator = TFTeam_Blue;
-
-enum PreferenceType
-{
-	Preference_DontBeActivator = (1 << 0), 
-	Preference_HideChatTips = (1 << 1)
-}
+const TFTeam TFTeam_Activators = TFTeam_Blue;
 
 enum
 {
@@ -77,29 +91,28 @@ enum
 	WINREASON_STOPWATCH_PLAYING_ROUNDS
 };
 
+enum PreferenceType
+{
+	Preference_DontBeActivator = (1 << 0), 
+	Preference_HideChatTips = (1 << 1)
+}
+
 char g_PreferenceNames[][] =  {
 	"Preference_DontBeActivator", 
 	"Preference_HideChatTips"
-};
-
-char g_OwnerEntityList[][] =  {
-	"projectile_rocket", 
-	"projectile_energy_ball", 
-	"weapon", 
-	"wearable", 
-	"prop_physics" //Conch
 };
 
 ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
+ConVar dr_num_activators;
+ConVar dr_activator_health;
 
-int g_CurrentActivator = -1;
+ArrayList g_CurrentActivators;
 
 #include "deathrun/player.sp"
 
-#include "deathrun/commands.sp"
 #include "deathrun/console.sp"
 #include "deathrun/config.sp"
 #include "deathrun/cookies.sp"
@@ -126,10 +139,15 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases.txt");
 	LoadTranslations("deathrun.phrases.txt");
 	
-	CAddColor("primary", 0xF26C4F);
-	CAddColor("secondary", 0x3A89C9);
+	CAddColor("primary", 0x4285F4);
+	CAddColor("secondary", 0xAA66CC);
+	CAddColor("success", 0x00C851);
+	CAddColor("danger", 0xFF4444);
 	
-	Commands_Init();
+	AddNormalSoundHook(OnSoundPlayed);
+	
+	g_CurrentActivators = new ArrayList();
+	
 	Console_Init();
 	Cookies_Init();
 	Config_Init();
@@ -140,9 +158,9 @@ public void OnPluginStart()
 	GameData gamedata = new GameData("deathrun");
 	if (gamedata == null)
 		SetFailState("Could not find deathrun gamedata");
-	
 	DHooks_Init(gamedata);
 	SDKCalls_Init(gamedata);
+	delete gamedata;
 	
 	DHooks_HookGamerules();
 	
@@ -161,6 +179,11 @@ public void OnPluginStart()
 	}
 }
 
+public void OnPluginEnd()
+{
+	ConVars_Disable();
+}
+
 public void OnMapStart()
 {
 	PrecacheScriptSound(GAMESOUND_EXPLOSION);
@@ -171,53 +194,29 @@ public void OnConfigsExecuted()
 	Cookies_Refresh();
 }
 
-public void OnPluginEnd()
+public void OnClientPutInServer(int client)
 {
-	ConVars_Disable();
+	SDKHooks_OnClientPutInServer(client);
+}
+
+public void OnClientCookiesCached(int client)
+{
+	Cookies_RefreshQueue(client);
+	Cookies_RefreshSettings(client);
+}
+
+public void OnClientDisconnect(int client)
+{
+	int index = g_CurrentActivators.FindValue(client);
+	if (index != -1)
+		g_CurrentActivators.Erase(index);
+	
+	DRPlayer(client).Reset();
 }
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	for (int i = 0; i < sizeof(g_OwnerEntityList); i++)
-	{
-		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
-		{
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
-			break;
-		}
-	}
-}
-
-void RequestFrameCallback_VerifyTeam(int userid)
-{
-	int client = GetClientOfUserId(userid);
-	if (IsValidClient(client) && IsClientInGame(client))
-	{
-		TFTeam team = TF2_GetClientTeam(client);
-		if (team <= TFTeam_Spectator)return;
-		
-		if (DRPlayer(client).IsActivator())
-		{
-			if (team == TFTeam_Runners) //Check if player is in the runner team, if so put them back to the activator team
-			{
-				TF2_ChangeClientTeam(client, TFTeam_Activator);
-				TF2_RespawnPlayer(client);
-			}
-		}
-		else
-		{
-			if (team == TFTeam_Activator) //Check if player is in the activator team, if so put them back to the runner team
-			{
-				TF2_ChangeClientTeam(client, TFTeam_Runners);
-				TF2_RespawnPlayer(client);
-			}
-		}
-	}
-}
-
-int GetActivator()
-{
-	return g_CurrentActivator;
+	SDKHooks_OnEntityCreated(entity, classname);
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
@@ -263,12 +262,53 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	return changed ? Plugin_Changed : Plugin_Continue;
 }
 
-public void OnClientPutInServer(int client)
+public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
 {
-	SDKHooks_OnClientPutInServer(client);
+	if (IsValidClient(entity))
+	{
+		return OnClientSoundPlayed(clients, numClients, entity);
+	}
+	else if (HasEntProp(entity, Prop_Send, "m_hBuilder"))
+	{
+		int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
+		if (IsValidClient(builder))
+			return OnClientSoundPlayed(clients, numClients, builder);
+	}
+	else if (HasEntProp(entity, Prop_Send, "m_hThrower"))
+	{
+		int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
+		if (IsValidClient(thrower))
+			return OnClientSoundPlayed(clients, numClients, thrower);
+	}
+	else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
+	{
+		int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+		if (IsValidClient(owner))
+			return OnClientSoundPlayed(clients, numClients, owner);
+	}
+	
+	return Plugin_Continue;
 }
 
-public void OnClientDisconnect(int client)
+static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int client)
 {
-	DRPlayer(client).Reset();
+	Action action = Plugin_Continue;
+	
+	//Iterate all clients this sound is played to and remove them from the array if they are hiding other runners
+	for (int i = 0; i < numClients; i++)
+	{
+		if (DRPlayer(clients[i]).CanHideClient(client))
+		{
+			for (int j = i; j < numClients - 1; j++)
+			{
+				clients[j] = clients[j + 1];
+			}
+			
+			numClients--;
+			i--;
+			action = Plugin_Changed;
+		}
+	}
+	
+	return action;
 }
