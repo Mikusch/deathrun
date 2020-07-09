@@ -293,22 +293,19 @@ static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int 
 {
 	Action action = Plugin_Continue;
 	
-	if (DRPlayer(client).IsActivator())
+	//Iterate all clients this sound is played to and remove them from the array if they are hiding other runners
+	for (int i = 0; i < numClients; i++)
 	{
-		//Iterate all clients this sound is played to and remove them from the array if they are hiding other runners
-		for (int i = 0; i < numClients; i++)
+		if (DRPlayer(clients[i]).CanHideClient(client))
 		{
-			if (DRPlayer(clients[i]).CanHideClient(client))
+			for (int j = i; j < numClients - 1; j++)
 			{
-				for (int j = i; j < numClients - 1; j++)
-				{
-					clients[j] = clients[j + 1];
-				}
-				
-				numClients--;
-				i--;
-				action = Plugin_Changed;
+				clients[j] = clients[j + 1];
 			}
+			
+			numClients--;
+			i--;
+			action = Plugin_Changed;
 		}
 	}
 	
