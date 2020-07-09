@@ -30,14 +30,9 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 			if (IsClientInGame(client))
 			{
 				if (DRPlayer(client).IsActivator())
-				{
 					PrintMessage(client, "%t", "RoundStart_MultipleActivators_Activator");
-				}
 				else
-				{
 					PrintMessage(client, "%t", "RoundStart_MultipleActivators_Runners");
-					SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
-				}
 			}
 		}
 	}
@@ -56,15 +51,17 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 			if (IsClientInGame(client))
 			{
 				if (client == activator)
-				{
 					PrintMessage(client, "%t", "RoundStart_NewActivator_Activator");
-				}
 				else
-				{
 					PrintMessage(client, "%t", "RoundStart_NewActivator_Runners", activatorName);
-				}
 			}
 		}
+	}
+	
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client))
+			SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 	}
 }
 
