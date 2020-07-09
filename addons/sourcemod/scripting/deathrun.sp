@@ -107,6 +107,7 @@ ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
 ConVar dr_num_activators;
+ConVar dr_activator_health;
 
 ArrayList g_CurrentActivators;
 

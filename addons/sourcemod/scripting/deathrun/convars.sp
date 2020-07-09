@@ -10,11 +10,12 @@ static ArrayList g_GameConVars;
 void ConVars_Init()
 {
 	CreateConVar("dr_version", PLUGIN_VERSION, "Plugin version");
-	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to clients at the end of each round.");
+	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to clients at the end of each round.", _, true, 1.0);
 	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set to 0 if you use other thirdperson plugins that may conflict.");
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "How often in seconds chat tips should be shown to clients. Set to 0 to disable chat tips.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have a glowing outline.");
-	dr_num_activators = CreateConVar("dr_num_activators", "1", "How many activators there should be.", _, true, 1.0, true, float(MaxClients - 1));
+	dr_num_activators = CreateConVar("dr_num_activators", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
+	dr_activator_health = CreateConVar("dr_activator_health", "1000", "Maximum health of the activator.", _, true, 1.0);
 	
 	HookConVarChange(dr_allow_thirdperson, ConVarChanged_AllowThirdPerson);
 	HookConVarChange(dr_runner_glow, ConVarChanged_RunnerGlow);
