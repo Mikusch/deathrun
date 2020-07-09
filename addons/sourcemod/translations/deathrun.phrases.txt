@@ -31,7 +31,7 @@
 	}
 	"ChatTip_HideTeammates"
 	{
-		"en"	"{success}PROTIP: Can't see in crowded areas? You can hide teammates blocking your sight with {secondary}/drhide{default}."
+		"en"	"{success}PROTIP: {default}Can't see in crowded areas? You can hide teammates blocking your sight with {secondary}/drhide{default}."
 	}
 	"ChatTip_ActivatorWeapons"
 	{
