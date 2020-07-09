@@ -16,22 +16,22 @@
 	{
 		"en"	"You have {danger}disabled {default}the third-person camera."
 	}
-	"Command_HideRunners_Enabled"
+	"Command_HideTeammates_Enabled"
 	{
-		"en"	"All other Runners are now {secondary}invisible {default}to you."
+		"en"	"Your teammates are now {secondary}invisible {default}to you."
 	}
-	"Command_HideRunners_Disabled"
+	"Command_HideTeammates_Disabled"
 	{
-		"en"	"All other Runners are now {secondary}visible {default}to you."
+		"en"	"Your teammates are now {secondary}visible {default}to you."
 	}
 	
 	"ChatTip_Deathrun"
 	{
 		"en"	"{success}PROTIP: {default}You can get an overview of all features and commands with {secondary}/deathrun{default} or {secondary}/dr{default}."
 	}
-	"ChatTip_HideRunners"
+	"ChatTip_HideTeammates"
 	{
-		"en"	"{success}PROTIP: {default}As a {red}Runner{default}, you can hide teammates blocking your sight with {secondary}/drhide{default}."
+		"en"	"{success}PROTIP: Can't see in crowded areas? You can hide teammates blocking your sight with {secondary}/drhide{default}."
 	}
 	"ChatTip_ActivatorWeapons"
 	{
@@ -140,9 +140,9 @@
 	{
 		"en"	"Toggle Third-Person Camera (/drthirdperson)"
 	}
-	"Menu_Main_HideRunners"
+	"Menu_Main_HideTeammates"
 	{
-		"en"	"Hide Runners (/drhide)"
+		"en"	"Hide Teammates (/drhide)"
 	}
 	"Menu_Queue_Title"
 	{

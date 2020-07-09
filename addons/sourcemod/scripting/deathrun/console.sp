@@ -20,9 +20,9 @@ void Console_Init()
 	RegConsoleCmd2("fp", ConCmd_FirstPerson);
 	RegConsoleCmd2("firstperson", ConCmd_FirstPerson);
 	
-	RegConsoleCmd2("hide", ConCmd_HideRunners);
-	RegConsoleCmd2("hiderunners", ConCmd_HideRunners);
-	RegConsoleCmd2("hideplayers", ConCmd_HideRunners);
+	RegConsoleCmd2("hide", ConCmd_HideTeammates);
+	RegConsoleCmd2("hideteammates", ConCmd_HideTeammates);
+	RegConsoleCmd2("hideplayers", ConCmd_HideTeammates);
 	
 	AddCommandListener(CommandListener_Build, "build");
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
@@ -128,7 +128,7 @@ public Action ConCmd_FirstPerson(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action ConCmd_HideRunners(int client, int args)
+public Action ConCmd_HideTeammates(int client, int args)
 {
 	if (client == 0)
 	{
@@ -137,9 +137,9 @@ public Action ConCmd_HideRunners(int client, int args)
 	}
 	
 	DRPlayer player = DRPlayer(client);
-	player.IsHidingRunners = !player.IsHidingRunners;
+	player.IsHidingTeammates = !player.IsHidingTeammates;
 	
-	PrintMessage(client, "%t", player.IsHidingRunners ? "Command_HideRunners_Enabled" : "Command_HideRunners_Disabled");
+	PrintMessage(client, "%t", player.IsHidingTeammates ? "Command_HideTeammates_Enabled" : "Command_HideTeammates_Disabled");
 	
 	return Plugin_Handled;
 }

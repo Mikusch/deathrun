@@ -1,7 +1,7 @@
-#define QUEUE		"queue"
-#define PREFERENCES	"preferences"
-#define THIRDPERSON	"thirdperson"
-#define HIDERUNNERS	"hiderunners"
+#define QUEUE			"queue"
+#define PREFERENCES		"preferences"
+#define THIRDPERSON		"thirdperson"
+#define HIDETEAMMATES	"hideteammates"
 
 void Menus_DisplayMainMenu(int client)
 {
@@ -19,8 +19,8 @@ void Menus_DisplayMainMenu(int client)
 	Format(display, sizeof(display), "%T", "Menu_Main_ThirdPerson", client);
 	menu.AddItem(THIRDPERSON, display, dr_allow_thirdperson.BoolValue ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
 	
-	Format(display, sizeof(display), "%T", "Menu_Main_HideRunners", client);
-	menu.AddItem(HIDERUNNERS, display);
+	Format(display, sizeof(display), "%T", "Menu_Main_HideTeammates", client);
+	menu.AddItem(HIDETEAMMATES, display);
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }
@@ -47,9 +47,9 @@ public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int pa
 				FakeClientCommand(param1, DRPlayer(param1).InThirdPerson ? "dr_firstperson" : "dr_thirdperson");
 				Menus_DisplayMainMenu(param1);
 			}
-			else if (StrEqual(info, HIDERUNNERS))
+			else if (StrEqual(info, HIDETEAMMATES))
 			{
-				FakeClientCommand(param1, "dr_hiderunners");
+				FakeClientCommand(param1, "dr_hideteammates");
 				Menus_DisplayMainMenu(param1);
 			}
 		}

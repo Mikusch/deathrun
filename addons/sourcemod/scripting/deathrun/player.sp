@@ -1,7 +1,7 @@
 int g_PlayerQueuePoints[TF_MAXPLAYERS] =  { -1, ... };
 int g_PlayerPreferences[TF_MAXPLAYERS] =  { -1, ... };
 bool g_PlayerInThirdPerson[TF_MAXPLAYERS];
-bool g_PlayerIsHidingRunners[TF_MAXPLAYERS];
+bool g_PlayerIsHidingTeammates[TF_MAXPLAYERS];
 
 methodmap DRPlayer
 {
@@ -54,22 +54,22 @@ methodmap DRPlayer
 		}
 	}
 	
-	property bool IsHidingRunners
+	property bool IsHidingTeammates
 	{
 		public get()
 		{
-			return g_PlayerIsHidingRunners[this];
+			return g_PlayerIsHidingTeammates[this];
 		}
 		public set(bool val)
 		{
-			g_PlayerIsHidingRunners[this] = val;
+			g_PlayerIsHidingTeammates[this] = val;
 		}
 	}
 	
 	public void Reset()
 	{
 		this.InThirdPerson = false;
-		this.IsHidingRunners = false;
+		this.IsHidingTeammates = false;
 	}
 	
 	public bool IsActivator()
@@ -99,10 +99,9 @@ methodmap DRPlayer
 	
 	public bool CanHideClient(int client)
 	{
-		return this.IsHidingRunners //Is this client hiding other runners?
-		 && TF2_GetClientTeam(this.Client) == TFTeam_Runners //Only hide as runner
-		 && IsPlayerAlive(this.Client) //Only hide when alive
-		 && TF2_GetClientTeam(client) == TFTeam_Runners //Only hide other runners, never the activator
-		 && client != this.Client; //Don't hide ourself
+		return this.IsHidingTeammates //Does this client want to hide teammates?
+		 && IsPlayerAlive(this.Client) //Only hide players when alive
+		 && TF2_GetClientTeam(this.Client) == TF2_GetClientTeam(client) //Only hide players on our team
+		 && this.Client != client; //Don't hide ourselves
 	}
 }
