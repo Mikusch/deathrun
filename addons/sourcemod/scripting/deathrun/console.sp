@@ -95,7 +95,7 @@ public Action ConCmd_ThirdPerson(int client, int args)
 	{
 		DRPlayer(client).InThirdPerson = true;
 		
-		if (!IsPlayerAlive(client))
+		if (!IsPlayerAlive(client) || TF2_IsPlayerInCondition(client, TFCond_Taunting))
 			PrintMessage(client, "%t", "Command_ThirdPerson_Enabled");
 	}
 	
@@ -121,7 +121,7 @@ public Action ConCmd_FirstPerson(int client, int args)
 	{
 		DRPlayer(client).InThirdPerson = false;
 		
-		if (!IsPlayerAlive(client))
+		if (!IsPlayerAlive(client) || TF2_IsPlayerInCondition(client, TFCond_Taunting))
 			PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
 	}
 	
