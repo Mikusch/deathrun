@@ -17,8 +17,8 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 		int activator = g_CurrentActivators.Get(i);
 		if (IsClientInGame(activator))
 		{
-			TF2Attrib_SetByName(activator, "max health additive bonus", 1000.0 - TF2_GetMaxHealth(activator));
-			SetEntityHealth(activator, 1000);
+			TF2Attrib_SetByName(activator, "max health additive bonus", 1000.0 / dr_num_activators.IntValue - TF2_GetMaxHealth(activator));
+			SetEntityHealth(activator, 1000 / dr_num_activators.IntValue);
 			numActivators++;
 		}
 	}
