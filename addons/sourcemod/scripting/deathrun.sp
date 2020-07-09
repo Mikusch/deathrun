@@ -285,18 +285,3 @@ public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sampl
 	
 	return Plugin_Continue;
 }
-
-int GetRandomAliveActivator()
-{
-	ArrayList clone = g_CurrentActivators.Clone();
-	
-	for (int i = 0; i < clone.Length; i++)
-	{
-		if (!IsPlayerAlive(clone.Get(i)))
-			clone.Erase(i--);
-	}
-	
-	int activator = clone.Get(GetRandomInt(0, clone.Length - 1));
-	delete clone;
-	return activator;
-}

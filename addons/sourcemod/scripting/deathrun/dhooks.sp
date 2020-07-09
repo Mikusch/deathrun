@@ -52,7 +52,12 @@ public MRESReturn DHook_SetWinningTeam_Pre(Handle params)
 		for (int client = 1; client <= MaxClients; client++)
 		{
 			if (IsClientInGame(client) && IsPlayerAlive(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
-				SDKHooks_TakeDamage(client, GetRandomAliveActivator(), 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
+			{
+				if (g_CurrentActivators.Length == 1)
+					SDKHooks_TakeDamage(client, g_CurrentActivators.Get(0), 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
+				else
+					SDKHooks_TakeDamage(client, 0, 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
+			}
 		}
 		
 		EmitGameSoundToAll(GAMESOUND_EXPLOSION);
