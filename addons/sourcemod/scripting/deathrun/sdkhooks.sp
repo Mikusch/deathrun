@@ -4,7 +4,6 @@ static char g_OwnerEntityList[][] =  {
 	"item_healthkit", 
 	"tf_ammo_pack", 
 	"tf_bonus_duck_pickup", 
-	"tf_dropped_weapon", 
 	"tf_flame", 
 	"tf_halloween_pickup", 
 	"tf_weapon", 
@@ -33,9 +32,14 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 		SDKHook(entity, SDKHook_SetTransmit, HasEntProp(entity, Prop_Send, "m_hThrower") ? SDKHookCB_ThrownEntitySetTransmit : SDKHookCB_OwnedEntitySetTransmit);
 	}
 	
-	if (StrContains(classname, "tf_ragdoll") != -1)
+	if (StrEqual(classname, "tf_ragdoll"))
 	{
 		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_RagdollSetTransmit);
+	}
+	
+	if (StrEqual(classname, "tf_dropped_weapon"))
+	{
+		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_DroppedWeaponSetTransmit);
 	}
 }
 
@@ -79,6 +83,18 @@ public Action SDKHookCB_RagdollSetTransmit(int entity, int client)
 		//We need to remove the flag here instead because otherwise no ragdolls get created for anyone
 		RemoveAlwaysTransmit(entity);
 		return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
+{
+	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsClientConnected(i) && GetSteamAccountID(i, false) == accountID && DRPlayer(client).CanHideClient(i))
+			return Plugin_Handled;
 	}
 	
 	return Plugin_Continue;
