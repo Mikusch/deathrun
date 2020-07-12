@@ -227,22 +227,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	if (activeWeapon == -1)
 		return Plugin_Continue;
 	
-	//No weapon firing in preround
-	if (GameRules_GetRoundState() == RoundState_Preround)
-	{
-		if (buttons & IN_ATTACK)
-		{
-			buttons &= ~IN_ATTACK;
-			changed = true;
-		}
-		
-		if (buttons & IN_ATTACK2)
-		{
-			buttons &= ~IN_ATTACK2;
-			changed = true;
-		}
-	}
-	
 	WeaponConfig config;
 	if (Config_GetWeaponByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config))
 	{
