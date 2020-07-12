@@ -115,8 +115,8 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 		{
 			switch (TF2_GetClientTeam(client))
 			{
-				case TFTeam_Runners:red++;
-				case TFTeam_Activators:blue++;
+				case TFTeam_Runners: red++;
+				case TFTeam_Activators: blue++;
 			}
 		}
 	}
@@ -175,13 +175,9 @@ public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool do
 				PrintMessage(client, "%t", "RoundWin_Runners");
 			
 			if (player.IsActivator())
-			{
 				TF2Attrib_RemoveByName(client, "max health additive bonus");
-			}
-			else
-			{
+			else if (TF2_GetClientTeam(client) != TFTeam_Spectator)
 				Queue_AddPoints(client, dr_queue_points.IntValue);
-			}
 		}
 	}
 }
