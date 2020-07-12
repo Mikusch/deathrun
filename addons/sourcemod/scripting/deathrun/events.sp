@@ -69,11 +69,20 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	
-	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator() && g_CurrentActivators.Length == 1)
+	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
 	{
-		int activator = g_CurrentActivators.Get(0);
-		if (victim != activator)
+		//Award a point to all activators
+		for (int i = 0; i < g_CurrentActivators.Length; i++)
 		{
+			int activator = g_CurrentActivators.Get(i);
+			int score = GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iScore", _, activator);
+			SetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iScore", score + 1, _, activator);
+		}
+		
+		//Rewrite death event to credit activator
+		if (g_CurrentActivators.Length == 1)
+		{
+			int activator = g_CurrentActivators.Get(0);
 			event.SetInt("attacker", GetClientUserId(activator));
 			return Plugin_Changed;
 		}
