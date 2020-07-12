@@ -33,7 +33,7 @@
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_DESCRIPTION	"Team Fortress 2 Deathrun"
-#define PLUGIN_VERSION		"1.3.0"
+#define PLUGIN_VERSION		"1.3.1"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
 #define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
@@ -162,8 +162,6 @@ public void OnPluginStart()
 	SDKCalls_Init(gamedata);
 	delete gamedata;
 	
-	DHooks_HookGamerules();
-	
 	ConVars_Enable();
 	
 	//Late load
@@ -187,6 +185,8 @@ public void OnPluginEnd()
 public void OnMapStart()
 {
 	PrecacheScriptSound(GAMESOUND_EXPLOSION);
+	
+	DHooks_HookGamerules();
 }
 
 public void OnConfigsExecuted()
