@@ -54,19 +54,19 @@ const TFTeam TFTeam_Activators = TFTeam_Blue;
 
 enum
 {
-	WeaponSlot_Primary = 0, 
-	WeaponSlot_Secondary, 
-	WeaponSlot_Melee, 
-	WeaponSlot_PDABuild, 
-	WeaponSlot_PDADisguise = 3, 
-	WeaponSlot_PDADestroy, 
-	WeaponSlot_InvisWatch = 4, 
-	WeaponSlot_BuilderEngie, 
-	WeaponSlot_Unknown1, 
-	WeaponSlot_Head, 
-	WeaponSlot_Misc1, 
-	WeaponSlot_Action, 
-	WeaponSlot_Misc2
+	ItemSlot_Primary = 0, 
+	ItemSlot_Secondary, 
+	ItemSlot_Melee, 
+	ItemSlot_PDABuild, 
+	ItemSlot_PDADisguise = 3, 
+	ItemSlot_PDADestroy, 
+	ItemSlot_InvisWatch = 4, 
+	ItemSlot_BuilderEngie, 
+	ItemSlot_Unknown1, 
+	ItemSlot_Head, 
+	ItemSlot_Misc1, 
+	ItemSlot_Action, 
+	ItemSlot_Misc2
 };
 
 // TF2 win reasons (from teamplayroundbased_gamerules.h)
@@ -227,8 +227,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	if (activeWeapon == -1)
 		return Plugin_Continue;
 	
-	WeaponConfig config;
-	if (Config_GetWeaponByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config))
+	ItemConfig config;
+	if (Config_GetItemByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config))
 	{
 		if (buttons & IN_ATTACK && config.blockPrimaryAttack)
 		{

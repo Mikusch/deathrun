@@ -1,58 +1,25 @@
-#define WEAPON_CONFIG_FILE		"configs/deathrun/weapons.cfg"
+#define ITEM_CONFIG_FILE	"configs/deathrun/items.cfg"
 
 enum AttributeModMode
 {
-	ModMode_Set,		/*< Sets the attribute, adding it if it doesn't exist */
+	ModMode_Set,		/*< Sets the attribute's value, adding it if it doesn't exist */
 	ModMode_Add,		/*< Adds to the current value of the attribute */
 	ModMode_Subtract,	/*< Subtracts from the current value of the attribute */
-	ModMode_Remove		/*< Removes the attribute */
+	ModMode_Remove		/*< Removes the attribute (static attributes can not be removed) */
 }
 
-enum struct WeaponEntPropConfig
+enum struct ItemAttributeConfig
 {
-	char name[256];				/*< Property name */
-	PropType type;				/*< Property type */
-	PropFieldType fieldType;	/*< Property value field type */
-	char value[256];			/*< Property value */
+	char name[256];			/*< Attribute name */
+	float value;			/*< Attribute value */
+	AttributeModMode mode;	/*< How this attribute should be modified */
 	
 	void ReadConfig(KeyValues kv)
 	{
 		kv.GetString("name", this.name, 256);
-		
-		char type[256];
-		kv.GetString("type", type, sizeof(type));
-		if (StrEqual(type, "send"))
-			this.type = Prop_Send;
-		else if (StrEqual(type, "send"))
-			this.type = Prop_Data;
-		
-		char fieldType[256];
-		kv.GetString("field_type", fieldType, sizeof(fieldType));
-		if (StrEqual(fieldType, "int") || StrEqual(fieldType, "integer"))
-			this.fieldType = PropField_Integer;
-		else if (StrEqual(fieldType, "float"))
-			this.fieldType = PropField_Float;
-		else if (StrEqual(fieldType, "vec") || StrEqual(fieldType, "vector"))
-			this.fieldType = PropField_Vector;
-		else if (StrEqual(fieldType, "str") || StrEqual(fieldType, "string"))
-			this.fieldType = PropField_String;
-		
-		kv.GetString("value", this.value, 256);
-	}
-}
-
-enum struct WeaponAttributeConfig
-{
-	char name[PLATFORM_MAX_PATH];	/*< Attribute name */
-	float value;					/*< Attribute value */
-	AttributeModMode mode;			/*< How this attribute should be modified */
-	
-	void ReadConfig(KeyValues kv)
-	{
-		kv.GetString("name", this.name, PLATFORM_MAX_PATH);
 		this.value = kv.GetFloat("value");
 		
-		char mode[PLATFORM_MAX_PATH];
+		char mode[32];
 		kv.GetString("mode", mode, sizeof(mode));
 		if (StrEqual(mode, "set"))
 			this.mode = ModMode_Set;
@@ -65,14 +32,47 @@ enum struct WeaponAttributeConfig
 	}
 }
 
-enum struct WeaponConfig
+enum struct ItemEntPropConfig
 {
-	int defindex;				/*< Item definition index of the weapon */
-	bool blockPrimaryAttack;	/*< Whether to block primary fire */
-	bool blockSecondaryAttack;	/*< Whether to block the secondary attack */
-	bool remove;				/*< Whether this weapon should be removed entirely */
-	ArrayList attributes;		/*< Attributes of the weapon - ArrayList<WeaponAttributeConfig> */
-	ArrayList entprops;			/*< Entity props - ArrayList<WeaponEntPropConfig> */
+	char name[256];				/*< Property name */
+	PropType type;				/*< Property type */
+	PropFieldType fieldType;	/*< Property field type */
+	char value[256];			/*< Property value */
+	
+	void ReadConfig(KeyValues kv)
+	{
+		kv.GetString("name", this.name, 256);
+		
+		char type[256];
+		kv.GetString("type", type, sizeof(type));
+		if (StrEqual(type, "send"))
+			this.type = Prop_Send;
+		else if (StrEqual(type, "data"))
+			this.type = Prop_Data;
+		
+		char fieldType[256];
+		kv.GetString("field_type", fieldType, sizeof(fieldType));
+		if (StrEqual(fieldType, "int") || StrEqual(fieldType, "integer"))
+			this.fieldType = PropField_Integer;
+		else if (StrEqual(fieldType, "float"))
+			this.fieldType = PropField_Float;
+		else if (StrEqual(fieldType, "vector"))
+			this.fieldType = PropField_Vector;
+		else if (StrEqual(fieldType, "string"))
+			this.fieldType = PropField_String;
+		
+		kv.GetString("value", this.value, 256);
+	}
+}
+
+enum struct ItemConfig
+{
+	int defindex;				/*< Item definition index of the item */
+	bool blockPrimaryAttack;	/*< Whether the primary fire of this item should be blocked */
+	bool blockSecondaryAttack;	/*< Whether the secondary fire of this item should be blocked */
+	bool remove;				/*< Whether this item should be removed from the player */
+	ArrayList attributes;		/*< Item attributes - ArrayList<ItemAttributeConfig> */
+	ArrayList entprops;			/*< Entity properties - ArrayList<ItemEntPropConfig> */
 	
 	void SetConfig(int defindex, KeyValues kv)
 	{
@@ -81,14 +81,14 @@ enum struct WeaponConfig
 		this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
 		this.remove = view_as<bool>(kv.GetNum("remove"));
 		
-		this.attributes = new ArrayList(sizeof(WeaponAttributeConfig));
+		this.attributes = new ArrayList(sizeof(ItemAttributeConfig));
 		if (kv.JumpToKey("attributes", false))
 		{
 			if (kv.GotoFirstSubKey(false))
 			{
 				do
 				{
-					WeaponAttributeConfig attribute;
+					ItemAttributeConfig attribute;
 					attribute.ReadConfig(kv);
 					this.attributes.PushArray(attribute);
 				}
@@ -98,14 +98,14 @@ enum struct WeaponConfig
 			kv.GoBack();
 		}
 		
-		this.entprops = new ArrayList(sizeof(WeaponEntPropConfig));
+		this.entprops = new ArrayList(sizeof(ItemEntPropConfig));
 		if (kv.JumpToKey("entprops", false))
 		{
 			if (kv.GotoFirstSubKey(false))
 			{
 				do
 				{
-					WeaponEntPropConfig entprop;
+					ItemEntPropConfig entprop;
 					entprop.ReadConfig(kv);
 					this.entprops.PushArray(entprop);
 				}
@@ -117,11 +117,11 @@ enum struct WeaponConfig
 	}
 }
 
-methodmap WeaponConfigList < ArrayList
+methodmap ItemConfigList < ArrayList
 {
-	public WeaponConfigList()
+	public ItemConfigList()
 	{
-		return view_as<WeaponConfigList>(new ArrayList(sizeof(WeaponConfig)));
+		return view_as<ItemConfigList>(new ArrayList(sizeof(ItemConfig)));
 	}
 	
 	public void ReadConfig(KeyValues kv)
@@ -138,9 +138,9 @@ methodmap WeaponConfigList < ArrayList
 				
 				for (int i = 0; i < retrieved; i++)
 				{
-					WeaponConfig weapon;
-					weapon.SetConfig(StringToInt(parts[i]), kv);
-					this.PushArray(weapon);
+					ItemConfig item;
+					item.SetConfig(StringToInt(parts[i]), kv);
+					this.PushArray(item);
 				}
 			}
 			while (kv.GotoNextKey(false));
@@ -149,38 +149,38 @@ methodmap WeaponConfigList < ArrayList
 		kv.GoBack();
 	}
 	
-	public int GetByDefIndex(int defindex, WeaponConfig config)
+	public int GetByDefIndex(int defindex, ItemConfig config)
 	{
 		int i = this.FindValue(defindex);
 		return i != -1 ? this.GetArray(i, config) : 0;
 	}
 }
 
-static WeaponConfigList g_Weapons;
+static ItemConfigList g_ItemConfig;
 
 void Config_Init()
 {
-	g_Weapons = new WeaponConfigList();
+	g_ItemConfig = new ItemConfigList();
 	
 	char path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), WEAPON_CONFIG_FILE);
-	KeyValues kv = new KeyValues("Weapons");
+	BuildPath(Path_SM, path, sizeof(path), ITEM_CONFIG_FILE);
+	KeyValues kv = new KeyValues("Items");
 	if (kv.ImportFromFile(path))
 	{
-		g_Weapons.ReadConfig(kv);
+		g_ItemConfig.ReadConfig(kv);
 		kv.GoBack();
 	}
 	delete kv;
 }
 
-bool Config_GetWeaponByDefIndex(int defindex, WeaponConfig config)
+bool Config_GetItemByDefIndex(int defindex, ItemConfig config)
 {
-	return g_Weapons.GetByDefIndex(defindex, config) > 0;
+	return g_ItemConfig.GetByDefIndex(defindex, config) > 0;
 }
 
 void Config_Apply(int client)
 {
-	for (int slot = 0; slot <= WeaponSlot_Misc2; slot++)
+	for (int slot = 0; slot <= ItemSlot_Misc2; slot++)
 	{
 		int item = TF2_GetItemInSlot(client, slot);
 		
@@ -188,10 +188,10 @@ void Config_Apply(int client)
 		{
 			int defindex = GetEntProp(item, Prop_Send, "m_iItemDefinitionIndex");
 			
-			WeaponConfig config;
-			if (Config_GetWeaponByDefIndex(defindex, config))
+			ItemConfig config;
+			if (Config_GetItemByDefIndex(defindex, config))
 			{
-				//Remove weapon if wanted
+				//Remove item if wanted
 				if (config.remove)
 				{
 					char classname[256];
@@ -201,35 +201,40 @@ void Config_Apply(int client)
 						TF2_RemoveWearable(client, item);
 					else
 						RemovePlayerItem(client, item);
+					
+					continue;
 				}
 				
 				//Handle attributes
 				for (int i = 0; i < config.attributes.Length; i++)
 				{
-					WeaponAttributeConfig attribute;
+					ItemAttributeConfig attribute;
 					if (config.attributes.GetArray(i, attribute, sizeof(attribute)) > 0)
 					{
-						if (attribute.mode == ModMode_Set)
+						switch (attribute.mode)
 						{
-							TF2Attrib_SetByName(item, attribute.name, attribute.value);
-						}
-						else if (attribute.mode == ModMode_Add)
-						{
-							Address address = TF2Attrib_GetByName(item, attribute.name);
-							TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) + attribute.value);
-							TF2Attrib_ClearCache(item);
-							TF2Attrib_ClearCache(GetEntProp(item, Prop_Data, "m_hOwnerEntity"));
-						}
-						else if (attribute.mode == ModMode_Subtract)
-						{
-							Address address = TF2Attrib_GetByName(item, attribute.name);
-							TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) - attribute.value);
-							TF2Attrib_ClearCache(item);
-							TF2Attrib_ClearCache(GetEntProp(item, Prop_Data, "m_hOwnerEntity"));
-						}
-						else if (attribute.mode == ModMode_Remove)
-						{
-							TF2Attrib_SetByName(item, attribute.name, 0.0); //TF2Attrib_RemoveByName can't remove static attributes
+							case ModMode_Set:
+							{
+								TF2Attrib_SetByName(item, attribute.name, attribute.value);
+							}
+							case ModMode_Add:
+							{
+								Address address = TF2Attrib_GetByName(item, attribute.name);
+								TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) + attribute.value);
+								TF2Attrib_ClearCache(item);
+								TF2Attrib_ClearCache(GetEntProp(item, Prop_Data, "m_hOwnerEntity"));
+							}
+							case ModMode_Subtract:
+							{
+								Address address = TF2Attrib_GetByName(item, attribute.name);
+								TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) - attribute.value);
+								TF2Attrib_ClearCache(item);
+								TF2Attrib_ClearCache(GetEntProp(item, Prop_Data, "m_hOwnerEntity"));
+							}
+							case ModMode_Remove:
+							{
+								TF2Attrib_RemoveByName(item, attribute.name);
+							}
 						}
 					}
 				}
@@ -237,7 +242,7 @@ void Config_Apply(int client)
 				//Handle entity props
 				for (int i = 0; i < config.entprops.Length; i++)
 				{
-					WeaponEntPropConfig entprop;
+					ItemEntPropConfig entprop;
 					if (config.entprops.GetArray(i, entprop, sizeof(entprop)) > 0)
 					{
 						switch (entprop.fieldType)
