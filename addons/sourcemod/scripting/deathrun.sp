@@ -295,7 +295,7 @@ static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int 
 	return action;
 }
 
-stock void UpdateActivatorHealth(int value, bool refillHealth)
+void UpdateActivatorHealth(int value, bool refill)
 {
 	for (int i = 0; i < g_CurrentActivators.Length; i++)
 	{
@@ -308,7 +308,7 @@ stock void UpdateActivatorHealth(int value, bool refillHealth)
 				TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) + float(value) / dr_num_activators.FloatValue);
 				TF2Attrib_ClearCache(activator);
 				
-				if (refillHealth)
+				if (refill)
 					SetEntityHealth(activator, TF2_GetMaxHealth(activator) + value / dr_num_activators.IntValue);
 			}
 			else

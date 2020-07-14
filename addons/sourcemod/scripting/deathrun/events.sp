@@ -12,11 +12,11 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 	int numActivators;
 	
 	//Calculate max health to grant to activators
-	int maxhealth;
+	int maxHealth;
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
-			maxhealth += TF2_GetMaxHealth(client);
+			maxHealth += TF2_GetMaxHealth(client);
 	}
 	
 	//Iterate all chosen activators and check if they are still in-game
@@ -25,8 +25,8 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 		int activator = g_CurrentActivators.Get(i);
 		if (IsClientInGame(activator))
 		{
-			TF2Attrib_SetByName(activator, "max health additive bonus", float(maxhealth) / dr_num_activators.FloatValue);
-			SetEntityHealth(activator, TF2_GetMaxHealth(activator) + maxhealth / dr_num_activators.IntValue);
+			TF2Attrib_SetByName(activator, "max health additive bonus", float(maxHealth) / dr_num_activators.FloatValue);
+			SetEntityHealth(activator, TF2_GetMaxHealth(activator) + maxHealth / dr_num_activators.IntValue);
 			
 			numActivators++;
 		}
