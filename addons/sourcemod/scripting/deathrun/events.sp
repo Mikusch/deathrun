@@ -78,7 +78,6 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	
-	
 	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
 	{
 		//Reduce activator health for every dead runner
@@ -101,11 +100,11 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	int userid = event.GetInt("userid");
 	int client = GetClientOfUserId(userid);
 	
-	//If this is a latespawn, give the activator health
-	if (GameRules_GetRoundState() == RoundState_Stalemate)
-		CreateTimer(0.2, Timer_UpdateActivatorHealth, GetClientUserId(client));
-	
 	Config_Apply(client);
+	
+	//If this is a latespawn, give the activator health
+	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(client).IsActivator())
+		CreateTimer(0.2, Timer_UpdateActivatorHealth, GetClientUserId(client));
 	
 	if (DRPlayer(client).InThirdPerson)
 		CreateTimer(0.2, Timer_SetThirdPerson, userid);
