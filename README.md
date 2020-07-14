@@ -7,7 +7,7 @@ Inspired by the plugins I played many years back that were never made accessible
 * Activator queue system
 * Built-in third-person mode (can be disabled by server operators using ``dr_allow_thirdperson``)
 * Little to no restrictions on equipped weapons
-* Buffed activator health for combat minigames
+* Dynamic Activator health for combat minigames
 * Configurable round timer
 
 ## Dependencies

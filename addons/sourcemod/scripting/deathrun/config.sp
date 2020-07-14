@@ -222,14 +222,14 @@ void Config_Apply(int client)
 								Address address = TF2Attrib_GetByName(item, attribute.name);
 								TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) + attribute.value);
 								TF2Attrib_ClearCache(item);
-								TF2Attrib_ClearCache(GetEntProp(item, Prop_Data, "m_hOwnerEntity"));
+								TF2Attrib_ClearCache(GetEntPropEnt(item, Prop_Data, "m_hOwnerEntity"));
 							}
 							case ModMode_Subtract:
 							{
 								Address address = TF2Attrib_GetByName(item, attribute.name);
 								TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) - attribute.value);
 								TF2Attrib_ClearCache(item);
-								TF2Attrib_ClearCache(GetEntProp(item, Prop_Data, "m_hOwnerEntity"));
+								TF2Attrib_ClearCache(GetEntPropEnt(item, Prop_Data, "m_hOwnerEntity"));
 							}
 							case ModMode_Remove:
 							{

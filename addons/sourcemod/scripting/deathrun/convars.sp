@@ -15,7 +15,6 @@ void ConVars_Init()
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "How often in seconds chat tips should be shown to clients. Set to 0 to disable chat tips.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have a glowing outline.");
 	dr_num_activators = CreateConVar("dr_num_activators", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
-	dr_activator_health = CreateConVar("dr_activator_health", "1000", "Maximum health of the activator.", _, true, 1.0);
 	
 	HookConVarChange(dr_allow_thirdperson, ConVarChanged_AllowThirdPerson);
 	HookConVarChange(dr_runner_glow, ConVarChanged_RunnerGlow);
