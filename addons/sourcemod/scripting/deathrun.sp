@@ -305,7 +305,7 @@ void UpdateActivatorHealth(int value, bool refill)
 			Address address = TF2Attrib_GetByName(activator, "max health additive bonus");
 			if (address != Address_Null)
 			{
-				TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) + float(value) / dr_num_activators.FloatValue);
+				TF2Attrib_SetValue(address, FloatMax(TF2Attrib_GetValue(address) + float(value) / dr_num_activators.FloatValue, 0.0));
 				TF2Attrib_ClearCache(activator);
 				
 				if (refill)
