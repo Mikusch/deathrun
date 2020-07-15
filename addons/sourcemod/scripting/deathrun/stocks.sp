@@ -13,8 +13,8 @@ stock void StringToVector(const char[] buffer, float vec[3], float defvalue[3] =
 		return;
 	}
 	
-	char sPart[3][32];
-	int iReturned = ExplodeString(buffer, StrContains(buffer, ",") != -1 ? ", " : " ", sPart, 3, 32);
+	char parts[3][32];
+	int iReturned = ExplodeString(buffer, StrContains(buffer, ",") != -1 ? ", " : " ", parts, 3, 32);
 	
 	if (iReturned != 3)
 	{
@@ -24,9 +24,9 @@ stock void StringToVector(const char[] buffer, float vec[3], float defvalue[3] =
 		return;
 	}
 	
-	vec[0] = StringToFloat(sPart[0]);
-	vec[1] = StringToFloat(sPart[1]);
-	vec[2] = StringToFloat(sPart[2]);
+	vec[0] = StringToFloat(parts[0]);
+	vec[1] = StringToFloat(parts[1]);
+	vec[2] = StringToFloat(parts[2]);
 }
 
 stock float FloatMin(float a, float b)

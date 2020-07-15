@@ -11,14 +11,23 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 {
 	int numActivators;
 	
+	//Calculate max health to grant to activators
+	int maxHealth;
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
+			maxHealth += TF2_GetMaxHealth(client);
+	}
+	
 	//Iterate all chosen activators and check if they are still in-game
 	for (int i = 0; i < g_CurrentActivators.Length; i++)
 	{
 		int activator = g_CurrentActivators.Get(i);
 		if (IsClientInGame(activator))
 		{
-			TF2Attrib_SetByName(activator, "max health additive bonus", dr_activator_health.FloatValue / dr_num_activators.IntValue - TF2_GetMaxHealth(activator));
-			SetEntityHealth(activator, dr_activator_health.IntValue / dr_num_activators.IntValue);
+			TF2Attrib_SetByName(activator, "max health additive bonus", float(maxHealth) / dr_num_activators.FloatValue);
+			SetEntityHealth(activator, TF2_GetMaxHealth(activator) + maxHealth / dr_num_activators.IntValue);
+			
 			numActivators++;
 		}
 	}
@@ -69,12 +78,17 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	
-	//Rewrite death event to credit activator
-	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator() && g_CurrentActivators.Length == 1)
+	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
 	{
-		int activator = g_CurrentActivators.Get(0);
-		event.SetInt("attacker", GetClientUserId(activator));
-		return Plugin_Changed;
+		UpdateActivatorHealth(-TF2_GetMaxHealth(victim), false);
+		
+		//Rewrite death event to credit activator
+		if (g_CurrentActivators.Length == 1)
+		{
+			int activator = g_CurrentActivators.Get(0);
+			event.SetInt("attacker", GetClientUserId(activator));
+			return Plugin_Changed;
+		}
 	}
 	
 	return Plugin_Continue;
@@ -86,6 +100,10 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	int client = GetClientOfUserId(userid);
 	
 	Config_Apply(client);
+	
+	//If this is a latespawn, give the activator health
+	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(client).IsActivator())
+		CreateTimer(0.2, Timer_UpdateActivatorHealth, userid);
 	
 	if (DRPlayer(client).InThirdPerson)
 		CreateTimer(0.2, Timer_SetThirdPerson, userid);
@@ -196,6 +214,11 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 			}
 		}
 	}
+}
+
+public Action Timer_UpdateActivatorHealth(Handle timer, int userid)
+{
+	UpdateActivatorHealth(TF2_GetMaxHealth(GetClientOfUserId(userid)), true);
 }
 
 public Action Timer_SetThirdPerson(Handle timer, int userid)
