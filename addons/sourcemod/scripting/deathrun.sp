@@ -309,11 +309,7 @@ void UpdateActivatorHealth(int value, bool refill)
 				TF2Attrib_ClearCache(activator);
 				
 				if (refill)
-					SetEntityHealth(activator, TF2_GetMaxHealth(activator) + value / dr_num_activators.IntValue);
-			}
-			else
-			{
-				LogError("Couldn't find attribute 'max health additive bonus' on activator");
+					SetEntityHealth(activator, GetEntProp(activator, Prop_Send, "m_iHealth") + value / dr_num_activators.IntValue);
 			}
 		}
 	}

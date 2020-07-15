@@ -1,3 +1,5 @@
+static Handle g_ActivatorHealthTimers[TF_MAXPLAYERS];
+
 void Events_Init()
 {
 	HookEvent("arena_round_start", EventHook_ArenaRoundStart);
@@ -80,8 +82,11 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 	
 	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
 	{
-		//Reduce activator health for every dead runner
-		UpdateActivatorHealth(-TF2_GetMaxHealth(victim), false);
+		Handle timer = g_ActivatorHealthTimers[victim];
+		if (timer != null) //Did the victim die before the activators ever got their health?
+			delete timer;
+		else
+			UpdateActivatorHealth(-TF2_GetMaxHealth(victim), false);
 		
 		//Rewrite death event to credit activator
 		if (g_CurrentActivators.Length == 1)
@@ -104,7 +109,7 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	
 	//If this is a latespawn, give the activator health
 	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(client).IsActivator())
-		CreateTimer(0.2, Timer_UpdateActivatorHealth, GetClientUserId(client));
+		g_ActivatorHealthTimers[client] = CreateTimer(0.2, Timer_UpdateActivatorHealth, userid);
 	
 	if (DRPlayer(client).InThirdPerson)
 		CreateTimer(0.2, Timer_SetThirdPerson, userid);
