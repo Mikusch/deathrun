@@ -1,22 +1,10 @@
 static Cookie g_CookieQueuePoints;
-static Cookie g_CookieSettings;
+static Cookie g_CookiePreferences;
 
 void Cookies_Init()
 {
-	g_CookieQueuePoints = new Cookie("dr_queue", "Queue points this player has", CookieAccess_Protected);
-	g_CookieSettings = new Cookie("dr_settings", "Deathrun-specific settings", CookieAccess_Protected);
-}
-
-void Cookies_Refresh()
-{
-	for (int client = 1; client <= MaxClients; client++)
-	{
-		if (IsClientInGame(client))
-		{
-			Cookies_RefreshQueue(client);
-			Cookies_RefreshSettings(client);
-		}
-	}
+	g_CookieQueuePoints = new Cookie("dr_queue", "Deathrun Queue Points", CookieAccess_Protected);
+	g_CookiePreferences = new Cookie("dr_preferences", "Deathrun Preferences Bitmask", CookieAccess_Protected);
 }
 
 void Cookies_RefreshQueue(int client)
@@ -36,10 +24,10 @@ void Cookies_SaveQueue(int client, int value)
 	}
 }
 
-void Cookies_RefreshSettings(int client)
+void Cookies_RefreshPreferences(int client)
 {
 	char value[16];
-	g_CookieSettings.Get(client, value, sizeof(value));
+	g_CookiePreferences.Get(client, value, sizeof(value));
 	DRPlayer(client).Preferences = StringToInt(value);
 }
 
@@ -49,6 +37,6 @@ void Cookies_SavePreferences(int client, int value)
 	{
 		char strValue[16];
 		IntToString(value, strValue, sizeof(strValue));
-		g_CookieSettings.Set(client, strValue);
+		g_CookiePreferences.Set(client, strValue);
 	}
 }

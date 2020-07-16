@@ -185,11 +185,6 @@ public void OnMapStart()
 	DHooks_HookGamerules();
 }
 
-public void OnConfigsExecuted()
-{
-	Cookies_Refresh();
-}
-
 public void OnClientPutInServer(int client)
 {
 	SDKHooks_OnClientPutInServer(client);
@@ -198,7 +193,7 @@ public void OnClientPutInServer(int client)
 public void OnClientCookiesCached(int client)
 {
 	Cookies_RefreshQueue(client);
-	Cookies_RefreshSettings(client);
+	Cookies_RefreshPreferences(client);
 }
 
 public void OnClientDisconnect(int client)
