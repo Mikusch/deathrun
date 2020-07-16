@@ -250,23 +250,26 @@ public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sampl
 	{
 		return OnClientSoundPlayed(clients, numClients, entity);
 	}
-	else if (HasEntProp(entity, Prop_Send, "m_hBuilder"))
+	else if (IsValidEntity(entity))
 	{
-		int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
-		if (IsValidClient(builder))
-			return OnClientSoundPlayed(clients, numClients, builder);
-	}
-	else if (HasEntProp(entity, Prop_Send, "m_hThrower"))
-	{
-		int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
-		if (IsValidClient(thrower))
-			return OnClientSoundPlayed(clients, numClients, thrower);
-	}
-	else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
-	{
-		int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
-		if (IsValidClient(owner))
-			return OnClientSoundPlayed(clients, numClients, owner);
+		if (HasEntProp(entity, Prop_Send, "m_hBuilder"))
+		{
+			int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
+			if (IsValidClient(builder))
+				return OnClientSoundPlayed(clients, numClients, builder);
+		}
+		else if (HasEntProp(entity, Prop_Send, "m_hThrower"))
+		{
+			int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
+			if (IsValidClient(thrower))
+				return OnClientSoundPlayed(clients, numClients, thrower);
+		}
+		else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
+		{
+			int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+			if (IsValidClient(owner))
+				return OnClientSoundPlayed(clients, numClients, owner);
+		}
 	}
 	
 	return Plugin_Continue;
