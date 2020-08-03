@@ -1,5 +1,6 @@
 static char g_OwnerEntityList[][] =  {
 	"env_sniperdot", 
+	"gib", 
 	"halloween_souls_pack", 
 	"item_healthkit", 
 	"tf_ammo_pack", 
