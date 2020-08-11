@@ -17,7 +17,7 @@ Inspired by the plugins I played many years back that were never made accessible
 * [More Colors](https://forums.alliedmods.net/showthread.php?t=185016) (compile only)
 
 ## Configuration
-The weapon configuration found in ``configs/deathrun/weapons.cfg`` allows you to configure weapons as you please. 
+The item configuration found in ``configs/deathrun/items.cfg`` allows you to configure player items as you please. 
 For example, there are multiple ways to disable the jumping capabilities of the Ullapool Caber:
 
 ```
