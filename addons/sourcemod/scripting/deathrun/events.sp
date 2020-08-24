@@ -157,14 +157,14 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 	}
 	
 	//New round has begun
+	Queue_SetNextActivatorsFromQueue();
+	
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		//Put every player in the same team and pick the activator later
-		if (IsClientInGame(client) && TF2_GetClientTeam(client) > TFTeam_Spectator)
+		//Put every non-activators in the runners team
+		if (IsClientInGame(client) && TF2_GetClientTeam(client) > TFTeam_Spectator && !DRPlayer(client).IsActivator())
 			TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
 	}
-	
-	Queue_SetNextActivatorsFromQueue();
 }
 
 public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
