@@ -72,6 +72,9 @@ stock void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 		TF2_SetPlayerClass(client, view_as<TFClassType>(GetRandomInt(1, 9)));
 	}
 	
+	if (TF2_GetClientTeam(client) == team && class != TFClass_Unknown)	//Already in same team
+		return;
+	
 	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
 	TF2_ChangeClientTeam(client, team);
 	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_ALIVE);
