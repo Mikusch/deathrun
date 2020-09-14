@@ -110,16 +110,12 @@ methodmap ItemConfigList < ArrayList
 		{
 			do
 			{
-				char defindexes[PLATFORM_MAX_PATH];
-				kv.GetSectionName(defindexes, sizeof(defindexes));
-				
-				char parts[32][8]; // maximum 32 defindexes up to 8 characters
-				int retrieved = ExplodeString(defindexes, ";", parts, sizeof(parts), sizeof(parts[]));
-				
-				for (int i = 0; i < retrieved; i++)
+				char section[8];
+				int defindex;
+				if (kv.GetSectionName(section, sizeof(section)) && StringToIntEx(section, defindex) > 0)
 				{
 					ItemConfig item;
-					item.SetConfig(StringToInt(parts[i]), kv);
+					item.SetConfig(defindex, kv);
 					this.PushArray(item);
 				}
 			}
@@ -144,7 +140,7 @@ void Config_Init()
 	
 	char path[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, path, sizeof(path), ITEM_CONFIG_FILE);
-	KeyValues kv = new KeyValues("Items");
+	KeyValues kv = new KeyValues("items");
 	if (kv.ImportFromFile(path))
 	{
 		g_ItemConfig.ReadConfig(kv);
