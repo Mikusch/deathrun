@@ -93,6 +93,12 @@ enum struct ItemConfig
 			kv.GoBack();
 		}
 	}
+	
+	void Destroy()
+	{
+		delete this.attributes;
+		delete this.entprops;
+	}
 }
 
 methodmap ItemConfigList < ArrayList
@@ -115,11 +121,17 @@ methodmap ItemConfigList < ArrayList
 					ItemConfig item;
 					item.SetConfig(defindex, kv);
 					
+					ItemConfig oldItem;
 					int i = this.FindValue(defindex);
-					if (i != -1)
+					if (i != -1 && this.GetArray(i, oldItem) > 0)
+					{
+						oldItem.Destroy();
 						this.SetArray(i, item);
+					}
 					else
+					{
 						this.PushArray(item);
+					}
 				}
 			}
 			while (kv.GotoNextKey(false));
