@@ -1,34 +1,12 @@
-#define ITEM_CONFIG_FILE	"configs/deathrun/items.cfg"
-
-enum AttributeModMode
-{
-	ModMode_Set,		/*< Sets the attribute's value, adding it if it doesn't exist */
-	ModMode_Add,		/*< Adds to the current value of the attribute */
-	ModMode_Subtract,	/*< Subtracts from the current value of the attribute */
-	ModMode_Remove		/*< Removes the attribute (static attributes can not be removed) */
-}
-
 enum struct ItemAttributeConfig
 {
 	char name[256];			/*< Attribute name */
 	float value;			/*< Attribute value */
-	AttributeModMode mode;	/*< How this attribute should be modified */
 	
 	void ReadConfig(KeyValues kv)
 	{
 		kv.GetString("name", this.name, 256);
 		this.value = kv.GetFloat("value");
-		
-		char mode[32];
-		kv.GetString("mode", mode, sizeof(mode));
-		if (StrEqual(mode, "set"))
-			this.mode = ModMode_Set;
-		else if (StrEqual(mode, "add"))
-			this.mode = ModMode_Add;
-		else if (StrEqual(mode, "subtract"))
-			this.mode = ModMode_Subtract;
-		else if (StrEqual(mode, "remove"))
-			this.mode = ModMode_Remove;
 	}
 }
 
@@ -115,6 +93,12 @@ enum struct ItemConfig
 			kv.GoBack();
 		}
 	}
+	
+	void Destroy()
+	{
+		delete this.attributes;
+		delete this.entprops;
+	}
 }
 
 methodmap ItemConfigList < ArrayList
@@ -130,17 +114,24 @@ methodmap ItemConfigList < ArrayList
 		{
 			do
 			{
-				char defindexes[PLATFORM_MAX_PATH];
-				kv.GetSectionName(defindexes, sizeof(defindexes));
-				
-				char parts[32][8]; // maximum 32 defindexes up to 8 characters
-				int retrieved = ExplodeString(defindexes, ";", parts, sizeof(parts), sizeof(parts[]));
-				
-				for (int i = 0; i < retrieved; i++)
+				char section[8];
+				int defindex;
+				if (kv.GetSectionName(section, sizeof(section)) && StringToIntEx(section, defindex) > 0)
 				{
 					ItemConfig item;
-					item.SetConfig(StringToInt(parts[i]), kv);
-					this.PushArray(item);
+					item.SetConfig(defindex, kv);
+					
+					ItemConfig oldItem;
+					int i = this.FindValue(defindex);
+					if (i != -1 && this.GetArray(i, oldItem) > 0)
+					{
+						oldItem.Destroy();
+						this.SetArray(i, item);
+					}
+					else
+					{
+						this.PushArray(item);
+					}
 				}
 			}
 			while (kv.GotoNextKey(false));
@@ -162,14 +153,27 @@ void Config_Init()
 {
 	g_ItemConfig = new ItemConfigList();
 	
-	char path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), ITEM_CONFIG_FILE);
 	KeyValues kv = new KeyValues("Items");
+	char path[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, path, sizeof(path), "configs/deathrun/items.cfg");
 	if (kv.ImportFromFile(path))
 	{
 		g_ItemConfig.ReadConfig(kv);
 		kv.GoBack();
 	}
+	
+	char map[128];
+	GetCurrentMap(map, sizeof(map));
+	GetMapDisplayName(map, map, sizeof(map));
+	
+	kv = new KeyValues("Items");
+	BuildPath(Path_SM, path, sizeof(path), "configs/deathrun/maps/%s.items.cfg", map);
+	if (kv.ImportFromFile(path))
+	{
+		g_ItemConfig.ReadConfig(kv);
+		kv.GoBack();
+	}
+	
 	delete kv;
 }
 
@@ -211,31 +215,7 @@ void Config_Apply(int client)
 					ItemAttributeConfig attribute;
 					if (config.attributes.GetArray(i, attribute, sizeof(attribute)) > 0)
 					{
-						switch (attribute.mode)
-						{
-							case ModMode_Set:
-							{
-								TF2Attrib_SetByName(item, attribute.name, attribute.value);
-							}
-							case ModMode_Add:
-							{
-								Address address = TF2Attrib_GetByName(item, attribute.name);
-								TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) + attribute.value);
-								TF2Attrib_ClearCache(item);
-								TF2Attrib_ClearCache(GetEntPropEnt(item, Prop_Data, "m_hOwnerEntity"));
-							}
-							case ModMode_Subtract:
-							{
-								Address address = TF2Attrib_GetByName(item, attribute.name);
-								TF2Attrib_SetValue(address, TF2Attrib_GetValue(address) - attribute.value);
-								TF2Attrib_ClearCache(item);
-								TF2Attrib_ClearCache(GetEntPropEnt(item, Prop_Data, "m_hOwnerEntity"));
-							}
-							case ModMode_Remove:
-							{
-								TF2Attrib_RemoveByName(item, attribute.name);
-							}
-						}
+						TF2Attrib_SetByName(item, attribute.name, attribute.value);
 					}
 				}
 				

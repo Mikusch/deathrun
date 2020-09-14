@@ -33,7 +33,7 @@
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_DESCRIPTION	"Team Fortress 2 Deathrun"
-#define PLUGIN_VERSION		"1.3.3"
+#define PLUGIN_VERSION		"1.4.0"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
 #define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
