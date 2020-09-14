@@ -153,7 +153,7 @@ void Config_Init()
 {
 	g_ItemConfig = new ItemConfigList();
 	
-	KeyValues kv = new KeyValues("items");
+	KeyValues kv = new KeyValues("Items");
 	char path[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, path, sizeof(path), "configs/deathrun/items.cfg");
 	if (kv.ImportFromFile(path))
@@ -166,7 +166,7 @@ void Config_Init()
 	GetCurrentMap(map, sizeof(map));
 	GetMapDisplayName(map, map, sizeof(map));
 	
-	kv = new KeyValues("items");
+	kv = new KeyValues("Items");
 	BuildPath(Path_SM, path, sizeof(path), "configs/deathrun/maps/%s.items.cfg", map);
 	if (kv.ImportFromFile(path))
 	{
