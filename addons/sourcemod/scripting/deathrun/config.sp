@@ -1,5 +1,3 @@
-#define ITEM_CONFIG_FILE	"configs/deathrun/items.cfg"
-
 enum struct ItemAttributeConfig
 {
 	char name[256];			/*< Attribute name */
@@ -116,7 +114,12 @@ methodmap ItemConfigList < ArrayList
 				{
 					ItemConfig item;
 					item.SetConfig(defindex, kv);
-					this.PushArray(item);
+					
+					int i = this.FindValue(defindex);
+					if (i != -1)
+						this.SetArray(i, item);
+					else
+						this.PushArray(item);
 				}
 			}
 			while (kv.GotoNextKey(false));
@@ -138,14 +141,27 @@ void Config_Init()
 {
 	g_ItemConfig = new ItemConfigList();
 	
-	char path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), ITEM_CONFIG_FILE);
 	KeyValues kv = new KeyValues("items");
+	char path[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, path, sizeof(path), "configs/deathrun/items.cfg");
 	if (kv.ImportFromFile(path))
 	{
 		g_ItemConfig.ReadConfig(kv);
 		kv.GoBack();
 	}
+	
+	char map[128];
+	GetCurrentMap(map, sizeof(map));
+	GetMapDisplayName(map, map, sizeof(map));
+	
+	kv = new KeyValues("items");
+	BuildPath(Path_SM, path, sizeof(path), "configs/deathrun/maps/%s.items.cfg", map);
+	if (kv.ImportFromFile(path))
+	{
+		g_ItemConfig.ReadConfig(kv);
+		kv.GoBack();
+	}
+	
 	delete kv;
 }
 
