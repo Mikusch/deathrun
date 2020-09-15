@@ -3,6 +3,7 @@ enum struct ConVarInfo
 	ConVar convar;
 	float value;
 	float defaultValue;
+	bool enforce;
 }
 
 static ArrayList g_GameConVars;
@@ -26,14 +27,17 @@ void ConVars_Init()
 	ConVars_Add("tf_arena_first_blood", 0.0);
 	ConVars_Add("tf_arena_use_queue", 0.0);
 	ConVars_Add("tf_avoidteammates_pushaway", 0.0);
-	ConVars_Add("tf_scout_air_dash_count", 0.0);
+	ConVars_Add("tf_scout_air_dash_count", 0.0, false);
+	ConVars_Add("tf_spy_cloak_regen_rate", 0.0, false);
+	ConVars_Add("tf_demoman_charge_regen_rate", 0.0, false);
 }
 
-void ConVars_Add(const char[] name, float value)
+void ConVars_Add(const char[] name, float value, bool enforce = true)
 {
 	ConVarInfo info;
 	info.convar = FindConVar(name);
 	info.value = value;
+	info.enforce = enforce;
 	g_GameConVars.PushArray(info);
 }
 
@@ -47,7 +51,9 @@ void ConVars_Enable()
 		g_GameConVars.SetArray(i, info);
 		
 		info.convar.SetFloat(info.value);
-		info.convar.AddChangeHook(ConVarChanged_GameConVar);
+		
+		if (info.enforce)
+			info.convar.AddChangeHook(ConVarChanged_GameConVar);
 	}
 }
 
@@ -58,7 +64,9 @@ void ConVars_Disable()
 		ConVarInfo info;
 		g_GameConVars.GetArray(i, info);
 		
-		info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
+		if (info.enforce)
+			info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
+		
 		info.convar.SetFloat(info.defaultValue);
 	}
 }
