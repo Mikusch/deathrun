@@ -106,7 +106,7 @@ public void ConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, const
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
+		if (IsClientInGame(client) && !DRPlayer(client).IsActivator())
 			SetEntProp(client, Prop_Send, "m_bGlowEnabled", StringToInt(newValue));
 	}
 }

@@ -69,7 +69,7 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 	
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client))
+		if (IsClientInGame(client) && !DRPlayer(client).IsActivator())
 			SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 	}
 }
