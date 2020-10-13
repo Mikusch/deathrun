@@ -30,6 +30,7 @@ void ConVars_Init()
 	ConVars_Add("tf_scout_air_dash_count", 0.0, false);
 	ConVars_Add("tf_spy_cloak_regen_rate", 0.0, false);
 	ConVars_Add("tf_demoman_charge_regen_rate", 0.0, false);
+	ConVars_Add("tf_spy_cloak_consume_rate", 25.0, false);
 }
 
 void ConVars_Add(const char[] name, float value, bool enforce = true)
