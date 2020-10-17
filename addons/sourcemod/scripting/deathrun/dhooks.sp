@@ -4,8 +4,7 @@ void DHooks_Init(GameData gamedata)
 {
 	g_DHookSetWinningTeam = DynamicHook.FromConf(gamedata, "CTeamplayRoundBasedRules::SetWinningTeam");
 	
-	DynamicDetour detour = DynamicDetour.FromConf(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed");
-	detour.Enable(Hook_Post, DHookCallback_CalculateMaxSpeed_Post);
+	DynamicDetour.FromConf(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed").Enable(Hook_Post, DHookCallback_CalculateMaxSpeed_Post);
 }
 
 void DHooks_HookGamerules()
