@@ -1,50 +1,21 @@
-static Handle g_DHook_SetWinningTeam;
-
-static int g_DHookCalculateMaxSpeedClient;
+static DynamicHook g_DHookSetWinningTeam;
 
 void DHooks_Init(GameData gamedata)
 {
-	g_DHook_SetWinningTeam = DHooks_CreateVirtual(gamedata, "CTeamplayRoundBasedRules::SetWinningTeam");
+	g_DHookSetWinningTeam = DynamicHook.FromConf(gamedata, "CTeamplayRoundBasedRules::SetWinningTeam");
 	
-	DHooks_CreateDetour(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed", DHookCallback_CalculateMaxSpeed_Pre, DHookCallback_CalculateMaxSpeed_Post);
-}
-
-static Handle DHooks_CreateVirtual(GameData gamedata, const char[] name)
-{
-	Handle hook = DHookCreateFromConf(gamedata, name);
-	if (!hook)
-		LogError("Failed to create hook: %s", name);
-	
-	return hook;
-}
-
-static void DHooks_CreateDetour(GameData gamedata, const char[] name, DHookCallback preCallback = INVALID_FUNCTION, DHookCallback postCallback = INVALID_FUNCTION)
-{
-	Handle detour = DHookCreateFromConf(gamedata, name);
-	if (!detour)
-	{
-		LogError("Failed to create detour: %s", name);
-	}
-	else
-	{
-		if (preCallback != INVALID_FUNCTION && !DHookEnableDetour(detour, false, preCallback))
-			LogError("Failed to enable pre detour: %s", name);
-		
-		if (postCallback != INVALID_FUNCTION && !DHookEnableDetour(detour, true, postCallback))
-			LogError("Failed to enable post detour: %s", name);
-		
-		delete detour;
-	}
+	DynamicDetour detour = DynamicDetour.FromConf(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed");
+	detour.Enable(Hook_Post, DHookCallback_CalculateMaxSpeed_Post);
 }
 
 void DHooks_HookGamerules()
 {
-	DHookGamerules(g_DHook_SetWinningTeam, false, _, DHook_SetWinningTeam_Pre);
+	g_DHookSetWinningTeam.HookGamerules(Hook_Pre, DHook_SetWinningTeam_Pre);
 }
 
-public MRESReturn DHook_SetWinningTeam_Pre(Handle params)
+public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 {
-	int winReason = DHookGetParam(params, 2);
+	int winReason = param.Get(2);
 	
 	//The arena timer has no assigned targetname and doesn't fire its OnFinished output before the round ends, making this the only way to detect the timer stalemate
 	if (FindConVar("tf_arena_round_time").IntValue > 0 && winReason == WINREASON_STALEMATE && GetAliveClientCount() > 0)
@@ -62,28 +33,21 @@ public MRESReturn DHook_SetWinningTeam_Pre(Handle params)
 		
 		EmitGameSoundToAll(GAMESOUND_EXPLOSION);
 		
-		DHookSetParam(params, 1, TFTeam_Activators); //team
-		DHookSetParam(params, 2, WINREASON_TIMELIMIT); //iWinReason
+		param.Set(1, TFTeam_Activators); //team
+		param.Set(2, WINREASON_TIMELIMIT); //iWinReason
 		return MRES_ChangedOverride;
 	}
 	
 	return MRES_Ignored;
 }
 
-public MRESReturn DHookCallback_CalculateMaxSpeed_Pre(int client, Handle returnVal, Handle params)
+public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret, DHookParam param)
 {
-	g_DHookCalculateMaxSpeedClient = client;
-}
-
-public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, Handle returnVal, Handle params)
-{
-	client = g_DHookCalculateMaxSpeedClient;
-	
 	//We don't want speedy scouts
 	if (IsClientInGame(client) && TF2_GetPlayerClass(client) == TFClass_Scout)
 	{
-		float speed = DHookGetReturn(returnVal);
-		DHookSetReturn(returnVal, FloatMax(speed - 80.0, 1.0));
+		float speed = ret.Value;
+		ret.Value = FloatMax(speed - 80.0, 1.0);
 		return MRES_Supercede;
 	}
 	
