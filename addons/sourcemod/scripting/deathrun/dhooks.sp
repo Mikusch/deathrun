@@ -41,7 +41,7 @@ public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 	return MRES_Ignored;
 }
 
-public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret, DHookParam param)
+public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret)
 {
 	//We don't want speedy scouts
 	if (IsClientInGame(client) && TF2_GetPlayerClass(client) == TFClass_Scout)
