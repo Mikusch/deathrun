@@ -2,9 +2,35 @@ static DynamicHook g_DHookSetWinningTeam;
 
 void DHooks_Init(GameData gamedata)
 {
-	g_DHookSetWinningTeam = DynamicHook.FromConf(gamedata, "CTeamplayRoundBasedRules::SetWinningTeam");
+	g_DHookSetWinningTeam = DHook_CreateVirtualHook(gamedata, "CTeamplayRoundBasedRules::SetWinningTeam");
 	
-	DynamicDetour.FromConf(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed").Enable(Hook_Post, DHookCallback_CalculateMaxSpeed_Post);
+	DHook_CreateDetour(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed", _, DHookCallback_CalculateMaxSpeed_Post);
+}
+
+static DynamicHook DHook_CreateVirtualHook(GameData gamedata, const char[] name)
+{
+	DynamicHook hook = DynamicHook.FromConf(gamedata, name);
+	if (!hook)
+		LogError("Failed to create virtual hook: %s", name);
+	
+	return hook;
+}
+
+static void DHook_CreateDetour(GameData gamedata, const char[] name, DHookCallback callbackPre = INVALID_FUNCTION, DHookCallback callbackPost = INVALID_FUNCTION)
+{
+	DynamicDetour detour = DynamicDetour.FromConf(gamedata, name);
+	if (!detour)
+	{
+		LogError("Failed to create detour: %s", name);
+	}
+	else
+	{
+		if (callbackPre != INVALID_FUNCTION)
+			detour.Enable(Hook_Pre, callbackPre);
+		
+		if (callbackPost != INVALID_FUNCTION)
+			detour.Enable(Hook_Post, callbackPost);
+	}
 }
 
 void DHooks_HookGamerules()
