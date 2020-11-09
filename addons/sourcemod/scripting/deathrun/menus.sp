@@ -62,7 +62,7 @@ public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int pa
 		}
 		case MenuAction_DisplayItem:
 		{
-			char info[64], display[64];
+			char info[64], display[128];
 			menu.GetItem(param2, info, sizeof(info), _, display, sizeof(display));
 			
 			Format(display, sizeof(display), "%T", display, param1);
@@ -91,11 +91,8 @@ void Menus_DisplayQueueMenu(int client)
 			int queuePoints = queue.Get(i, 0);
 			int queueClient = queue.Get(i, 1);
 			
-			char name[MAX_NAME_LENGTH];
-			GetClientName(queueClient, name, sizeof(name));
-			
-			char display[64];
-			Format(display, sizeof(display), "%s (%d)", name, queuePoints);
+			char display[MAX_NAME_LENGTH + 8];
+			Format(display, sizeof(display), "%N (%d)", queueClient, queuePoints);
 			
 			menu.AddItem(NULL_STRING, display, ITEMDRAW_DISABLED);
 		}
@@ -165,7 +162,7 @@ public int MenuHandler_PreferencesMenu(Menu menu, MenuAction action, int param1,
 			DRPlayer player = DRPlayer(param1);
 			player.SetPreference(preference, !player.HasPreference(preference));
 			
-			char name[64];
+			char name[128];
 			Format(name, sizeof(name), "%T", g_PreferenceNames[i], param1);
 			
 			if (player.HasPreference(preference))
@@ -186,7 +183,7 @@ public int MenuHandler_PreferencesMenu(Menu menu, MenuAction action, int param1,
 		}
 		case MenuAction_DisplayItem:
 		{
-			char info[4], display[64];
+			char info[4], display[128];
 			menu.GetItem(param2, info, sizeof(info), _, display, sizeof(display));
 			
 			int i = StringToInt(info);
