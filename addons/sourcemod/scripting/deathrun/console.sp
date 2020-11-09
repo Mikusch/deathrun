@@ -44,7 +44,7 @@ public Action ConCmd_DeathrunMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		ReplyToCommand(client, "%t", "Command is in-game only");
 		return Plugin_Handled;
 	}
 	
@@ -56,7 +56,7 @@ public Action ConCmd_QueueMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		ReplyToCommand(client, "%t", "Command is in-game only");
 		return Plugin_Handled;
 	}
 	
@@ -68,7 +68,7 @@ public Action ConCmd_PreferencesMenu(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		ReplyToCommand(client, "%t", "Command is in-game only");
 		return Plugin_Handled;
 	}
 	
@@ -80,7 +80,7 @@ public Action ConCmd_ThirdPerson(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		ReplyToCommand(client, "%t", "Command is in-game only");
 		return Plugin_Handled;
 	}
 	
@@ -106,7 +106,7 @@ public Action ConCmd_FirstPerson(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		ReplyToCommand(client, "%t", "Command is in-game only");
 		return Plugin_Handled;
 	}
 	
@@ -132,7 +132,7 @@ public Action ConCmd_HideTeammates(int client, int args)
 {
 	if (client == 0)
 	{
-		ReplyToCommand(client, "%t", "Command_NotUsableInConsole");
+		ReplyToCommand(client, "%t", "Command is in-game only");
 		return Plugin_Handled;
 	}
 	

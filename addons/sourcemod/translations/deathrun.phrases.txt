@@ -1,9 +1,5 @@
 "Phrases"
 {
-	"Command_NotUsableInConsole"
-	{
-		"en"	"This command can not be used from the server console."
-	}
 	"Command_Disabled"
 	{
 		"en"	"The server operator has disabled this command."
