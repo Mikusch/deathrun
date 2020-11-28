@@ -32,7 +32,7 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 		}
 	}
 	
-	if (numActivators > 1) //Multiple activators
+	if (numActivators > 1)	//Multiple activators
 	{
 		for (int client = 1; client <= MaxClients; client++)
 		{
@@ -45,11 +45,11 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 			}
 		}
 	}
-	else if (numActivators < 1) //No activators
+	else if (numActivators < 1)	//No activators
 	{
-		PrintMessageToAll("%t", "RoundStart_Activator_Disconnected", FindConVar("tf_bonusroundtime").IntValue);
+		PrintMessageToAll("%t", "RoundStart_Activator_Disconnected", FindConVar("mp_bonusroundtime").IntValue);
 	}
-	else //One activator
+	else	//One activator
 	{
 		int activator = g_CurrentActivators.Get(0); //Should be safe
 		char activatorName[MAX_NAME_LENGTH];
@@ -131,7 +131,7 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 	//Both teams must have at least one player
 	if (red == 0 || blue == 0)
 	{
-		if (red + blue >= 2) //If we have atleast 2 players in red or blue, force one person to the other team and try again
+		if (red + blue >= 2)	//If we have atleast 2 players in red or blue, force one person to the other team and try again
 		{
 			for (int client = 1; client <= MaxClients; client++)
 			{
@@ -199,7 +199,7 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 		
 		if (DRPlayer(client).IsActivator())
 		{
-			if (team == TFTeam_Runners) //Check if player is in the runner team, if so put them back to the activator team
+			if (team == TFTeam_Runners)	//Check if player is in the runner team, if so put them back to the activator team
 			{
 				TF2_ChangeClientTeam(client, TFTeam_Activators);
 				TF2_RespawnPlayer(client);
@@ -207,7 +207,7 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 		}
 		else
 		{
-			if (team == TFTeam_Activators) //Check if player is in the activator team, if so put them back to the runner team
+			if (team == TFTeam_Activators)	//Check if player is in the activator team, if so put them back to the runner team
 			{
 				TF2_ChangeClientTeam(client, TFTeam_Runners);
 				TF2_RespawnPlayer(client);
