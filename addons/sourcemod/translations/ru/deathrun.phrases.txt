@@ -39,11 +39,11 @@
 	}
 	"ChatTip_DisableChatTips"
 	{
-		"ru"	"{success}СОВЕТ: {default}Вы можете отключить эти подсказки в чате, изменив пользовательские настройки с помощью команды {secondary}/drsettings{default}."
+		"ru"	"{success}СОВЕТ: {default}Вы можете отключить эти подсказки в чате, изменив польз. настройки с помощью команды {secondary}/drsettings{default}."
 	}
 	"ChatTip_DisableActivator"
 	{
-		"ru"	"{success}СОВЕТ: {default}Не хотите играть за {blue}активатора{default}? Измените свои пользовательские настройки с помощью команды {secondary}/drsettings{default}."
+		"ru"	"{success}СОВЕТ: {default}Не хотите играть за {blue}активатора{default}? Измените свои польз. настройки с помощью команды {secondary}/drsettings{default}."
 	}
 	
 	"Thirdperson_ForceDisable"
@@ -61,7 +61,6 @@
 	}
 	"RoundStart_NewActivator_Runners"
 	{
-		"#format"	"{1:s}"
 		"ru"		"{1} стал {blue}активатором{default}! Избегайте попадания в ловушки и приведите свою команду к победе!"
 	}
 	"RoundStart_NewActivator_Activator"
@@ -78,18 +77,15 @@
 	}
 	"RoundStart_Activator_Disconnected"
 	{
-		"#format"	"{1:d}"
 		"ru"		"{blue}Активатор {default}отключился! Раунд возобновится через {secondary}{1} {default}сек."
 	}
 	
 	"Preferences_Enabled"
 	{
-		"#format"	"{1:s}"
 		"ru"		"Вы успешно {success}включили {default}настройку {secondary}{1}{default}."
 	}
 	"Preferences_Disabled"
 	{
-		"#format"	"{1:s}"
 		"ru"		"Вы успешно {danger}отключили {default}настройку {secondary}{1}{default}."
 	}
 	
@@ -112,7 +108,6 @@
 	}
 	"Queue_PointsAwarded"
 	{
-		"#format"	"{1:d},{2:d}"
 		"ru"		"Вы получили {success}{1} {default}очков очереди (Всего: {success}{2}{default})."
 	}
 	"Queue_ChosenAsRandomActivator"
@@ -146,7 +141,6 @@
 	}
 	"Menu_Queue_Title_QueuePoints"
 	{
-		"#format"	"{1:d}"
 		"ru"		"Ваши очки очереди: {1}"
 	}
 	"Menu_Queue_NotLoaded"
