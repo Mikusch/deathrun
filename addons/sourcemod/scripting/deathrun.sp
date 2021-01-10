@@ -40,7 +40,6 @@
 
 #define TF_MAXPLAYERS			33
 #define INTEGER_MAX_VALUE		0x7FFFFFFF
-#define MAX_CHATMESSAGE_LENGTH	192
 
 // m_lifeState values
 #define LIFE_ALIVE				0 // alive

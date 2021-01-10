@@ -17,8 +17,9 @@ void ConVars_Init()
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have a glowing outline.");
 	dr_num_activators = CreateConVar("dr_num_activators", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
 	
-	HookConVarChange(dr_allow_thirdperson, ConVarChanged_AllowThirdPerson);
-	HookConVarChange(dr_runner_glow, ConVarChanged_RunnerGlow);
+	dr_allow_thirdperson.AddChangeHook(ConVarChanged_AllowThirdPerson);
+	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);
+	dr_runner_glow.AddChangeHook(ConVarChanged_RunnerGlow);
 	
 	g_GameConVars = new ArrayList(sizeof(ConVarInfo));
 	
@@ -101,6 +102,11 @@ public void ConVarChanged_AllowThirdPerson(ConVar convar, const char[] oldValue,
 			}
 		}
 	}
+}
+
+public void ConVarChanged_ChatTipsInterval(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	Timers_CreateChatTipTimer(convar.FloatValue);
 }
 
 public void ConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, const char[] newValue)

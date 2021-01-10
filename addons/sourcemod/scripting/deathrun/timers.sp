@@ -7,15 +7,25 @@ static char g_ChatTips[][] =  {
 	"ChatTip_DisableActivator"
 };
 
+static Handle g_ChatTipTimer;
+
 void Timers_Init()
 {
-	if (dr_chattips_interval.IntValue > 0)
-		CreateTimer(dr_chattips_interval.FloatValue, Timer_PrintChatTip, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+	Timers_CreateChatTipTimer(dr_chattips_interval.FloatValue);
+}
+
+void Timers_CreateChatTipTimer(float interval)
+{
+	if (interval > 0.0)
+		g_ChatTipTimer = CreateTimer(interval, Timer_PrintChatTip, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action Timer_PrintChatTip(Handle timer)
 {
-	char tip[MAX_MESSAGE_LENGTH];
+	if (timer != g_ChatTipTimer)
+		return Plugin_Stop;
+	
+	char tip[MAX_BUFFER_LENGTH];
 	strcopy(tip, sizeof(tip), g_ChatTips[GetRandomInt(0, sizeof(g_ChatTips) - 1)]);
 	
 	for (int client = 1; client <= MaxClients; client++)
@@ -23,4 +33,6 @@ public Action Timer_PrintChatTip(Handle timer)
 		if (IsClientInGame(client) && !DRPlayer(client).HasPreference(Preference_HideChatTips))
 			PrintMessage(client, "%t", tip);
 	}
+	
+	return Plugin_Continue;
 }
