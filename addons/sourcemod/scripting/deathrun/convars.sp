@@ -13,9 +13,10 @@ void ConVars_Init()
 	CreateConVar("dr_version", PLUGIN_VERSION, "Plugin version");
 	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to clients at the end of each round.", _, true, 1.0);
 	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "Whether thirdperson mode may be toggled by clients. Set to 0 if you use other thirdperson plugins that may conflict.");
-	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "How often in seconds chat tips should be shown to clients. Set to 0 to disable chat tips.");
+	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "How often chat tips should be shown to clients, in seconds. Set to 0 to disable chat tips.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have a glowing outline.");
 	dr_num_activators = CreateConVar("dr_num_activators", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
+	dr_scout_speed_penalty = CreateConVar("dr_scout_speed_penalty", "80.0", "Max speed penalty for Scouts, in HU/s.");
 	
 	dr_allow_thirdperson.AddChangeHook(ConVarChanged_AllowThirdPerson);
 	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);

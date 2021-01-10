@@ -106,6 +106,7 @@ ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
 ConVar dr_num_activators;
+ConVar dr_scout_speed_penalty;
 
 ArrayList g_CurrentActivators;
 
