@@ -15,11 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define MAX_COMMAND_LENGTH 1024
+
 enum struct ConVarInfo
 {
 	ConVar convar;
-	float value;
-	float defaultValue;
+	char value[MAX_COMMAND_LENGTH];
+	char initialValue[MAX_COMMAND_LENGTH];
 	bool enforce;
 }
 
@@ -42,22 +44,22 @@ void ConVars_Init()
 	
 	g_GameConVars = new ArrayList(sizeof(ConVarInfo));
 	
-	ConVars_Add("mp_autoteambalance", 0.0);
-	ConVars_Add("mp_teams_unbalance_limit", 0.0);
-	ConVars_Add("tf_arena_first_blood", 0.0);
-	ConVars_Add("tf_arena_use_queue", 0.0);
-	ConVars_Add("tf_avoidteammates_pushaway", 0.0);
-	ConVars_Add("tf_scout_air_dash_count", 0.0, false);
-	ConVars_Add("tf_spy_cloak_regen_rate", 0.0, false);
-	ConVars_Add("tf_demoman_charge_regen_rate", 0.0, false);
-	ConVars_Add("tf_spy_cloak_consume_rate", 25.0, false);
+	ConVars_Add("mp_autoteambalance", "0");
+	ConVars_Add("mp_teams_unbalance_limit", "0");
+	ConVars_Add("tf_arena_first_blood", "0");
+	ConVars_Add("tf_arena_use_queue", "0");
+	ConVars_Add("tf_avoidteammates_pushaway", "0");
+	ConVars_Add("tf_scout_air_dash_count", "0", false);
+	ConVars_Add("tf_spy_cloak_regen_rate", "0.0", false);
+	ConVars_Add("tf_demoman_charge_regen_rate", "0.0", false);
+	ConVars_Add("tf_spy_cloak_consume_rate", "25.0", false);
 }
 
-void ConVars_Add(const char[] name, float value, bool enforce = true)
+void ConVars_Add(const char[] name, const char[] value, bool enforce = true)
 {
 	ConVarInfo info;
 	info.convar = FindConVar(name);
-	info.value = value;
+	strcopy(info.value, sizeof(info.value), value);
 	info.enforce = enforce;
 	g_GameConVars.PushArray(info);
 }
@@ -68,10 +70,10 @@ void ConVars_Enable()
 	{
 		ConVarInfo info;
 		g_GameConVars.GetArray(i, info);
-		info.defaultValue = info.convar.FloatValue;
+		info.convar.GetString(info.initialValue, sizeof(info.initialValue));
 		g_GameConVars.SetArray(i, info);
 		
-		info.convar.SetFloat(info.value);
+		info.convar.SetString(info.value);
 		
 		if (info.enforce)
 			info.convar.AddChangeHook(ConVarChanged_GameConVar);
@@ -88,7 +90,7 @@ void ConVars_Disable()
 		if (info.enforce)
 			info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
 		
-		info.convar.SetFloat(info.defaultValue);
+		info.convar.SetString(info.initialValue);
 	}
 }
 
@@ -99,10 +101,9 @@ public void ConVarChanged_GameConVar(ConVar convar, const char[] oldValue, const
 	{
 		ConVarInfo info;
 		g_GameConVars.GetArray(index, info);
-		float value = StringToFloat(newValue);
 		
-		if (value != info.value)
-			info.convar.SetFloat(info.value);
+		if (!StrEqual(newValue, info.value))
+			info.convar.SetString(info.value);
 	}
 }
 
