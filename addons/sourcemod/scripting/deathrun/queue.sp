@@ -41,7 +41,7 @@ void Queue_SetNextActivatorsFromQueue()
 	
 	ArrayList queue = Queue_GetQueueList();
 	
-	for (int i = 0; i < dr_num_activators.IntValue; i++)
+	for (int i = 0; i < dr_activator_count.IntValue; i++)
 	{
 		int activator;
 		

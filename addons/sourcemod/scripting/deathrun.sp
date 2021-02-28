@@ -102,8 +102,9 @@ ConVar dr_queue_points;
 ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
-ConVar dr_num_activators;
+ConVar dr_activator_count;
 ConVar dr_activator_health_modifier;
+ConVar dr_activator_healthbar;
 ConVar dr_scout_speed_penalty;
 
 ArrayList g_CurrentActivators;
@@ -201,6 +202,35 @@ public void OnClientDisconnect(int client)
 		g_CurrentActivators.Erase(index);
 	
 	DRPlayer(client).Reset();
+}
+
+public void OnGameFrame()
+{
+	int monsterResource = FindEntityByClassname(MaxClients + 1, "monster_resource");
+	if (monsterResource != -1)
+	{
+		if (dr_activator_healthbar.BoolValue)
+		{
+			int maxhealth, health;
+			
+			for (int client = 1; client <= MaxClients; client++)
+			{
+				if (IsClientInGame(client) && DRPlayer(client).IsActivator())
+				{
+					if (IsPlayerAlive(client))
+						health += GetEntProp(client, Prop_Send, "m_iHealth");
+					
+					maxhealth += TF2_GetMaxHealth(client);
+				}
+			}
+			
+			SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", Min(RoundFloat(float(health) / float(maxhealth) * 255), 255));
+		}
+		else
+		{
+			SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
+		}
+	}
 }
 
 public void OnEntityCreated(int entity, const char[] classname)

@@ -46,19 +46,14 @@ stock void StringToVector(const char[] buffer, float vec[3], float defvalue[3] =
 	vec[2] = StringToFloat(parts[2]);
 }
 
-stock float FloatMin(float a, float b)
+stock any Min(any a, any b)
 {
 	return (a < b) ? a : b;
 }
 
-stock float FloatMax(float a, float b)
+stock any Max(any a, any b)
 {
 	return (a > b) ? a : b;
-}
-
-stock float FloatClamp(float val, float min, float max)
-{
-	return FloatMax(min, FloatMin(max, val));
 }
 
 stock int TF2_GetItemInSlot(int client, int slot)
@@ -126,7 +121,7 @@ stock void PrintMessage(int client, const char[] format, any...)
 {
 	char message[MAX_BUFFER_LENGTH];
 	VFormat(message, sizeof(message), format, 3);
-	Format(message, sizeof(message), "[{primary}DR{default}] %s", message);
+	Format(message, sizeof(message), "[{primary}"...PLUGIN_NAME..."{default}] %s", message);
 	CPrintToChat(client, message);
 }
 
@@ -134,6 +129,6 @@ stock void PrintMessageToAll(const char[] format, any...)
 {
 	char message[MAX_BUFFER_LENGTH];
 	VFormat(message, sizeof(message), format, 2);
-	Format(message, sizeof(message), "[{primary}DR{default}] %s", message);
+	Format(message, sizeof(message), "[{primary}"...PLUGIN_NAME..."{default}] %s", message);
 	CPrintToChatAll(message);
 }

@@ -89,7 +89,7 @@ public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn r
 	if (IsClientInGame(client) && TF2_GetPlayerClass(client) == TFClass_Scout)
 	{
 		float speed = ret.Value;
-		ret.Value = FloatMax(speed - dr_scout_speed_penalty.FloatValue, 1.0);
+		ret.Value = Max(speed - dr_scout_speed_penalty.FloatValue, 1.0);
 		return MRES_Supercede;
 	}
 	

@@ -88,7 +88,7 @@ public Action SDKHookCB_ClientGetMaxHealth(int client, int &maxhealth)
 				maxhealth += RoundFloat(TF2_GetMaxHealth(i) * dr_activator_health_modifier.FloatValue);
 		}
 		
-		maxhealth /= dr_num_activators.IntValue;
+		maxhealth /= dr_activator_count.IntValue;
 		
 		//Refill the activator's health during preround
 		if (GameRules_GetRoundState() == RoundState_Preround)
