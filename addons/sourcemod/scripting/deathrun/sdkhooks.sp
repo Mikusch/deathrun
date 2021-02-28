@@ -31,6 +31,7 @@ static char g_OwnerEntityList[][] =  {
 void SDKHooks_OnClientPutInServer(int client)
 {
 	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_ClientSetTransmit);
+	SDKHook(client, SDKHook_GetMaxHealth, SDKHookCB_ClientGetMaxHealth);
 }
 
 void SDKHooks_OnEntityCreated(int entity, const char[] classname)
@@ -67,6 +68,29 @@ public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 	
 	if (DRPlayer(client).CanHideClient(entity))
 		return Plugin_Handled;
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_ClientGetMaxHealth(int entity, int &maxhealth)
+{
+	int health = dr_activator_health_base.IntValue;
+	
+	if (DRPlayer(entity).IsActivator())
+	{
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (entity != client && IsValidClient(client) && IsPlayerAlive(client) && !DRPlayer(client).IsActivator())
+				health += RoundFloat(TF2_GetMaxHealth(client) * dr_activator_health_modifier.FloatValue);
+		}
+		
+		//Refill the activator's health during preround
+		if (GameRules_GetRoundState() == RoundState_Preround)
+			SetEntProp(entity, Prop_Send, "m_iHealth", health);
+		
+		maxhealth = health;
+		return Plugin_Changed;
+	}
 	
 	return Plugin_Continue;
 }

@@ -97,8 +97,6 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 	
 	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
 	{
-		UpdateActivatorHealth(-TF2_GetMaxHealth(victim), false);
-		
 		//Rewrite death event to credit activator
 		if (g_CurrentActivators.Length == 1)
 		{
@@ -117,10 +115,6 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	int client = GetClientOfUserId(userid);
 	
 	Config_Apply(client);
-	
-	//If this is a latespawn, give the activator health
-	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(client).IsActivator())
-		CreateTimer(0.2, Timer_UpdateActivatorHealth, userid);
 	
 	if (DRPlayer(client).InThirdPerson)
 		CreateTimer(0.2, Timer_SetThirdPerson, userid);
@@ -231,11 +225,6 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 			}
 		}
 	}
-}
-
-public Action Timer_UpdateActivatorHealth(Handle timer, int userid)
-{
-	UpdateActivatorHealth(TF2_GetMaxHealth(GetClientOfUserId(userid)), true);
 }
 
 public Action Timer_SetThirdPerson(Handle timer, int userid)

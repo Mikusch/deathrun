@@ -104,6 +104,8 @@ ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
 ConVar dr_num_activators;
+ConVar dr_activator_health_base;
+ConVar dr_activator_health_modifier;
 ConVar dr_scout_speed_penalty;
 
 ArrayList g_CurrentActivators;
@@ -201,8 +203,6 @@ public void OnClientDisconnect(int client)
 		g_CurrentActivators.Erase(index);
 	
 	DRPlayer(client).Reset();
-	
-	UpdateActivatorHealth(-TF2_GetMaxHealth(client), false);
 }
 
 public void OnEntityCreated(int entity, const char[] classname)
@@ -291,22 +291,3 @@ static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int 
 	return action;
 }
 
-void UpdateActivatorHealth(int value, bool refill)
-{
-	for (int i = 0; i < g_CurrentActivators.Length; i++)
-	{
-		int activator = g_CurrentActivators.Get(i);
-		if (IsClientInGame(activator))
-		{
-			Address address = TF2Attrib_GetByName(activator, "max health additive bonus");
-			if (address != Address_Null)
-			{
-				TF2Attrib_SetValue(address, FloatMax(TF2Attrib_GetValue(address) + float(value) / dr_num_activators.FloatValue, 0.0));
-				TF2Attrib_ClearCache(activator);
-				
-				if (refill)
-					SetEntityHealth(activator, GetEntProp(activator, Prop_Send, "m_iHealth") + value / dr_num_activators.IntValue);
-			}
-		}
-	}
-}

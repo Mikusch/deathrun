@@ -36,6 +36,8 @@ void ConVars_Init()
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "Interval between helpful tips printed to chat, in seconds. Set to 0 to disable chat tips.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "If enabled, runners will have a glowing outline.");
 	dr_num_activators = CreateConVar("dr_num_activators", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
+	dr_activator_health_base = CreateConVar("dr_activator_health_base", "100", "Base health of the activator.", _, true, 1.0);
+	dr_activator_health_modifier = CreateConVar("dr_activator_health_modifier", "1.0", "Modifier of the health the activator receives from runners.", _, true, 0.0);
 	dr_scout_speed_penalty = CreateConVar("dr_scout_speed_penalty", "80.0", "Max speed penalty for Scouts, in HU/s.");
 	
 	dr_allow_thirdperson.AddChangeHook(ConVarChanged_AllowThirdPerson);
