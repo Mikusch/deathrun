@@ -78,23 +78,20 @@ public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_ClientGetMaxHealth(int entity, int &maxhealth)
+public Action SDKHookCB_ClientGetMaxHealth(int client, int &maxhealth)
 {
-	int health = dr_activator_health_base.IntValue;
-	
-	if (DRPlayer(entity).IsActivator())
+	if (DRPlayer(client).IsActivator())
 	{
-		for (int client = 1; client <= MaxClients; client++)
+		for (int i = 1; i <= MaxClients; i++)
 		{
-			if (entity != client && IsValidClient(client) && IsPlayerAlive(client) && !DRPlayer(client).IsActivator())
-				health += RoundFloat(TF2_GetMaxHealth(client) * dr_activator_health_modifier.FloatValue);
+			if (client != i && IsValidClient(i) && IsPlayerAlive(i) && !DRPlayer(i).IsActivator())
+				maxhealth += RoundFloat(TF2_GetMaxHealth(i) * dr_activator_health_modifier.FloatValue);
 		}
 		
 		//Refill the activator's health during preround
 		if (GameRules_GetRoundState() == RoundState_Preround)
-			SetEntProp(entity, Prop_Send, "m_iHealth", health);
+			SetEntityHealth(client, maxhealth);
 		
-		maxhealth = health;
 		return Plugin_Changed;
 	}
 	
