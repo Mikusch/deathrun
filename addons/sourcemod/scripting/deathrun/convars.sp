@@ -43,6 +43,7 @@ void ConVars_Init()
 	dr_allow_thirdperson.AddChangeHook(ConVarChanged_AllowThirdPerson);
 	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);
 	dr_runner_glow.AddChangeHook(ConVarChanged_RunnerGlow);
+	dr_activator_healthbar.AddChangeHook(ConVarChanged_ActivatorHealthBar);
 	
 	g_GameConVars = new ArrayList(sizeof(ConVarInfo));
 	
@@ -128,7 +129,7 @@ public void ConVarChanged_AllowThirdPerson(ConVar convar, const char[] oldValue,
 
 public void ConVarChanged_ChatTipsInterval(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	Timers_CreateChatTipTimer(convar.FloatValue);
+	Timers_CreateChatTipTimer(StringToFloat(newValue));
 }
 
 public void ConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -137,5 +138,15 @@ public void ConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, const
 	{
 		if (IsClientInGame(client) && !DRPlayer(client).IsActivator())
 			SetEntProp(client, Prop_Send, "m_bGlowEnabled", StringToInt(newValue));
+	}
+}
+
+public void ConVarChanged_ActivatorHealthBar(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (!StringToInt(newValue))
+	{
+		int monsterResource = FindEntityByClassname(MaxClients + 1, "monster_resource");
+		if (monsterResource != -1)
+			SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
 	}
 }

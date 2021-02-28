@@ -206,10 +206,10 @@ public void OnClientDisconnect(int client)
 
 public void OnGameFrame()
 {
-	int monsterResource = FindEntityByClassname(MaxClients + 1, "monster_resource");
-	if (monsterResource != -1)
+	if (dr_activator_healthbar.BoolValue)
 	{
-		if (dr_activator_healthbar.BoolValue)
+		int monsterResource = FindEntityByClassname(MaxClients + 1, "monster_resource");
+		if (monsterResource != -1)
 		{
 			int maxhealth, health;
 			
@@ -225,10 +225,6 @@ public void OnGameFrame()
 			}
 			
 			SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", Min(RoundFloat(float(health) / float(maxhealth) * 255), 255));
-		}
-		else
-		{
-			SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
 		}
 	}
 }
