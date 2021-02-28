@@ -44,7 +44,7 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 		}
 	}
 	
-	if (StrContains(classname, "obj_") != -1)
+	if (strncmp(classname, "obj_", 4) == 0)
 	{
 		RemoveAlwaysTransmit(entity);
 		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ObjectSetTransmit);
@@ -55,7 +55,7 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_DroppedWeaponSetTransmit);
 	}
 	
-	if (StrContains(classname, "tf_projectile") != -1)
+	if (strncmp(classname, "tf_projectile_", 14) == 0)
 	{
 		RemoveAlwaysTransmit(entity);
 		SDKHook(entity, SDKHook_SetTransmit, HasEntProp(entity, Prop_Send, "m_hThrower") ? SDKHookCB_ThrownEntitySetTransmit : SDKHookCB_OwnedEntitySetTransmit);
