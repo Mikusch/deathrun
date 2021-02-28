@@ -111,7 +111,7 @@ void Menus_DisplayQueueMenu(int client)
 			char display[MAX_NAME_LENGTH + 8];
 			Format(display, sizeof(display), "%N (%d)", queueClient, queuePoints);
 			
-			menu.AddItem(NULL_STRING, display, ITEMDRAW_DISABLED);
+			menu.AddItem(NULL_STRING, display, client == queueClient ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
 		}
 		
 		menu.Display(client, MENU_TIME_FOREVER);

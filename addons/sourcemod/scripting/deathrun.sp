@@ -30,7 +30,6 @@
 
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
-#define PLUGIN_DESCRIPTION	"Team Fortress 2 Deathrun"
 #define PLUGIN_VERSION		"1.4.2"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
@@ -127,7 +126,7 @@ ArrayList g_CurrentActivators;
 public Plugin pluginInfo =  {
 	name = PLUGIN_NAME, 
 	author = PLUGIN_AUTHOR, 
-	description = PLUGIN_DESCRIPTION, 
+	description = "Team Fortress 2 Deathrun", 
 	version = PLUGIN_VERSION, 
 	url = PLUGIN_URL
 };
@@ -289,4 +288,3 @@ static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int 
 	
 	return action;
 }
-
