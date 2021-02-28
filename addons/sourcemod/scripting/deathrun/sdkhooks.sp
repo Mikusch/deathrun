@@ -45,6 +45,12 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 		}
 	}
 	
+	if (StrContains(classname, "obj_") != -1)
+	{
+		RemoveAlwaysTransmit(entity);
+		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ObjectSetTransmit);
+	}
+	
 	if (StrContains(classname, "tf_projectile") != -1)
 	{
 		RemoveAlwaysTransmit(entity);
@@ -91,6 +97,15 @@ public Action SDKHookCB_ClientGetMaxHealth(int entity, int &maxhealth)
 		maxhealth = health;
 		return Plugin_Changed;
 	}
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_ObjectSetTransmit(int entity, int client)
+{
+	int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
+	if (IsValidClient(builder) && DRPlayer(client).CanHideClient(builder))
+		return Plugin_Handled;
 	
 	return Plugin_Continue;
 }
