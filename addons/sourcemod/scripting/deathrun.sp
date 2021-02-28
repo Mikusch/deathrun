@@ -224,7 +224,23 @@ public void OnGameFrame()
 				}
 			}
 			
-			SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", Min(RoundFloat(float(health) / float(maxhealth) * 255), 255));
+			static float nextHealthBarHideTime;
+			static int oldHealthBarValue;
+			
+			int healthBarValue = Min(RoundFloat(float(health) / float(maxhealth) * 255), 255);
+			
+			if (GameRules_GetRoundState() == RoundState_Preround || (oldHealthBarValue != 0 && oldHealthBarValue != healthBarValue))
+			{
+				nextHealthBarHideTime = GetGameTime() + 10.0;
+				oldHealthBarValue = healthBarValue;
+				
+				SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", healthBarValue);
+			}
+			else if (nextHealthBarHideTime <= GetGameTime())
+			{
+				//Hide the health bar if it hasn't changed in a while
+				SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
+			}
 		}
 	}
 }
