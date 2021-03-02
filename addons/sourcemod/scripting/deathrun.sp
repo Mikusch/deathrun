@@ -105,7 +105,7 @@ ConVar dr_runner_glow;
 ConVar dr_activator_count;
 ConVar dr_activator_health_modifier;
 ConVar dr_activator_healthbar;
-ConVar dr_scout_speed_penalty;
+ConVar dr_speed_modifier[view_as<int>(TFClassType)];
 
 ArrayList g_CurrentActivators;
 

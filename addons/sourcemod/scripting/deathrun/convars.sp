@@ -38,7 +38,16 @@ void ConVars_Init()
 	dr_activator_count = CreateConVar("dr_activator_count", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
 	dr_activator_health_modifier = CreateConVar("dr_activator_health_modifier", "1.0", "Modifier of the health the activator receives from runners.", _, true, 0.0);
 	dr_activator_healthbar = CreateConVar("dr_activator_healthbar", "1", "If enabled, the activator health will be displayed on screen.");
-	dr_scout_speed_penalty = CreateConVar("dr_scout_speed_penalty", "80.0", "Max speed penalty for Scouts, in HU/s.");
+	dr_speed_modifier[0] = CreateConVar("dr_speed_modifier", "0.0", "Maximum speed modifier for all classes, in HU/s.");
+	dr_speed_modifier[1] = CreateConVar("dr_speed_modifier_scout", "-80.0", "Maximum speed modifier for Scout, in HU/s.");
+	dr_speed_modifier[2] = CreateConVar("dr_speed_modifier_sniper", "0.0", "Maximum speed modifier for Sniper, in HU/s.");
+	dr_speed_modifier[3] = CreateConVar("dr_speed_modifier_soldier", "0.0", "Maximum speed modifier for Soldier, in HU/s.");
+	dr_speed_modifier[4] = CreateConVar("dr_speed_modifier_demoman", "0.0", "Maximum speed modifier for Demoman, in HU/s.");
+	dr_speed_modifier[5] = CreateConVar("dr_speed_modifier_medic", "0.0", "Maximum speed modifier for Medic, in HU/s.");
+	dr_speed_modifier[6] = CreateConVar("dr_speed_modifier_heavy", "0.0", "Maximum speed modifier for Heavy, in HU/s.");
+	dr_speed_modifier[7] = CreateConVar("dr_speed_modifier_pyro", "0.0", "Maximum speed modifier for Pyro, in HU/s.");
+	dr_speed_modifier[8] = CreateConVar("dr_speed_modifier_spy", "0.0", "Maximum speed modifier for Spy, in HU/s.");
+	dr_speed_modifier[9] = CreateConVar("dr_speed_modifier_engineer", "0.0", "Maximum speed modifier for Engineer, in HU/s.");
 	
 	dr_allow_thirdperson.AddChangeHook(ConVarChanged_AllowThirdPerson);
 	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);

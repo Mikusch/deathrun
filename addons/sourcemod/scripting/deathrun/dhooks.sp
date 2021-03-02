@@ -85,12 +85,18 @@ public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 
 public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret)
 {
-	//We don't want speedy scouts
-	if (IsClientInGame(client) && TF2_GetPlayerClass(client) == TFClass_Scout)
+	if (IsClientInGame(client))
 	{
-		float speed = ret.Value;
-		ret.Value = Max(speed - dr_scout_speed_penalty.FloatValue, 1.0);
-		return MRES_Supercede;
+		//Modify player speed based on their class
+		TFClassType class = TF2_GetPlayerClass(client);
+		if (class != TFClass_Unknown)
+		{
+			float speed = ret.Value;
+			float modifier = dr_speed_modifier[0].FloatValue + dr_speed_modifier[class].FloatValue;
+			ret.Value = Max(speed + modifier, 1.0);
+			
+			return MRES_Supercede;
+		}
 	}
 	
 	return MRES_Ignored;
