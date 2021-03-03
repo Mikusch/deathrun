@@ -58,11 +58,8 @@ void ConVars_Init()
 	ConVars_Add("mp_teams_unbalance_limit", "0");
 	ConVars_Add("tf_arena_first_blood", "0");
 	ConVars_Add("tf_arena_use_queue", "0");
-	ConVars_Add("tf_avoidteammates_pushaway", "0");
+	ConVars_Add("tf_avoidteammates_pushaway", "0", false);
 	ConVars_Add("tf_scout_air_dash_count", "0", false);
-	ConVars_Add("tf_spy_cloak_regen_rate", "0.0", false);
-	ConVars_Add("tf_demoman_charge_regen_rate", "0.0", false);
-	ConVars_Add("tf_spy_cloak_consume_rate", "25.0", false);
 }
 
 void ConVars_Add(const char[] name, const char[] value, bool enforce = true)
