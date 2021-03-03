@@ -103,6 +103,14 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	
 	Config_Apply(client);
 	
+	for (int slot = 0; slot <= ItemSlot_Misc2; slot++)
+	{
+		//Some items always transmit, breaking our "hide players" feature
+		int item = TF2_GetItemInSlot(client, slot);
+		if (IsValidEntity(item))
+			SetEdictFlags(item, (GetEdictFlags(item) & ~FL_EDICT_ALWAYS | FL_EDICT_PVSCHECK));
+	}
+	
 	if (DRPlayer(client).InThirdPerson)
 		CreateTimer(0.2, Timer_SetThirdPerson, userid);
 	
