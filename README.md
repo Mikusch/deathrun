@@ -108,13 +108,10 @@ Any item definition indexes specified in a map-specific item configuration will 
 
 - `dr_version` - Plugin version, don't touch.
 - `dr_queue_points ( def. "15" )` - Amount of queue points awarded to runners at the end of each round.
-- `dr_allow_thirdperson ( def. "1" )` - If enabled, players may toggle thirdperson. Set to 0 if you use other
-  thirdperson plugins that may conflict.
 - `dr_chattips_interval ( def. "240" )` - Interval between helpful tips printed to chat, in seconds. Set to 0 to disable
   chat tips.
 - `dr_runner_glow ( def. "0" )` - If enabled, runners will have a glowing outline.
 - `dr_activator_count ( def. "1" )` - Amount of activators chosen at the start of a round.
-- `dr_scout_speed_penalty ( def. "80.0" )` - Max speed penalty for Scouts, in HU/s.
 - `dr_activator_health_modifier ( def. "1.0" )` - Modifier of the health the activator receives from runners.
 - `dr_activator_healthbar ( def. "1" )` - If enabled, the activator health will be displayed on screen.
 - `dr_speed_modifier ( def. "0.0" )` - Maximum speed modifier for all classes, in HU/s.
