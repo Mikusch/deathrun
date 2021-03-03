@@ -125,7 +125,7 @@ public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
 public Action SDKHookCB_VGUIScreenSetTransmit(int entity, int client)
 {
 	int obj = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
-	if (IsValidEntity(obj))
+	if (IsValidEntity(obj) && HasEntProp(obj, Prop_Send, "m_hBuilder"))
 	{
 		int builder = GetEntPropEnt(obj, Prop_Send, "m_hBuilder");
 		if (IsValidClient(builder) && DRPlayer(client).CanHideClient(builder))
