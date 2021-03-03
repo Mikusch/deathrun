@@ -32,7 +32,6 @@ void ConVars_Init()
 	CreateConVar("dr_version", PLUGIN_VERSION, PLUGIN_NAME..." version", FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
 	
 	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to runners at the end of each round.", _, true, 1.0);
-	dr_allow_thirdperson = CreateConVar("dr_allow_thirdperson", "1", "If enabled, players may toggle thirdperson. Set to 0 if you use other thirdperson plugins that may conflict.");
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "Interval between helpful tips printed to chat, in seconds. Set to 0 to disable chat tips.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "If enabled, runners will have a glowing outline.");
 	dr_activator_count = CreateConVar("dr_activator_count", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
@@ -49,7 +48,6 @@ void ConVars_Init()
 	dr_speed_modifier[8] = CreateConVar("dr_speed_modifier_spy", "0.0", "Maximum speed modifier for Spy, in HU/s.");
 	dr_speed_modifier[9] = CreateConVar("dr_speed_modifier_engineer", "0.0", "Maximum speed modifier for Engineer, in HU/s.");
 	
-	dr_allow_thirdperson.AddChangeHook(ConVarChanged_AllowThirdPerson);
 	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);
 	dr_runner_glow.AddChangeHook(ConVarChanged_RunnerGlow);
 	dr_activator_healthbar.AddChangeHook(ConVarChanged_ActivatorHealthBar);
@@ -116,23 +114,6 @@ public void ConVarChanged_GameConVar(ConVar convar, const char[] oldValue, const
 		
 		if (!StrEqual(newValue, info.value))
 			info.convar.SetString(info.value);
-	}
-}
-
-public void ConVarChanged_AllowThirdPerson(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	if (!StringToInt(newValue))
-	{
-		for (int client = 1; client <= MaxClients; client++)
-		{
-			if (IsClientInGame(client) && DRPlayer(client).InThirdPerson)
-			{
-				DRPlayer(client).InThirdPerson = false;
-				SetVariantInt(0);
-				AcceptEntityInput(client, "SetForcedTauntCam");
-				PrintMessage(client, "%t", "Thirdperson_ForceDisable");
-			}
-		}
 	}
 }
 

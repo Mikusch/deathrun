@@ -17,18 +17,16 @@
 
 #define INFO_QUEUE			"queue"
 #define INFO_PREFERENCES	"preferences"
-#define INFO_THIRDPERSON	"thirdperson"
 #define INFO_HIDETEAMMATES	"hideteammates"
 
 void Menus_DisplayMainMenu(int client)
 {
 	Menu menu = new Menu(MenuHandler_MainMenu, MenuAction_Select | MenuAction_End | MenuAction_DrawItem | MenuAction_DisplayItem);
 	
-	menu.SetTitle("%T", "Menu_Main_Title", client, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR, PLUGIN_URL);
+	menu.SetTitle("%T", "Menu_Main_Title", client, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR);
 	
 	menu.AddItem(INFO_QUEUE, "Menu_Main_Queue");
 	menu.AddItem(INFO_PREFERENCES, "Menu_Main_Preferences");
-	menu.AddItem(INFO_THIRDPERSON, "Menu_Main_ThirdPerson");
 	menu.AddItem(INFO_HIDETEAMMATES, "Menu_Main_HideTeammates");
 	
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -51,11 +49,6 @@ public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int pa
 			{
 				Menus_DisplayPreferencesMenu(param1);
 			}
-			else if (StrEqual(info, INFO_THIRDPERSON))
-			{
-				FakeClientCommand(param1, DRPlayer(param1).InThirdPerson ? "dr_firstperson" : "dr_thirdperson");
-				Menus_DisplayMainMenu(param1);
-			}
 			else if (StrEqual(info, INFO_HIDETEAMMATES))
 			{
 				FakeClientCommand(param1, "dr_hideteammates");
@@ -65,17 +58,6 @@ public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int pa
 		case MenuAction_End:
 		{
 			delete menu;
-		}
-		case MenuAction_DrawItem:
-		{
-			int style;
-			char info[64];
-			menu.GetItem(param2, info, sizeof(info), style);
-			
-			if (StrEqual(info, INFO_THIRDPERSON) && !dr_allow_thirdperson.BoolValue)
-				return ITEMDRAW_DISABLED;
-			
-			return style;
 		}
 		case MenuAction_DisplayItem:
 		{
@@ -207,9 +189,9 @@ public int MenuHandler_PreferencesMenu(Menu menu, MenuAction action, int param1,
 			PreferenceType preference = view_as<PreferenceType>(RoundToNearest(Pow(2.0, float(i))));
 			
 			if (DRPlayer(param1).HasPreference(preference))
-				Format(display, sizeof(display), "■ %T", g_PreferenceNames[i], param1);
+				Format(display, sizeof(display), "☑ %T", g_PreferenceNames[i], param1);
 			else
-				Format(display, sizeof(display), "□ %T", g_PreferenceNames[i], param1);
+				Format(display, sizeof(display), "☐ %T", g_PreferenceNames[i], param1);
 			
 			return RedrawMenuItem(display);
 		}

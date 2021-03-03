@@ -4,14 +4,6 @@
 	{
 		"en"	"The server operator has disabled this command."
 	}
-	"Command_ThirdPerson_Enabled"
-	{
-		"en"	"You have {success}enabled {default}the third-person camera."
-	}
-	"Command_ThirdPerson_Disabled"
-	{
-		"en"	"You have {danger}disabled {default}the third-person camera."
-	}
 	"Command_HideTeammates_Enabled"
 	{
 		"en"	"Your teammates are now {secondary}invisible {default}to you."
@@ -23,32 +15,27 @@
 	
 	"ChatTip_Deathrun"
 	{
-		"en"	"{success}PROTIP: {default}You can get an overview of all features and commands with {secondary}/deathrun{default} or {secondary}/dr{default}."
+		"en"	"{positive}PROTIP: {default}You can get an overview of all features and commands with {secondary}/deathrun{default} or {secondary}/dr{default}."
 	}
 	"ChatTip_HideTeammates"
 	{
-		"en"	"{success}PROTIP: {default}Can't see in crowded areas? You can hide teammates blocking your sight with {secondary}/drhide{default}."
+		"en"	"{positive}PROTIP: {default}Can't see in crowded areas? You can hide teammates blocking your sight with {secondary}/drhide{default}."
 	}
 	"ChatTip_ActivatorWeapons"
 	{
-		"en"	"{success}PROTIP: {default}As the {blue}Activator{default}, utilize ranged weapons from your loadout to hit traps from far away."
+		"en"	"{positive}PROTIP: {default}As the {blue}Activator{default}, utilize ranged weapons from your loadout to hit traps from far away."
 	}
 	"ChatTip_CheckQueue"
 	{
-		"en"	"{success}PROTIP: {default}You can check the Activator queue with {secondary}/drnext{default}."
+		"en"	"{positive}PROTIP: {default}You can check the Activator queue with {secondary}/drnext{default}."
 	}
 	"ChatTip_DisableChatTips"
 	{
-		"en"	"{success}PROTIP: {default}You can disable these chat tips by changing your user preferences with {secondary}/drsettings{default}."
+		"en"	"{positive}PROTIP: {default}You can disable these chat tips by changing your user preferences with {secondary}/drsettings{default}."
 	}
 	"ChatTip_DisableActivator"
 	{
-		"en"	"{success}PROTIP: {default}Don't want to play as the {blue}Activator{default}? Change your user preferences with {secondary}/drsettings{default}."
-	}
-	
-	"Thirdperson_ForceDisable"
-	{
-		"en"	"Your third-person camera has been disabled by the server operator."
+		"en"	"{positive}PROTIP: {default}Don't want to play as the {blue}Activator{default}? Change your user preferences with {secondary}/drsettings{default}."
 	}
 	
 	"RoundWin_Activator"
@@ -85,12 +72,12 @@
 	"Preferences_Enabled"
 	{
 		"#format"	"{1:s}"
-		"en"		"You have successfully {success}enabled {default}the preference {secondary}{1}{default}."
+		"en"		"You have positivefully {positive}enabled {default}the preference {secondary}{1}{default}."
 	}
 	"Preferences_Disabled"
 	{
 		"#format"	"{1:s}"
-		"en"		"You have successfully {danger}disabled {default}the preference {secondary}{1}{default}."
+		"en"		"You have positivefully {negative}disabled {default}the preference {secondary}{1}{default}."
 	}
 	
 	"Preference_DontBeActivator"
@@ -113,7 +100,7 @@
 	"Queue_PointsAwarded"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"You have been awarded {success}{1} {default}queue points (Total: {success}{2}{default})."
+		"en"		"You have been awarded {positive}{1} {default}queue points (Total: {positive}{2}{default})."
 	}
 	"Queue_ChosenAsRandomActivator"
 	{
@@ -122,7 +109,8 @@
 	
 	"Menu_Main_Title"
 	{
-		"en"	"Welcome to %s %s by %s!\n%s"
+		"#format"	"{1:s},{2:s},{3:s}"
+		"en"		"{1} ({2}) by {3}"
 	}
 	"Menu_Main_Queue"
 	{
@@ -131,10 +119,6 @@
 	"Menu_Main_Preferences"
 	{
 		"en"	"Change User Preferences (/drsettings)"
-	}
-	"Menu_Main_ThirdPerson"
-	{
-		"en"	"Toggle Third-Person Camera (/drthirdperson)"
 	}
 	"Menu_Main_HideTeammates"
 	{

@@ -32,11 +32,6 @@ void Console_Init()
 	RegConsoleCmd2("preferences", ConCmd_PreferencesMenu);
 	RegConsoleCmd2("settings", ConCmd_PreferencesMenu);
 	
-	RegConsoleCmd2("tp", ConCmd_ThirdPerson);
-	RegConsoleCmd2("thirdperson", ConCmd_ThirdPerson);
-	RegConsoleCmd2("fp", ConCmd_FirstPerson);
-	RegConsoleCmd2("firstperson", ConCmd_FirstPerson);
-	
 	RegConsoleCmd2("hide", ConCmd_HideTeammates);
 	RegConsoleCmd2("hideteammates", ConCmd_HideTeammates);
 	RegConsoleCmd2("hideplayers", ConCmd_HideTeammates);
@@ -90,58 +85,6 @@ public Action ConCmd_PreferencesMenu(int client, int args)
 	}
 	
 	Menus_DisplayPreferencesMenu(client);
-	return Plugin_Handled;
-}
-
-public Action ConCmd_ThirdPerson(int client, int args)
-{
-	if (client == 0)
-	{
-		ReplyToCommand(client, "%t", "Command is in-game only");
-		return Plugin_Handled;
-	}
-	
-	if (!dr_allow_thirdperson.BoolValue)
-	{
-		PrintMessage(client, "%t", "Command_Disabled");
-		return Plugin_Handled;
-	}
-	
-	SetVariantInt(true);
-	if (AcceptEntityInput(client, "SetForcedTauntCam"))
-	{
-		DRPlayer(client).InThirdPerson = true;
-		
-		if (!IsPlayerAlive(client) || TF2_IsPlayerInCondition(client, TFCond_Taunting))
-			PrintMessage(client, "%t", "Command_ThirdPerson_Enabled");
-	}
-	
-	return Plugin_Handled;
-}
-
-public Action ConCmd_FirstPerson(int client, int args)
-{
-	if (client == 0)
-	{
-		ReplyToCommand(client, "%t", "Command is in-game only");
-		return Plugin_Handled;
-	}
-	
-	if (!dr_allow_thirdperson.BoolValue)
-	{
-		PrintMessage(client, "%t", "Command_Disabled");
-		return Plugin_Handled;
-	}
-	
-	SetVariantInt(false);
-	if (AcceptEntityInput(client, "SetForcedTauntCam"))
-	{
-		DRPlayer(client).InThirdPerson = false;
-		
-		if (!IsPlayerAlive(client) || TF2_IsPlayerInCondition(client, TFCond_Taunting))
-			PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
-	}
-	
 	return Plugin_Handled;
 }
 
