@@ -75,8 +75,8 @@ public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 		
 		EmitGameSoundToAll(GAMESOUND_EXPLOSION);
 		
-		param.Set(1, TFTeam_Activators); //team
-		param.Set(2, WINREASON_TIMELIMIT); //iWinReason
+		param.Set(1, TFTeam_Activators);	//team
+		param.Set(2, WINREASON_TIMELIMIT);	//iWinReason
 		return MRES_ChangedOverride;
 	}
 	

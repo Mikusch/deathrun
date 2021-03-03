@@ -24,6 +24,11 @@ static char g_CommandPrefixes[][] =  {
 
 void Console_Init()
 {
+	AddMultiTargetFilter("@runner", MultiTargetFilter_AllRunners, "Target_AllRunners", true);
+	AddMultiTargetFilter("@runners", MultiTargetFilter_AllRunners, "Target_AllRunners", true);
+	AddMultiTargetFilter("@activator", MultiTargetFilter_AllActivators, "Target_AllActivators", true);
+	AddMultiTargetFilter("@activators", MultiTargetFilter_AllActivators, "Target_AllActivators", true);
+	
 	RegConsoleCmd("dr", ConCmd_DeathrunMenu);
 	RegConsoleCmd("deathrun", ConCmd_DeathrunMenu);
 	
@@ -33,8 +38,12 @@ void Console_Init()
 	RegConsoleCmd2("settings", ConCmd_PreferencesMenu);
 	
 	RegConsoleCmd2("hide", ConCmd_HideTeammates);
-	RegConsoleCmd2("hideteammates", ConCmd_HideTeammates);
 	RegConsoleCmd2("hideplayers", ConCmd_HideTeammates);
+	RegConsoleCmd2("hideteammates", ConCmd_HideTeammates);
+	
+	RegAdminCmd2("addpoints", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
+	RegAdminCmd2("addqueue", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
+	RegAdminCmd2("addqueuepoints", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
 	
 	AddCommandListener(CommandListener_Build, "build");
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
@@ -42,7 +51,7 @@ void Console_Init()
 	AddCommandListener(CommandListener_JoinTeam, "spectate");
 }
 
-stock void RegConsoleCmd2(const char[] cmd, ConCmd callback)
+void RegConsoleCmd2(const char[] cmd, ConCmd callback)
 {
 	for (int i = 0; i < sizeof(g_CommandPrefixes); i++)
 	{
@@ -50,6 +59,38 @@ stock void RegConsoleCmd2(const char[] cmd, ConCmd callback)
 		Format(buffer, sizeof(buffer), "%s%s", g_CommandPrefixes[i], cmd);
 		RegConsoleCmd(buffer, callback);
 	}
+}
+
+void RegAdminCmd2(const char[] cmd, ConCmd callback, int adminflags)
+{
+	for (int i = 0; i < sizeof(g_CommandPrefixes); i++)
+	{
+		char buffer[256];
+		Format(buffer, sizeof(buffer), "%s%s", g_CommandPrefixes[i], cmd);
+		RegAdminCmd(buffer, callback, adminflags);
+	}
+}
+
+public bool MultiTargetFilter_AllRunners(const char[] pattern, ArrayList clients)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
+			clients.Push(client);
+	}
+	
+	return clients.Length > 0;
+}
+
+public bool MultiTargetFilter_AllActivators(const char[] pattern, ArrayList clients)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Activators)
+			clients.Push(client);
+	}
+	
+	return clients.Length > 0;
 }
 
 public Action ConCmd_DeathrunMenu(int client, int args)
@@ -99,7 +140,55 @@ public Action ConCmd_HideTeammates(int client, int args)
 	DRPlayer player = DRPlayer(client);
 	player.IsHidingTeammates = !player.IsHidingTeammates;
 	
-	PrintMessage(client, "%t", player.IsHidingTeammates ? "Command_HideTeammates_Enabled" : "Command_HideTeammates_Disabled");
+	CPrintToChat(client, PLUGIN_TAG ... " %t", player.IsHidingTeammates ? "Command_HideTeammates_Enabled" : "Command_HideTeammates_Disabled");
+	
+	return Plugin_Handled;
+}
+
+public Action ConCmd_AddQueuePoints(int client, int args)
+{
+	if (args < 2)
+	{
+		CReplyToCommand(client, PLUGIN_TAG ... " %t", "Command_AddQueuePoints_Usage");
+		return Plugin_Handled;
+	}
+	
+	char arg[64];
+	GetCmdArg(1, arg, sizeof(arg));
+	
+	int amount = 0;
+	char arg2[16];
+	GetCmdArg(2, arg2, sizeof(arg2));
+	if (StringToIntEx(arg2, amount) == 0 || amount <= 0)
+	{
+		CReplyToCommand(client, PLUGIN_TAG ... " %t", "Invalid Amount");
+		return Plugin_Handled;
+	}
+	
+	int[] target_list = new int[MaxClients + 1];
+	char target_name[MAX_TARGET_LENGTH];
+	bool tn_is_ml;
+	int target_count;
+	
+	if ((target_count = ProcessTargetString(arg, client, target_list, MaxClients + 1, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+	
+	for (int i = 0; i < target_count; i++)
+	{
+		Queue_AddPoints(i, amount);
+	}
+	
+	if (tn_is_ml)
+	{
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Added", amount, target_name);
+	}
+	else
+	{
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Added", amount, "_s", target_name);
+	}
 	
 	return Plugin_Handled;
 }

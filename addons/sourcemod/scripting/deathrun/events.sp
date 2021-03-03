@@ -43,15 +43,15 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 			if (IsClientInGame(client))
 			{
 				if (DRPlayer(client).IsActivator())
-					PrintMessage(client, "%t", "RoundStart_MultipleActivators_Activator");
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_MultipleActivators_Activator");
 				else
-					PrintMessage(client, "%t", "RoundStart_MultipleActivators_Runners");
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_MultipleActivators_Runners");
 			}
 		}
 	}
 	else if (numActivators < 1)	//No activators
 	{
-		PrintMessageToAll("%t", "RoundStart_Activator_Disconnected", FindConVar("mp_bonusroundtime").IntValue);
+		CPrintToChatAll(PLUGIN_TAG ... " %t", "RoundStart_Activator_Disconnected", FindConVar("mp_bonusroundtime").IntValue);
 	}
 	else	//One activator
 	{
@@ -64,9 +64,9 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 			if (IsClientInGame(client))
 			{
 				if (client == activator)
-					PrintMessage(client, "%t", "RoundStart_NewActivator_Activator");
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Activator");
 				else
-					PrintMessage(client, "%t", "RoundStart_NewActivator_Runners", activatorName);
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Runners", activatorName);
 			}
 		}
 	}
@@ -179,18 +179,15 @@ public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool do
 	
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		DRPlayer player = DRPlayer(client);
 		if (IsClientInGame(client))
 		{
 			if (team == TFTeam_Activators)
-				PrintMessage(client, "%t", "RoundWin_Activator");
+				CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundWin_Activator");
 			else if (team == TFTeam_Runners)
-				PrintMessage(client, "%t", "RoundWin_Runners");
+				CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundWin_Runners");
 			
-			if (player.IsActivator())
-				TF2Attrib_RemoveByName(client, "max health additive bonus");
-			else if (TF2_GetClientTeam(client) != TFTeam_Spectator)
-				Queue_AddPoints(client, dr_queue_points.IntValue);
+			if (TF2_GetClientTeam(client) == TFTeam_Runners)
+				Queue_AwardPoints(client, dr_queue_points.IntValue);
 		}
 	}
 }

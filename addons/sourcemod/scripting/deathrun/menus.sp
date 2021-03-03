@@ -23,7 +23,7 @@ void Menus_DisplayMainMenu(int client)
 {
 	Menu menu = new Menu(MenuHandler_MainMenu, MenuAction_Select | MenuAction_End | MenuAction_DrawItem | MenuAction_DisplayItem);
 	
-	menu.SetTitle("%T", "Menu_Main_Title", client, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR);
+	menu.SetTitle("%T", "Menu_Main_Title", client, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR, PLUGIN_URL);
 	
 	menu.AddItem(INFO_QUEUE, "Menu_Main_Queue");
 	menu.AddItem(INFO_PREFERENCES, "Menu_Main_Preferences");
@@ -165,9 +165,9 @@ public int MenuHandler_PreferencesMenu(Menu menu, MenuAction action, int param1,
 			Format(name, sizeof(name), "%T", g_PreferenceNames[i], param1);
 			
 			if (player.HasPreference(preference))
-				PrintMessage(param1, "%t", "Preferences_Enabled", name);
+				CPrintToChat(param1, PLUGIN_TAG ... " %t", "Preferences_Enabled", name);
 			else
-				PrintMessage(param1, "%t", "Preferences_Disabled", name);
+				CPrintToChat(param1, PLUGIN_TAG ... " %t", "Preferences_Disabled", name);
 			
 			Menus_DisplayPreferencesMenu(param1);
 		}

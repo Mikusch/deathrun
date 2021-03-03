@@ -31,6 +31,9 @@
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_VERSION		"1.5.0"
+#define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
+
+#define PLUGIN_TAG	"[{primary}" ... PLUGIN_NAME ... "{default}]"
 
 #define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
 
@@ -127,7 +130,7 @@ public Plugin pluginInfo =  {
 	author = PLUGIN_AUTHOR, 
 	description = "Team Fortress 2 Deathrun", 
 	version = PLUGIN_VERSION, 
-	url = "https://github.com/Mikusch/deathrun"
+	url = PLUGIN_URL
 };
 
 public void OnPluginStart()
@@ -135,8 +138,8 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases.txt");
 	LoadTranslations("deathrun.phrases.txt");
 	
-	CAddColor("primary", 0x4285F4);
-	CAddColor("secondary", 0xAA66CC);
+	CAddColor("primary", 0x4B69FF);
+	CAddColor("secondary", 0xFF9F4B);
 	CAddColor("positive", 0x00C851);
 	CAddColor("negative", 0xFF4444);
 	

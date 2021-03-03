@@ -12,6 +12,24 @@
 	{
 		"en"	"Your teammates are now {secondary}visible {default}to you."
 	}
+	"Command_AddQueuePoints_Usage"
+	{
+		"en"	"Usage: dr_addqueuepoints <#userid|name> [amount]"
+	}
+	"Command_AddQueuePoints_Added"
+	{
+		"#format"	"{1:d},{2:t}"
+		"en"		"Added {positive}{1} {default}queue point(s) to {2}."
+	}
+	
+	"Target_AllRunners"
+	{
+		"en"	"all runners"
+	}
+	"Target_AllActivators"
+	{
+		"en"	"all activators"
+	}
 	
 	"ChatTip_Deathrun"
 	{
@@ -72,12 +90,12 @@
 	"Preferences_Enabled"
 	{
 		"#format"	"{1:s}"
-		"en"		"You have positivefully {positive}enabled {default}the preference {secondary}{1}{default}."
+		"en"		"You have {positive}enabled {default}the preference {secondary}{1}{default}."
 	}
 	"Preferences_Disabled"
 	{
 		"#format"	"{1:s}"
-		"en"		"You have positivefully {negative}disabled {default}the preference {secondary}{1}{default}."
+		"en"		"You have {negative}disabled {default}the preference {secondary}{1}{default}."
 	}
 	
 	"Preference_DontBeActivator"
@@ -109,8 +127,8 @@
 	
 	"Menu_Main_Title"
 	{
-		"#format"	"{1:s},{2:s},{3:s}"
-		"en"		"{1} ({2}) by {3}"
+		"#format"	"{1:s},{2:s},{3:s},{4:s}"
+		"en"		"{1} ({2}) by {3}\n{4}"
 	}
 	"Menu_Main_Queue"
 	{

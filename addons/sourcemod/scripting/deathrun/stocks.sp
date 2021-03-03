@@ -104,19 +104,3 @@ stock int GetAliveClientCount()
 	}
 	return count;
 }
-
-stock void PrintMessage(int client, const char[] format, any...)
-{
-	char message[MAX_BUFFER_LENGTH];
-	VFormat(message, sizeof(message), format, 3);
-	Format(message, sizeof(message), "[{primary}"...PLUGIN_NAME..."{default}] %s", message);
-	CPrintToChat(client, message);
-}
-
-stock void PrintMessageToAll(const char[] format, any...)
-{
-	char message[MAX_BUFFER_LENGTH];
-	VFormat(message, sizeof(message), format, 2);
-	Format(message, sizeof(message), "[{primary}"...PLUGIN_NAME..."{default}] %s", message);
-	CPrintToChatAll(message);
-}

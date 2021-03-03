@@ -104,7 +104,7 @@
 	
 	"Menu_Main_Title"
 	{
-		"ru"	"{1} ({2}) от {3}"
+		"ru"	"{1} ({2}) от {3}\n{4}"
 	}
 	"Menu_Main_Queue"
 	{
