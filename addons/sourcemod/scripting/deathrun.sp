@@ -33,7 +33,7 @@
 #define PLUGIN_VERSION		"1.5.0"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
-#define PLUGIN_TAG	"[{primary}" ... PLUGIN_NAME ... "{default}]"
+#define PLUGIN_TAG		"[{primary}" ... PLUGIN_NAME ... "{default}]"
 
 #define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
 

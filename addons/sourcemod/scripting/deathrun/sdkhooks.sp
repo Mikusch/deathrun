@@ -18,6 +18,7 @@
 static char g_OwnerEntityList[][] =  {
 	"env_sniperdot", 
 	"halloween_souls_pack", 
+	"info_particle_system", 
 	"item_healthkit", 
 	"tf_ammo_pack", 
 	"tf_bonus_duck_pickup", 
