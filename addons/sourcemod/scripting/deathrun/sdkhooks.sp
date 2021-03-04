@@ -22,9 +22,7 @@ static char g_OwnerEntityList[][] =  {
 	"tf_ammo_pack", 
 	"tf_bonus_duck_pickup", 
 	"tf_flame", 
-	"tf_halloween_pickup", 
-	"tf_weapon", 
-	"tf_wearable"
+	"tf_halloween_pickup"
 };
 
 void SDKHooks_OnClientPutInServer(int client)
@@ -39,11 +37,7 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 	{
 		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
 		{
-			//Miniguns always transmit
-			if (StrEqual(classname, "tf_weapon_minigun"))
-				SetEdictFlags(entity, (GetEdictFlags(entity) & ~FL_EDICT_ALWAYS | FL_EDICT_PVSCHECK));
-			
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
+			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnerEntitySetTransmit);
 		}
 	}
 	
@@ -65,16 +59,31 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 	if (strncmp(classname, "tf_projectile_", 14) == 0)
 	{
 		if (HasEntProp(entity, Prop_Send, "m_hThrower"))
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ThrownEntitySetTransmit);
+			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ThrowerEntitySetTransmit);
 		else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
+			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnerEntitySetTransmit);
 	}
 }
 
 public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 {
 	if (DRPlayer(client).CanHideClient(entity))
+	{
+		//Force player's items to not transmit
+		for (int slot = 0; slot <= ItemSlot_Misc2; slot++)
+		{
+			int item = TF2_GetItemInSlot(entity, slot);
+			if (IsValidEntity(item))
+				SetEdictFlags(item, (GetEdictFlags(item) & ~FL_EDICT_ALWAYS));
+		}
+		
+		//Force disguise weapon to not transmit
+		int disguiseWeapon = GetEntPropEnt(entity, Prop_Send, "m_hDisguiseWeapon");
+		if (IsValidEntity(disguiseWeapon))
+			SetEdictFlags(disguiseWeapon, (GetEdictFlags(disguiseWeapon) & ~FL_EDICT_ALWAYS));
+		
 		return Plugin_Handled;
+	}
 	
 	return Plugin_Continue;
 }
@@ -101,7 +110,7 @@ public Action SDKHookCB_ClientGetMaxHealth(int client, int &maxhealth)
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_OwnedEntitySetTransmit(int entity, int client)
+public Action SDKHookCB_OwnerEntitySetTransmit(int entity, int client)
 {
 	int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 	if (IsValidClient(owner) && DRPlayer(client).CanHideClient(owner))
@@ -150,7 +159,7 @@ public Action SDKHookCB_ObjectSetTransmit(int entity, int client)
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_ThrownEntitySetTransmit(int entity, int client)
+public Action SDKHookCB_ThrowerEntitySetTransmit(int entity, int client)
 {
 	int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
 	if (IsValidClient(thrower) && DRPlayer(client).CanHideClient(thrower))
