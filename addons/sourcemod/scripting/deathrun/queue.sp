@@ -112,15 +112,8 @@ void Queue_SetPoints(int client, int points)
 
 bool Queue_IsClientAllowed(int client)
 {
-	if (IsValidClient(client)
-		 && TF2_GetClientTeam(client) > TFTeam_Spectator	//Is the client not in spectator team?
-		 && DRPlayer(client).QueuePoints != -1	//Does the client have their queue points loaded?
-		 && !DRPlayer(client).HasPreference(Preference_DontBeActivator))	//Does the client want to be the activator?
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return IsValidClient(client)
+	 && TF2_GetClientTeam(client) > TFTeam_Spectator	//Is the client not in spectator team?
+	 && DRPlayer(client).QueuePoints != -1	//Does the client have their queue points loaded?
+	 && !DRPlayer(client).HasPreference(Preference_DontBeActivator);	//Does the client want to be the activator?
 }

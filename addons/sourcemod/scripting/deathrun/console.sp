@@ -24,10 +24,10 @@ static char g_CommandPrefixes[][] =  {
 
 void Console_Init()
 {
-	AddMultiTargetFilter("@runner", MultiTargetFilter_AllRunners, "Target_AllRunners", true);
-	AddMultiTargetFilter("@runners", MultiTargetFilter_AllRunners, "Target_AllRunners", true);
-	AddMultiTargetFilter("@activator", MultiTargetFilter_AllActivators, "Target_AllActivators", true);
-	AddMultiTargetFilter("@activators", MultiTargetFilter_AllActivators, "Target_AllActivators", true);
+	AddMultiTargetFilter("@runner", MultiTargetFilter_RunnerTeam, "Target_RunnerTeam", true);
+	AddMultiTargetFilter("@runners", MultiTargetFilter_RunnerTeam, "Target_RunnerTeam", true);
+	AddMultiTargetFilter("@activator", MultiTargetFilter_ActivatorTeam, "Target_ActivatorTeam", true);
+	AddMultiTargetFilter("@activators", MultiTargetFilter_ActivatorTeam, "Target_ActivatorTeam", true);
 	
 	RegConsoleCmd("dr", ConCmd_DeathrunMenu);
 	RegConsoleCmd("deathrun", ConCmd_DeathrunMenu);
@@ -44,6 +44,10 @@ void Console_Init()
 	RegAdminCmd2("addpoints", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
 	RegAdminCmd2("addqueue", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
 	RegAdminCmd2("addqueuepoints", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
+	
+	RegAdminCmd2("setpoints", ConCmd_SetQueuePoints, ADMFLAG_CHANGEMAP);
+	RegAdminCmd2("setqueue", ConCmd_SetQueuePoints, ADMFLAG_CHANGEMAP);
+	RegAdminCmd2("setqueuepoints", ConCmd_SetQueuePoints, ADMFLAG_CHANGEMAP);
 	
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
 	AddCommandListener(CommandListener_JoinTeam, "autoteam");
@@ -70,7 +74,7 @@ void RegAdminCmd2(const char[] cmd, ConCmd callback, int adminflags)
 	}
 }
 
-public bool MultiTargetFilter_AllRunners(const char[] pattern, ArrayList clients)
+public bool MultiTargetFilter_RunnerTeam(const char[] pattern, ArrayList clients)
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
@@ -81,7 +85,7 @@ public bool MultiTargetFilter_AllRunners(const char[] pattern, ArrayList clients
 	return clients.Length > 0;
 }
 
-public bool MultiTargetFilter_AllActivators(const char[] pattern, ArrayList clients)
+public bool MultiTargetFilter_ActivatorTeam(const char[] pattern, ArrayList clients)
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
@@ -152,7 +156,7 @@ public Action ConCmd_AddQueuePoints(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	char arg[64];
+	char arg[MAX_TARGET_LENGTH];
 	GetCmdArg(1, arg, sizeof(arg));
 	
 	int amount = 0;
@@ -171,22 +175,70 @@ public Action ConCmd_AddQueuePoints(int client, int args)
 	
 	if ((target_count = ProcessTargetString(arg, client, target_list, MaxClients + 1, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
 	{
-		ReplyToTargetError(client, target_count);
+		CReplyToTargetError(client, target_count);
 		return Plugin_Handled;
 	}
 	
 	for (int i = 0; i < target_count; i++)
 	{
-		Queue_AddPoints(i, amount);
+		Queue_AddPoints(target_list[i], amount);
 	}
 	
 	if (tn_is_ml)
 	{
-		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Added", amount, target_name);
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Success", amount, target_name);
 	}
 	else
 	{
-		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Added", amount, "_s", target_name);
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Success", amount, "_s", target_name);
+	}
+	
+	return Plugin_Handled;
+}
+
+public Action ConCmd_SetQueuePoints(int client, int args)
+{
+	if (args < 2)
+	{
+		CReplyToCommand(client, PLUGIN_TAG ... " %t", "Command_SetQueuePoints_Usage");
+		return Plugin_Handled;
+	}
+	
+	char arg[MAX_TARGET_LENGTH];
+	GetCmdArg(1, arg, sizeof(arg));
+	
+	int amount = 0;
+	char arg2[16];
+	GetCmdArg(2, arg2, sizeof(arg2));
+	if (StringToIntEx(arg2, amount) == 0 || amount < 0)
+	{
+		CReplyToCommand(client, PLUGIN_TAG ... " %t", "Invalid Amount");
+		return Plugin_Handled;
+	}
+	
+	int[] target_list = new int[MaxClients + 1];
+	char target_name[MAX_TARGET_LENGTH];
+	bool tn_is_ml;
+	int target_count;
+	
+	if ((target_count = ProcessTargetString(arg, client, target_list, MaxClients + 1, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+	{
+		CReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+	
+	for (int i = 0; i < target_count; i++)
+	{
+		Queue_SetPoints(target_list[i], amount);
+	}
+	
+	if (tn_is_ml)
+	{
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_SetQueuePoints_Success", target_name, amount);
+	}
+	else
+	{
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_SetQueuePoints_Success", "_s", target_name, amount);
 	}
 	
 	return Plugin_Handled;

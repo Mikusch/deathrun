@@ -104,3 +104,42 @@ stock int GetAliveClientCount()
 	}
 	return count;
 }
+
+stock void CReplyToTargetError(int client, int reason)
+{
+	switch (reason)
+	{
+		case COMMAND_TARGET_NONE:
+		{
+			CReplyToCommand(client, PLUGIN_TAG ... " %t", "No matching client");
+		}
+		case COMMAND_TARGET_NOT_ALIVE:
+		{
+			CReplyToCommand(client, PLUGIN_TAG ... " %t", "Target must be alive");
+		}
+		case COMMAND_TARGET_NOT_DEAD:
+		{
+			CReplyToCommand(client, PLUGIN_TAG ... " %t", "Target must be dead");
+		}
+		case COMMAND_TARGET_NOT_IN_GAME:
+		{
+			CReplyToCommand(client, PLUGIN_TAG ... " %t", "Target is not in game");
+		}
+		case COMMAND_TARGET_IMMUNE:
+		{
+			CReplyToCommand(client, PLUGIN_TAG ... " %t", "Unable to target");
+		}
+		case COMMAND_TARGET_EMPTY_FILTER:
+		{
+			CReplyToCommand(client, PLUGIN_TAG ... " %t", "No matching clients");
+		}
+		case COMMAND_TARGET_NOT_HUMAN:
+		{
+			CReplyToCommand(client, PLUGIN_TAG ... " %t", "Cannot target bot");
+		}
+		case COMMAND_TARGET_AMBIGUOUS:
+		{
+			CReplyToCommand(client, PLUGIN_TAG ... " %t", "More than one client matched");
+		}
+	}
+}
