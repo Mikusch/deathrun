@@ -22,6 +22,7 @@ void DHooks_Init(GameData gamedata)
 	g_DHookSetWinningTeam = DHooks_CreateVirtualHook(gamedata, "CTeamplayRoundBasedRules::SetWinningTeam");
 	
 	DHooks_CreateDetour(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed", _, DHookCallback_CalculateMaxSpeed_Post);
+	DHooks_CreateDetour(gamedata, "CTFPlayer::GetMaxHealthForBuffing", _, DHookCallback_GetMaxHealthForBuffing_Post);
 }
 
 static DynamicHook DHooks_CreateVirtualHook(GameData gamedata, const char[] name)
@@ -97,6 +98,31 @@ public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn r
 			
 			return MRES_Supercede;
 		}
+	}
+	
+	return MRES_Ignored;
+}
+
+public MRESReturn DHookCallback_GetMaxHealthForBuffing_Post(int client, DHookReturn ret)
+{
+	if (DRPlayer(client).IsActivator())
+	{
+		int maxhealth = ret.Value;
+		
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (client != i && IsValidClient(i) && IsPlayerAlive(i) && !DRPlayer(i).IsActivator())
+				maxhealth += RoundFloat(TF2_GetMaxHealth(i) * dr_activator_health_modifier.FloatValue);
+		}
+		
+		maxhealth /= dr_activator_count.IntValue;
+		
+		//Refill the activator's health during preround
+		if (GameRules_GetRoundState() == RoundState_Preround)
+			SetEntityHealth(client, maxhealth);
+		
+		ret.Value = maxhealth;
+		return MRES_Supercede;
 	}
 	
 	return MRES_Ignored;
