@@ -45,7 +45,6 @@ void Console_Init()
 	RegAdminCmd2("addqueue", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
 	RegAdminCmd2("addqueuepoints", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
 	
-	AddCommandListener(CommandListener_Build, "build");
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
 	AddCommandListener(CommandListener_JoinTeam, "autoteam");
 	AddCommandListener(CommandListener_JoinTeam, "spectate");
@@ -190,12 +189,6 @@ public Action ConCmd_AddQueuePoints(int client, int args)
 		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Added", amount, "_s", target_name);
 	}
 	
-	return Plugin_Handled;
-}
-
-public Action CommandListener_Build(int client, const char[] command, int argc)
-{
-	//Disallow building
 	return Plugin_Handled;
 }
 
