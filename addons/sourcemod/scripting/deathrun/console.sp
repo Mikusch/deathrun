@@ -31,6 +31,7 @@ void Console_Init()
 	
 	RegConsoleCmd("dr", ConCmd_DeathrunMenu);
 	RegConsoleCmd("deathrun", ConCmd_DeathrunMenu);
+	RegConsoleCmd2("menu", ConCmd_DeathrunMenu);
 	
 	RegConsoleCmd2("next", ConCmd_QueueMenu);
 	RegConsoleCmd2("queue", ConCmd_QueueMenu);
