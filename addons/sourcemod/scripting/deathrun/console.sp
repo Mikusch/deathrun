@@ -24,30 +24,38 @@ static char g_CommandPrefixes[][] =  {
 
 void Console_Init()
 {
+	AddMultiTargetFilter("@runner", MultiTargetFilter_RunnerTeam, "Target_RunnerTeam", true);
+	AddMultiTargetFilter("@runners", MultiTargetFilter_RunnerTeam, "Target_RunnerTeam", true);
+	AddMultiTargetFilter("@activator", MultiTargetFilter_ActivatorTeam, "Target_ActivatorTeam", true);
+	AddMultiTargetFilter("@activators", MultiTargetFilter_ActivatorTeam, "Target_ActivatorTeam", true);
+	
 	RegConsoleCmd("dr", ConCmd_DeathrunMenu);
 	RegConsoleCmd("deathrun", ConCmd_DeathrunMenu);
+	RegConsoleCmd2("menu", ConCmd_DeathrunMenu);
 	
 	RegConsoleCmd2("next", ConCmd_QueueMenu);
 	RegConsoleCmd2("queue", ConCmd_QueueMenu);
 	RegConsoleCmd2("preferences", ConCmd_PreferencesMenu);
 	RegConsoleCmd2("settings", ConCmd_PreferencesMenu);
 	
-	RegConsoleCmd2("tp", ConCmd_ThirdPerson);
-	RegConsoleCmd2("thirdperson", ConCmd_ThirdPerson);
-	RegConsoleCmd2("fp", ConCmd_FirstPerson);
-	RegConsoleCmd2("firstperson", ConCmd_FirstPerson);
-	
 	RegConsoleCmd2("hide", ConCmd_HideTeammates);
-	RegConsoleCmd2("hideteammates", ConCmd_HideTeammates);
 	RegConsoleCmd2("hideplayers", ConCmd_HideTeammates);
+	RegConsoleCmd2("hideteammates", ConCmd_HideTeammates);
 	
-	AddCommandListener(CommandListener_Build, "build");
+	RegAdminCmd2("addpoints", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
+	RegAdminCmd2("addqueue", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
+	RegAdminCmd2("addqueuepoints", ConCmd_AddQueuePoints, ADMFLAG_CHANGEMAP);
+	
+	RegAdminCmd2("setpoints", ConCmd_SetQueuePoints, ADMFLAG_CHANGEMAP);
+	RegAdminCmd2("setqueue", ConCmd_SetQueuePoints, ADMFLAG_CHANGEMAP);
+	RegAdminCmd2("setqueuepoints", ConCmd_SetQueuePoints, ADMFLAG_CHANGEMAP);
+	
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
 	AddCommandListener(CommandListener_JoinTeam, "autoteam");
 	AddCommandListener(CommandListener_JoinTeam, "spectate");
 }
 
-stock void RegConsoleCmd2(const char[] cmd, ConCmd callback)
+void RegConsoleCmd2(const char[] cmd, ConCmd callback)
 {
 	for (int i = 0; i < sizeof(g_CommandPrefixes); i++)
 	{
@@ -55,6 +63,38 @@ stock void RegConsoleCmd2(const char[] cmd, ConCmd callback)
 		Format(buffer, sizeof(buffer), "%s%s", g_CommandPrefixes[i], cmd);
 		RegConsoleCmd(buffer, callback);
 	}
+}
+
+void RegAdminCmd2(const char[] cmd, ConCmd callback, int adminflags)
+{
+	for (int i = 0; i < sizeof(g_CommandPrefixes); i++)
+	{
+		char buffer[256];
+		Format(buffer, sizeof(buffer), "%s%s", g_CommandPrefixes[i], cmd);
+		RegAdminCmd(buffer, callback, adminflags);
+	}
+}
+
+public bool MultiTargetFilter_RunnerTeam(const char[] pattern, ArrayList clients)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
+			clients.Push(client);
+	}
+	
+	return clients.Length > 0;
+}
+
+public bool MultiTargetFilter_ActivatorTeam(const char[] pattern, ArrayList clients)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Activators)
+			clients.Push(client);
+	}
+	
+	return clients.Length > 0;
 }
 
 public Action ConCmd_DeathrunMenu(int client, int args)
@@ -93,58 +133,6 @@ public Action ConCmd_PreferencesMenu(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action ConCmd_ThirdPerson(int client, int args)
-{
-	if (client == 0)
-	{
-		ReplyToCommand(client, "%t", "Command is in-game only");
-		return Plugin_Handled;
-	}
-	
-	if (!dr_allow_thirdperson.BoolValue)
-	{
-		PrintMessage(client, "%t", "Command_Disabled");
-		return Plugin_Handled;
-	}
-	
-	SetVariantInt(true);
-	if (AcceptEntityInput(client, "SetForcedTauntCam"))
-	{
-		DRPlayer(client).InThirdPerson = true;
-		
-		if (!IsPlayerAlive(client) || TF2_IsPlayerInCondition(client, TFCond_Taunting))
-			PrintMessage(client, "%t", "Command_ThirdPerson_Enabled");
-	}
-	
-	return Plugin_Handled;
-}
-
-public Action ConCmd_FirstPerson(int client, int args)
-{
-	if (client == 0)
-	{
-		ReplyToCommand(client, "%t", "Command is in-game only");
-		return Plugin_Handled;
-	}
-	
-	if (!dr_allow_thirdperson.BoolValue)
-	{
-		PrintMessage(client, "%t", "Command_Disabled");
-		return Plugin_Handled;
-	}
-	
-	SetVariantInt(false);
-	if (AcceptEntityInput(client, "SetForcedTauntCam"))
-	{
-		DRPlayer(client).InThirdPerson = false;
-		
-		if (!IsPlayerAlive(client) || TF2_IsPlayerInCondition(client, TFCond_Taunting))
-			PrintMessage(client, "%t", "Command_ThirdPerson_Disabled");
-	}
-	
-	return Plugin_Handled;
-}
-
 public Action ConCmd_HideTeammates(int client, int args)
 {
 	if (client == 0)
@@ -156,14 +144,104 @@ public Action ConCmd_HideTeammates(int client, int args)
 	DRPlayer player = DRPlayer(client);
 	player.IsHidingTeammates = !player.IsHidingTeammates;
 	
-	PrintMessage(client, "%t", player.IsHidingTeammates ? "Command_HideTeammates_Enabled" : "Command_HideTeammates_Disabled");
+	CPrintToChat(client, PLUGIN_TAG ... " %t", player.IsHidingTeammates ? "Command_HideTeammates_Enabled" : "Command_HideTeammates_Disabled");
 	
 	return Plugin_Handled;
 }
 
-public Action CommandListener_Build(int client, const char[] command, int argc)
+public Action ConCmd_AddQueuePoints(int client, int args)
 {
-	//Disallow building
+	if (args < 2)
+	{
+		CReplyToCommand(client, PLUGIN_TAG ... " %t", "Command_AddQueuePoints_Usage");
+		return Plugin_Handled;
+	}
+	
+	char arg[MAX_TARGET_LENGTH];
+	GetCmdArg(1, arg, sizeof(arg));
+	
+	int amount = 0;
+	char arg2[16];
+	GetCmdArg(2, arg2, sizeof(arg2));
+	if (StringToIntEx(arg2, amount) == 0 || amount <= 0)
+	{
+		CReplyToCommand(client, PLUGIN_TAG ... " %t", "Invalid Amount");
+		return Plugin_Handled;
+	}
+	
+	int[] target_list = new int[MaxClients + 1];
+	char target_name[MAX_TARGET_LENGTH];
+	bool tn_is_ml;
+	int target_count;
+	
+	if ((target_count = ProcessTargetString(arg, client, target_list, MaxClients + 1, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+	{
+		CReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+	
+	for (int i = 0; i < target_count; i++)
+	{
+		Queue_AddPoints(target_list[i], amount);
+	}
+	
+	if (tn_is_ml)
+	{
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Success", amount, target_name);
+	}
+	else
+	{
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_AddQueuePoints_Success", amount, "_s", target_name);
+	}
+	
+	return Plugin_Handled;
+}
+
+public Action ConCmd_SetQueuePoints(int client, int args)
+{
+	if (args < 2)
+	{
+		CReplyToCommand(client, PLUGIN_TAG ... " %t", "Command_SetQueuePoints_Usage");
+		return Plugin_Handled;
+	}
+	
+	char arg[MAX_TARGET_LENGTH];
+	GetCmdArg(1, arg, sizeof(arg));
+	
+	int amount = 0;
+	char arg2[16];
+	GetCmdArg(2, arg2, sizeof(arg2));
+	if (StringToIntEx(arg2, amount) == 0 || amount < 0)
+	{
+		CReplyToCommand(client, PLUGIN_TAG ... " %t", "Invalid Amount");
+		return Plugin_Handled;
+	}
+	
+	int[] target_list = new int[MaxClients + 1];
+	char target_name[MAX_TARGET_LENGTH];
+	bool tn_is_ml;
+	int target_count;
+	
+	if ((target_count = ProcessTargetString(arg, client, target_list, MaxClients + 1, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+	{
+		CReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+	
+	for (int i = 0; i < target_count; i++)
+	{
+		Queue_SetPoints(target_list[i], amount);
+	}
+	
+	if (tn_is_ml)
+	{
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_SetQueuePoints_Success", target_name, amount);
+	}
+	else
+	{
+		CShowActivity2(client, "{default}" ... PLUGIN_TAG ... " ", "%t", "Command_SetQueuePoints_Success", "_s", target_name, amount);
+	}
+	
 	return Plugin_Handled;
 }
 

@@ -48,7 +48,7 @@ public Action Timer_PrintChatTip(Handle timer)
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client) && !DRPlayer(client).HasPreference(Preference_HideChatTips))
-			PrintMessage(client, "%t", tip);
+			CPrintToChat(client, PLUGIN_TAG ... " %t", tip);
 	}
 	
 	return Plugin_Continue;

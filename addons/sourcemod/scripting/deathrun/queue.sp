@@ -24,7 +24,7 @@ ArrayList Queue_GetQueueList()
 	{
 		if (Queue_IsClientAllowed(client))
 		{
-			queue.Set(length, DRPlayer(client).QueuePoints, 0); //block 0 gets sorted
+			queue.Set(length, DRPlayer(client).QueuePoints, 0);	//block 0 gets sorted
 			queue.Set(length, client, 1);
 			length++;
 		}
@@ -41,7 +41,7 @@ void Queue_SetNextActivatorsFromQueue()
 	
 	ArrayList queue = Queue_GetQueueList();
 	
-	for (int i = 0; i < dr_num_activators.IntValue; i++)
+	for (int i = 0; i < dr_activator_count.IntValue; i++)
 	{
 		int activator;
 		
@@ -65,7 +65,7 @@ void Queue_SetNextActivatorsFromQueue()
 			}
 			
 			activator = clients[GetRandomInt(0, numClients - 1)];
-			PrintMessage(activator, "%t", "Queue_ChosenAsRandomActivator");
+			CPrintToChat(activator, PLUGIN_TAG ... " %t", "Queue_ChosenAsRandomActivator");
 		}
 		
 		g_CurrentActivators.Push(activator);
@@ -75,25 +75,32 @@ void Queue_SetNextActivatorsFromQueue()
 	delete queue;
 }
 
-void Queue_AddPoints(int client, int points)
+void Queue_AwardPoints(int client, int points)
 {
 	DRPlayer player = DRPlayer(client);
 	
 	if (player.QueuePoints == -1)
 	{
-		PrintMessage(client, "%t", "Queue_NoPointsAwarded_NotLoaded");
+		CPrintToChat(client, PLUGIN_TAG ... " %t", "Queue_NoPointsAwarded_NotLoaded");
 		return;
 	}
 	else if (DRPlayer(client).HasPreference(Preference_DontBeActivator))
 	{
-		PrintMessage(client, "%t", "Queue_NoPointsAwarded_Preferences");
+		CPrintToChat(client, PLUGIN_TAG ... " %t", "Queue_NoPointsAwarded_Preferences");
 		return;
 	}
 	
 	player.QueuePoints += points;
 	Cookies_SaveQueue(client, player.QueuePoints);
 	
-	PrintMessage(client, "%t", "Queue_PointsAwarded", dr_queue_points.IntValue, player.QueuePoints);
+	CPrintToChat(client, PLUGIN_TAG ... " %t", "Queue_PointsAwarded", dr_queue_points.IntValue, player.QueuePoints);
+}
+
+void Queue_AddPoints(int client, int points)
+{
+	DRPlayer player = DRPlayer(client);
+	player.QueuePoints += points;
+	Cookies_SaveQueue(client, player.QueuePoints);
 }
 
 void Queue_SetPoints(int client, int points)
@@ -105,15 +112,8 @@ void Queue_SetPoints(int client, int points)
 
 bool Queue_IsClientAllowed(int client)
 {
-	if (IsValidClient(client)
-		 && TF2_GetClientTeam(client) > TFTeam_Spectator	//Is the client not in spectator team?
-		 && DRPlayer(client).QueuePoints != -1	//Does the client have their queue points loaded?
-		 && !DRPlayer(client).HasPreference(Preference_DontBeActivator))	//Does the client want to be the activator?
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return IsValidClient(client)
+	 && TF2_GetClientTeam(client) > TFTeam_Spectator	//Is the client not in spectator team?
+	 && DRPlayer(client).QueuePoints != -1	//Does the client have their queue points loaded?
+	 && !DRPlayer(client).HasPreference(Preference_DontBeActivator);	//Does the client want to be the activator?
 }

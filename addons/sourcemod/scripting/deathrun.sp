@@ -30,9 +30,10 @@
 
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
-#define PLUGIN_DESCRIPTION	"Team Fortress 2 Deathrun"
-#define PLUGIN_VERSION		"1.4.2"
+#define PLUGIN_VERSION		"1.5.0"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
+
+#define PLUGIN_TAG		"[{primary}" ... PLUGIN_NAME ... "{default}]"
 
 #define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
 
@@ -100,11 +101,12 @@ char g_PreferenceNames[][] =  {
 };
 
 ConVar dr_queue_points;
-ConVar dr_allow_thirdperson;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
-ConVar dr_num_activators;
-ConVar dr_scout_speed_penalty;
+ConVar dr_activator_count;
+ConVar dr_activator_health_modifier;
+ConVar dr_activator_healthbar;
+ConVar dr_speed_modifier[view_as<int>(TFClassType)];
 
 ArrayList g_CurrentActivators;
 
@@ -126,7 +128,7 @@ ArrayList g_CurrentActivators;
 public Plugin pluginInfo =  {
 	name = PLUGIN_NAME, 
 	author = PLUGIN_AUTHOR, 
-	description = PLUGIN_DESCRIPTION, 
+	description = "Team Fortress 2 Deathrun", 
 	version = PLUGIN_VERSION, 
 	url = PLUGIN_URL
 };
@@ -136,10 +138,10 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases.txt");
 	LoadTranslations("deathrun.phrases.txt");
 	
-	CAddColor("primary", 0x4285F4);
-	CAddColor("secondary", 0xAA66CC);
-	CAddColor("success", 0x00C851);
-	CAddColor("danger", 0xFF4444);
+	CAddColor("primary", 0x4B69FF);
+	CAddColor("secondary", 0xFF9F4B);
+	CAddColor("positive", 0x00C851);
+	CAddColor("negative", 0xFF4444);
 	
 	AddNormalSoundHook(OnSoundPlayed);
 	
@@ -201,8 +203,47 @@ public void OnClientDisconnect(int client)
 		g_CurrentActivators.Erase(index);
 	
 	DRPlayer(client).Reset();
-	
-	UpdateActivatorHealth(-TF2_GetMaxHealth(client), false);
+}
+
+public void OnGameFrame()
+{
+	if (dr_activator_healthbar.BoolValue)
+	{
+		int monsterResource = FindEntityByClassname(MaxClients + 1, "monster_resource");
+		if (monsterResource != -1)
+		{
+			int maxhealth, health;
+			
+			for (int client = 1; client <= MaxClients; client++)
+			{
+				if (IsClientInGame(client) && DRPlayer(client).IsActivator())
+				{
+					if (IsPlayerAlive(client))
+						health += GetEntProp(client, Prop_Send, "m_iHealth");
+					
+					maxhealth += TF2_GetMaxHealth(client);
+				}
+			}
+			
+			static float nextHealthBarHideTime;
+			static int oldHealthBarValue;
+			
+			int healthBarValue = Min(RoundFloat(float(health) / float(maxhealth) * 255), 255);
+			
+			if (GameRules_GetRoundState() == RoundState_Preround || (oldHealthBarValue != 0 && oldHealthBarValue != healthBarValue))
+			{
+				nextHealthBarHideTime = GetGameTime() + 10.0;
+				oldHealthBarValue = healthBarValue;
+				
+				SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", healthBarValue);
+			}
+			else if (nextHealthBarHideTime <= GetGameTime())
+			{
+				//Hide the health bar if it hasn't changed in a while
+				SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
+			}
+		}
+	}
 }
 
 public void OnEntityCreated(int entity, const char[] classname)
@@ -289,24 +330,4 @@ static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int 
 	}
 	
 	return action;
-}
-
-void UpdateActivatorHealth(int value, bool refill)
-{
-	for (int i = 0; i < g_CurrentActivators.Length; i++)
-	{
-		int activator = g_CurrentActivators.Get(i);
-		if (IsClientInGame(activator))
-		{
-			Address address = TF2Attrib_GetByName(activator, "max health additive bonus");
-			if (address != Address_Null)
-			{
-				TF2Attrib_SetValue(address, FloatMax(TF2Attrib_GetValue(address) + float(value) / dr_num_activators.FloatValue, 0.0));
-				TF2Attrib_ClearCache(activator);
-				
-				if (refill)
-					SetEntityHealth(activator, GetEntProp(activator, Prop_Send, "m_iHealth") + value / dr_num_activators.IntValue);
-			}
-		}
-	}
 }

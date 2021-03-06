@@ -28,25 +28,12 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 {
 	int numActivators;
 	
-	//Calculate max health to grant to activators
-	int maxHealth;
-	for (int client = 1; client <= MaxClients; client++)
-	{
-		if (IsClientInGame(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
-			maxHealth += TF2_GetMaxHealth(client);
-	}
-	
 	//Iterate all chosen activators and check if they are still in-game
 	for (int i = 0; i < g_CurrentActivators.Length; i++)
 	{
 		int activator = g_CurrentActivators.Get(i);
 		if (IsClientInGame(activator))
-		{
-			TF2Attrib_SetByName(activator, "max health additive bonus", float(maxHealth) / dr_num_activators.FloatValue);
-			SetEntityHealth(activator, TF2_GetMaxHealth(activator) + maxHealth / dr_num_activators.IntValue);
-			
 			numActivators++;
-		}
 	}
 	
 	if (numActivators > 1)	//Multiple activators
@@ -56,15 +43,15 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 			if (IsClientInGame(client))
 			{
 				if (DRPlayer(client).IsActivator())
-					PrintMessage(client, "%t", "RoundStart_MultipleActivators_Activator");
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_MultipleActivators_Activator");
 				else
-					PrintMessage(client, "%t", "RoundStart_MultipleActivators_Runners");
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_MultipleActivators_Runners");
 			}
 		}
 	}
 	else if (numActivators < 1)	//No activators
 	{
-		PrintMessageToAll("%t", "RoundStart_Activator_Disconnected", FindConVar("mp_bonusroundtime").IntValue);
+		CPrintToChatAll(PLUGIN_TAG ... " %t", "RoundStart_Activator_Disconnected", FindConVar("mp_bonusroundtime").IntValue);
 	}
 	else	//One activator
 	{
@@ -77,9 +64,9 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 			if (IsClientInGame(client))
 			{
 				if (client == activator)
-					PrintMessage(client, "%t", "RoundStart_NewActivator_Activator");
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Activator");
 				else
-					PrintMessage(client, "%t", "RoundStart_NewActivator_Runners", activatorName);
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Runners", activatorName);
 			}
 		}
 	}
@@ -97,8 +84,6 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 	
 	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
 	{
-		UpdateActivatorHealth(-TF2_GetMaxHealth(victim), false);
-		
 		//Rewrite death event to credit activator
 		if (g_CurrentActivators.Length == 1)
 		{
@@ -117,10 +102,6 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	int client = GetClientOfUserId(userid);
 	
 	Config_Apply(client);
-	
-	//If this is a latespawn, give the activator health
-	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(client).IsActivator())
-		CreateTimer(0.2, Timer_UpdateActivatorHealth, userid);
 	
 	if (DRPlayer(client).InThirdPerson)
 		CreateTimer(0.2, Timer_SetThirdPerson, userid);
@@ -190,18 +171,15 @@ public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool do
 	
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		DRPlayer player = DRPlayer(client);
 		if (IsClientInGame(client))
 		{
 			if (team == TFTeam_Activators)
-				PrintMessage(client, "%t", "RoundWin_Activator");
+				CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundWin_Activator");
 			else if (team == TFTeam_Runners)
-				PrintMessage(client, "%t", "RoundWin_Runners");
+				CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundWin_Runners");
 			
-			if (player.IsActivator())
-				TF2Attrib_RemoveByName(client, "max health additive bonus");
-			else if (TF2_GetClientTeam(client) != TFTeam_Spectator)
-				Queue_AddPoints(client, dr_queue_points.IntValue);
+			if (TF2_GetClientTeam(client) == TFTeam_Runners)
+				Queue_AwardPoints(client, dr_queue_points.IntValue);
 		}
 	}
 }
@@ -231,11 +209,6 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 			}
 		}
 	}
-}
-
-public Action Timer_UpdateActivatorHealth(Handle timer, int userid)
-{
-	UpdateActivatorHealth(TF2_GetMaxHealth(GetClientOfUserId(userid)), true);
 }
 
 public Action Timer_SetThirdPerson(Handle timer, int userid)

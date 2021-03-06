@@ -17,15 +17,14 @@
 
 static char g_OwnerEntityList[][] =  {
 	"env_sniperdot", 
-	"gib", 
 	"halloween_souls_pack", 
+	"light_dynamic", 
+	"info_particle_system", 
 	"item_healthkit", 
 	"tf_ammo_pack", 
 	"tf_bonus_duck_pickup", 
 	"tf_flame", 
-	"tf_halloween_pickup", 
-	"tf_weapon", 
-	"tf_wearable"
+	"tf_halloween_pickup"
 };
 
 void SDKHooks_OnClientPutInServer(int client)
@@ -39,69 +38,62 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 	{
 		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
 		{
-			RemoveAlwaysTransmit(entity);
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnedEntitySetTransmit);
+			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnerEntitySetTransmit);
 		}
-	}
-	
-	if (StrContains(classname, "tf_projectile") != -1)
-	{
-		RemoveAlwaysTransmit(entity);
-		SDKHook(entity, SDKHook_SetTransmit, HasEntProp(entity, Prop_Send, "m_hThrower") ? SDKHookCB_ThrownEntitySetTransmit : SDKHookCB_OwnedEntitySetTransmit);
-	}
-	
-	if (StrEqual(classname, "tf_ragdoll"))
-	{
-		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_RagdollSetTransmit);
 	}
 	
 	if (StrEqual(classname, "tf_dropped_weapon"))
 	{
 		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_DroppedWeaponSetTransmit);
 	}
+	
+	if (StrEqual(classname, "vgui_screen"))
+	{
+		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_VGUIScreenSetTransmit);
+	}
+	
+	if (strncmp(classname, "obj_", 4) == 0)
+	{
+		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ObjectSetTransmit);
+	}
+	
+	if (strncmp(classname, "tf_projectile_", 14) == 0)
+	{
+		if (HasEntProp(entity, Prop_Send, "m_hThrower"))
+			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ThrowerEntitySetTransmit);
+		else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
+			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnerEntitySetTransmit);
+	}
 }
 
 public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 {
-	RemoveAlwaysTransmit(entity);
-	
 	if (DRPlayer(client).CanHideClient(entity))
+	{
+		//Force player's items to not transmit
+		for (int slot = 0; slot <= ItemSlot_Misc2; slot++)
+		{
+			int item = TF2_GetItemInSlot(entity, slot);
+			if (IsValidEntity(item))
+				SetEdictFlags(item, (GetEdictFlags(item) & ~FL_EDICT_ALWAYS));
+		}
+		
+		//Force disguise weapon to not transmit
+		int disguiseWeapon = GetEntPropEnt(entity, Prop_Send, "m_hDisguiseWeapon");
+		if (IsValidEntity(disguiseWeapon))
+			SetEdictFlags(disguiseWeapon, (GetEdictFlags(disguiseWeapon) & ~FL_EDICT_ALWAYS));
+		
 		return Plugin_Handled;
+	}
 	
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_ThrownEntitySetTransmit(int entity, int client)
+public Action SDKHookCB_OwnerEntitySetTransmit(int entity, int client)
 {
-	RemoveAlwaysTransmit(entity);
-	
-	int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
-	if (IsValidClient(thrower) && DRPlayer(client).CanHideClient(thrower))
-		return Plugin_Handled;
-	
-	return Plugin_Continue;
-}
-
-public Action SDKHookCB_OwnedEntitySetTransmit(int entity, int client)
-{
-	RemoveAlwaysTransmit(entity);
-	
 	int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 	if (IsValidClient(owner) && DRPlayer(client).CanHideClient(owner))
 		return Plugin_Handled;
-	
-	return Plugin_Continue;
-}
-
-public Action SDKHookCB_RagdollSetTransmit(int entity, int client)
-{
-	int playerIndex = GetEntProp(entity, Prop_Send, "m_iPlayerIndex");
-	if (IsValidClient(playerIndex) && DRPlayer(client).CanHideClient(playerIndex))
-	{
-		//We need to remove the flag here instead because otherwise no ragdolls get created for anyone
-		RemoveAlwaysTransmit(entity);
-		return Plugin_Handled;
-	}
 	
 	return Plugin_Continue;
 }
@@ -111,9 +103,46 @@ public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
 	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsClientConnected(i) && GetSteamAccountID(i, false) == accountID && DRPlayer(client).CanHideClient(i))
+		if (IsClientConnected(i) && (IsFakeClient(i) || GetSteamAccountID(i, false) == accountID) && DRPlayer(client).CanHideClient(i))
 			return Plugin_Handled;
 	}
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_VGUIScreenSetTransmit(int entity, int client)
+{
+	int obj = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+	if (IsValidEntity(obj) && HasEntProp(obj, Prop_Send, "m_hBuilder"))
+	{
+		int builder = GetEntPropEnt(obj, Prop_Send, "m_hBuilder");
+		if (IsValidClient(builder) && DRPlayer(client).CanHideClient(builder))
+			return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_ObjectSetTransmit(int entity, int client)
+{
+	int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
+	if (IsValidClient(builder) && DRPlayer(client).CanHideClient(builder))
+	{
+		//Level 3 sentry guns always transmit
+		if (TF2_GetObjectType(entity) == TFObject_Sentry && GetEntProp(entity, Prop_Send, "m_iUpgradeLevel") == 3)
+			SetEdictFlags(entity, (GetEdictFlags(entity) & ~FL_EDICT_ALWAYS));
+		
+		return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_ThrowerEntitySetTransmit(int entity, int client)
+{
+	int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
+	if (IsValidClient(thrower) && DRPlayer(client).CanHideClient(thrower))
+		return Plugin_Handled;
 	
 	return Plugin_Continue;
 }

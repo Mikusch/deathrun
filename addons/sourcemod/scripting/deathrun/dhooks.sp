@@ -22,6 +22,7 @@ void DHooks_Init(GameData gamedata)
 	g_DHookSetWinningTeam = DHooks_CreateVirtualHook(gamedata, "CTeamplayRoundBasedRules::SetWinningTeam");
 	
 	DHooks_CreateDetour(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed", _, DHookCallback_CalculateMaxSpeed_Post);
+	DHooks_CreateDetour(gamedata, "CTFPlayer::GetMaxHealthForBuffing", _, DHookCallback_GetMaxHealthForBuffing_Post);
 }
 
 static DynamicHook DHooks_CreateVirtualHook(GameData gamedata, const char[] name)
@@ -75,8 +76,8 @@ public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 		
 		EmitGameSoundToAll(GAMESOUND_EXPLOSION);
 		
-		param.Set(1, TFTeam_Activators); //team
-		param.Set(2, WINREASON_TIMELIMIT); //iWinReason
+		param.Set(1, TFTeam_Activators);	//team
+		param.Set(2, WINREASON_TIMELIMIT);	//iWinReason
 		return MRES_ChangedOverride;
 	}
 	
@@ -85,11 +86,42 @@ public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 
 public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret)
 {
-	//We don't want speedy scouts
-	if (IsClientInGame(client) && TF2_GetPlayerClass(client) == TFClass_Scout)
+	if (IsClientInGame(client))
 	{
-		float speed = ret.Value;
-		ret.Value = FloatMax(speed - dr_scout_speed_penalty.FloatValue, 1.0);
+		//Modify player speed based on their class
+		TFClassType class = TF2_GetPlayerClass(client);
+		if (class != TFClass_Unknown)
+		{
+			float speed = ret.Value;
+			float modifier = dr_speed_modifier[0].FloatValue + dr_speed_modifier[class].FloatValue;
+			ret.Value = Max(speed + modifier, 1.0);
+			
+			return MRES_Supercede;
+		}
+	}
+	
+	return MRES_Ignored;
+}
+
+public MRESReturn DHookCallback_GetMaxHealthForBuffing_Post(int client, DHookReturn ret)
+{
+	if (DRPlayer(client).IsActivator())
+	{
+		int maxhealth = ret.Value;
+		
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (client != i && IsValidClient(i) && IsPlayerAlive(i) && !DRPlayer(i).IsActivator())
+				maxhealth += RoundFloat(TF2_GetMaxHealth(i) * dr_activator_health_modifier.FloatValue);
+		}
+		
+		maxhealth /= dr_activator_count.IntValue;
+		
+		//Refill the activator's health during preround
+		if (GameRules_GetRoundState() == RoundState_Preround)
+			SetEntityHealth(client, maxhealth);
+		
+		ret.Value = maxhealth;
 		return MRES_Supercede;
 	}
 	

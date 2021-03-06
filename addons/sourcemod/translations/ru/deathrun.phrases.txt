@@ -4,14 +4,6 @@
 	{
 		"ru"	"Оператор сервера отключил эту команду."
 	}
-	"Command_ThirdPerson_Enabled"
-	{
-		"ru"	"Вы {success}включили {default}камеру от третьего лица."
-	}
-	"Command_ThirdPerson_Disabled"
-	{
-		"ru"	"Вы {danger}отключили {default}камеру от третьего лица."
-	}
 	"Command_HideTeammates_Enabled"
 	{
 		"ru"	"Ваши товарищи по команде теперь {secondary}невидимы {default}для вас."
@@ -23,32 +15,27 @@
 	
 	"ChatTip_Deathrun"
 	{
-		"ru"	"{success}СОВЕТ: {default}Вы можете получить обзор всех функций и команд с помощью команды {secondary}/deathrun{default} или {secondary}/dr{default}."
+		"ru"	"{positive}СОВЕТ: {default}Вы можете получить обзор всех функций и команд с помощью команды {secondary}/deathrun{default} или {secondary}/dr{default}."
 	}
 	"ChatTip_HideTeammates"
 	{
-		"ru"	"{success}СОВЕТ: {default}Не видно в людных местах? Вы можете скрыть товарищей по команде, мешающим вам, с помощью команды {secondary}/drhide{default}."
+		"ru"	"{positive}СОВЕТ: {default}Не видно в людных местах? Вы можете скрыть товарищей по команде, мешающим вам, с помощью команды {secondary}/drhide{default}."
 	}
 	"ChatTip_ActivatorWeapons"
 	{
-		"ru"	"{success}СОВЕТ: {default}Играя за {blue}активатора{default}, используйте оружие дальнего боя из своего снаряжения, чтобы активировать ловушки издалека."
+		"ru"	"{positive}СОВЕТ: {default}Играя за {blue}активатора{default}, используйте оружие дальнего боя из своего снаряжения, чтобы активировать ловушки издалека."
 	}
 	"ChatTip_CheckQueue"
 	{
-		"ru"	"{success}СОВЕТ: {default}Вы можете проверить очередь активатора с помощью команды {secondary}/drnext{default}."
+		"ru"	"{positive}СОВЕТ: {default}Вы можете проверить очередь активатора с помощью команды {secondary}/drnext{default}."
 	}
 	"ChatTip_DisableChatTips"
 	{
-		"ru"	"{success}СОВЕТ: {default}Вы можете отключить эти подсказки в чате, изменив польз. настройки с помощью команды {secondary}/drsettings{default}."
+		"ru"	"{positive}СОВЕТ: {default}Вы можете отключить эти подсказки в чате, изменив польз. настройки с помощью команды {secondary}/drsettings{default}."
 	}
 	"ChatTip_DisableActivator"
 	{
-		"ru"	"{success}СОВЕТ: {default}Не хотите играть за {blue}активатора{default}? Измените свои польз. настройки с помощью команды {secondary}/drsettings{default}."
-	}
-	
-	"Thirdperson_ForceDisable"
-	{
-		"ru"	"Ваша камера от третьего лица была отключена оператором сервера."
+		"ru"	"{positive}СОВЕТ: {default}Не хотите играть за {blue}активатора{default}? Измените свои польз. настройки с помощью команды {secondary}/drsettings{default}."
 	}
 	
 	"RoundWin_Activator"
@@ -61,7 +48,7 @@
 	}
 	"RoundStart_NewActivator_Runners"
 	{
-		"ru"		"{1} стал {blue}активатором{default}! Избегайте попадания в ловушки и приведите свою команду к победе!"
+		"ru"	"{1} стал {blue}активатором{default}! Избегайте попадания в ловушки и приведите свою команду к победе!"
 	}
 	"RoundStart_NewActivator_Activator"
 	{
@@ -77,16 +64,16 @@
 	}
 	"RoundStart_Activator_Disconnected"
 	{
-		"ru"		"{blue}Активатор {default}отключился! Раунд возобновится через {secondary}{1} {default}сек."
+		"ru"	"{blue}Активатор {default}отключился! Раунд возобновится через {secondary}{1} {default}сек."
 	}
 	
 	"Preferences_Enabled"
 	{
-		"ru"		"Вы успешно {success}включили {default}настройку {secondary}{1}{default}."
+		"ru"	"Вы успешно {positive}включили {default}настройку {secondary}{1}{default}."
 	}
 	"Preferences_Disabled"
 	{
-		"ru"		"Вы успешно {danger}отключили {default}настройку {secondary}{1}{default}."
+		"ru"	"Вы успешно {negative}отключили {default}настройку {secondary}{1}{default}."
 	}
 	
 	"Preference_DontBeActivator"
@@ -108,7 +95,7 @@
 	}
 	"Queue_PointsAwarded"
 	{
-		"ru"		"Вы получили {success}{1} {default}очков очереди (Всего: {success}{2}{default})."
+		"ru"	"Вы получили {positive}{1} {default}очков очереди (Всего: {positive}{2}{default})."
 	}
 	"Queue_ChosenAsRandomActivator"
 	{
@@ -117,7 +104,7 @@
 	
 	"Menu_Main_Title"
 	{
-		"ru"	"Добро пожаловать в %s %s от %s!\n%s"
+		"ru"	"{1} ({2}) от {3}\n{4}"
 	}
 	"Menu_Main_Queue"
 	{
@@ -126,10 +113,6 @@
 	"Menu_Main_Preferences"
 	{
 		"ru"	"Изменить настройки пользователя (/drsettings)"
-	}
-	"Menu_Main_ThirdPerson"
-	{
-		"ru"	"Переключить камеру от третьего лица (/drthirdperson)"
 	}
 	"Menu_Main_HideTeammates"
 	{
@@ -141,7 +124,7 @@
 	}
 	"Menu_Queue_Title_QueuePoints"
 	{
-		"ru"		"Ваши очки очереди: {1}"
+		"ru"	"Ваши очки очереди: {1}"
 	}
 	"Menu_Queue_NotLoaded"
 	{

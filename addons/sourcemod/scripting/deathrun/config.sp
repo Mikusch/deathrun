@@ -242,6 +242,12 @@ void Config_Apply(int client)
 					ItemEntPropConfig entprop;
 					if (config.entprops.GetArray(i, entprop, sizeof(entprop)) > 0)
 					{
+						if (!HasEntProp(item, entprop.type, entprop.name))
+						{
+							LogError("Invalid entity property: %s", entprop.name);
+							continue;
+						}
+						
 						switch (entprop.fieldType)
 						{
 							case PropField_Integer:
