@@ -46,6 +46,7 @@ void ConVars_Init()
 	dr_speed_modifier[6] = CreateConVar("dr_speed_modifier_heavy", "0.0", "Maximum speed modifier for Heavy, in HU/s.");
 	dr_speed_modifier[7] = CreateConVar("dr_speed_modifier_pyro", "0.0", "Maximum speed modifier for Pyro, in HU/s.");
 	dr_speed_modifier[8] = CreateConVar("dr_speed_modifier_spy", "0.0", "Maximum speed modifier for Spy, in HU/s.");
+	dr_backstab_damage = CreateConVar("dr_backstab_damage", "750.0", "Damage dealt to the activator by Spy backstabs. Set to 0 to let the game determine the damage.");
 	dr_speed_modifier[9] = CreateConVar("dr_speed_modifier_engineer", "0.0", "Maximum speed modifier for Engineer, in HU/s.");
 	
 	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);

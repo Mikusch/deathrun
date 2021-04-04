@@ -114,6 +114,7 @@ Any item definition indexes specified in a map-specific item configuration will 
 - `dr_activator_count ( def. "1" )` - Amount of activators chosen at the start of a round.
 - `dr_activator_health_modifier ( def. "1.0" )` - Modifier of the health the activator receives from runners.
 - `dr_activator_healthbar ( def. "1" )` - If enabled, the activator health will be displayed on screen.
+- `dr_backstab_damage ( def. "750.0" )` - Damage dealt to the activator by Spy backstabs. Set to 0 to let the game determine the damage.
 - `dr_speed_modifier ( def. "0.0" )` - Maximum speed modifier for all classes, in HU/s.
     - `dr_speed_modifier_scout ( def. "-80.0" )` - Maximum speed modifier for Scout, in HU/s.
     - `dr_speed_modifier_sniper ( def. "0.0" )` - Maximum speed modifier for Sniper, in HU/s.

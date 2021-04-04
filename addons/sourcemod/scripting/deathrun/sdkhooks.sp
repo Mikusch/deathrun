@@ -30,6 +30,7 @@ static char g_OwnerEntityList[][] =  {
 void SDKHooks_OnClientPutInServer(int client)
 {
 	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_ClientSetTransmit);
+	SDKHook(client, SDKHook_OnTakeDamageAlive, SDKHookCB_ClientOnTakeDamageAlive);
 }
 
 void SDKHooks_OnEntityCreated(int entity, const char[] classname)
@@ -84,6 +85,17 @@ public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 			SetEdictFlags(disguiseWeapon, (GetEdictFlags(disguiseWeapon) & ~FL_EDICT_ALWAYS));
 		
 		return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action SDKHookCB_ClientOnTakeDamageAlive(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+{
+	if (DRPlayer(victim).IsActivator() && damagecustom == TF_CUSTOM_BACKSTAB && dr_backstab_damage.FloatValue > 0.0)
+	{
+		damage = dr_backstab_damage.FloatValue;
+		return Plugin_Changed;
 	}
 	
 	return Plugin_Continue;
