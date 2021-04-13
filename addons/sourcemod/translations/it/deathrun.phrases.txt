@@ -162,7 +162,7 @@
 	}
 	"Menu_Queue_NotLoaded"
 	{
-		"it"		"I tuoi punticoda si stanno ancora caricando, per favore aspetta un momento.
+		"it"		"I tuoi punticoda si stanno ancora caricando, per favore aspetta un momento."
 	}
 	"Menu_Preferences_Title"
 	{
