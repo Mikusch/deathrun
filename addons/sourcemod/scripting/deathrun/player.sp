@@ -39,11 +39,11 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerQueuePoints[this];
+			return g_PlayerQueuePoints[view_as<int>(this)];
 		}
 		public set(int val)
 		{
-			g_PlayerQueuePoints[this] = val;
+			g_PlayerQueuePoints[view_as<int>(this)] = val;
 		}
 	}
 	
@@ -51,11 +51,11 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerPreferences[this];
+			return g_PlayerPreferences[view_as<int>(this)];
 		}
 		public set(int val)
 		{
-			g_PlayerPreferences[this] = val;
+			g_PlayerPreferences[view_as<int>(this)] = val;
 		}
 	}
 	
@@ -63,11 +63,11 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerInThirdPerson[this];
+			return g_PlayerInThirdPerson[view_as<int>(this)];
 		}
 		public set(bool val)
 		{
-			g_PlayerInThirdPerson[this] = val;
+			g_PlayerInThirdPerson[view_as<int>(this)] = val;
 		}
 	}
 	
@@ -75,11 +75,11 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerIsHidingTeammates[this];
+			return g_PlayerIsHidingTeammates[view_as<int>(this)];
 		}
 		public set(bool val)
 		{
-			g_PlayerIsHidingTeammates[this] = val;
+			g_PlayerIsHidingTeammates[view_as<int>(this)] = val;
 		}
 	}
 	

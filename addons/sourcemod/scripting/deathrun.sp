@@ -107,7 +107,7 @@ ConVar dr_activator_count;
 ConVar dr_activator_health_modifier;
 ConVar dr_activator_healthbar;
 ConVar dr_backstab_damage;
-ConVar dr_speed_modifier[view_as<int>(TFClassType)];
+ConVar dr_speed_modifier[/*view_as<int>(TFClassType)*/10];
 
 ArrayList g_CurrentActivators;
 
@@ -134,7 +134,12 @@ public Plugin pluginInfo =  {
 	url = PLUGIN_URL
 };
 
-public void OnPluginStart()
+public APLRes AskPluginLoad2(Handle self, bool late, char[] error, int err_max)
+{
+	if(late) OnMapStart();
+}
+
+public void PluginStart()
 {
 	LoadTranslations("common.phrases.txt");
 	LoadTranslations("deathrun.phrases.txt");
@@ -181,6 +186,9 @@ public void OnPluginEnd()
 
 public void OnMapStart()
 {
+	char map[5]; GetCurrentMap(map, sizeof(map));
+	if(StrContains(map, "dr_", false) != -1) PluginStart();
+	
 	PrecacheScriptSound(GAMESOUND_EXPLOSION);
 	
 	DHooks_HookGamerules();
