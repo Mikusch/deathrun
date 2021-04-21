@@ -100,6 +100,8 @@ char g_PreferenceNames[][] =  {
 	"Preference_HideChatTips"
 };
 
+bool g_IsMapDR;
+
 ConVar dr_queue_points;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
@@ -187,11 +189,14 @@ public void OnPluginEnd()
 public void OnMapStart()
 {
 	char map[5]; GetCurrentMap(map, sizeof(map));
-	if(StrContains(map, "dr_", false) != -1) PluginStart();
-	
-	PrecacheScriptSound(GAMESOUND_EXPLOSION);
-	
-	DHooks_HookGamerules();
+	if(StrContains(map, "dr_", false) != -1)
+	{
+		g_IsMapDR = true;
+		PluginStart();
+		PrecacheScriptSound(GAMESOUND_EXPLOSION);
+		DHooks_HookGamerules();
+	}
+	else g_IsMapDR = false;
 }
 
 public void OnClientPutInServer(int client)
