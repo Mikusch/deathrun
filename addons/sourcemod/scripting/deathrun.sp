@@ -190,7 +190,6 @@ public void OnMapStart()
 	if(StrContains(map, "dr_", false) != -1)
 	{
 		g_IsMapDR = true;
-		//PluginStart();
 		PrecacheScriptSound(GAMESOUND_EXPLOSION);
 		DHooks_HookGamerules();
 		ConVars_Enable();
