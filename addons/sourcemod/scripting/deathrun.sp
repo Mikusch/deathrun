@@ -187,8 +187,8 @@ public void OnPluginEnd()
 
 public void OnMapStart()
 {
-	char map[5]; GetCurrentMap(map, sizeof(map));
-	if(StrContains(map, "dr_", false) != -1)
+	char map[16]; GetCurrentMap(map, sizeof(map));
+	if(StrContains(map, "dr_", false) != -1 || StrContains(map, "vsh_dr_", false) != -1)
 	{
 		g_Enabled = true;
 		PrecacheScriptSound(GAMESOUND_EXPLOSION);
