@@ -35,7 +35,7 @@ void SDKHooks_OnClientPutInServer(int client)
 
 void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 {
-	if(!g_Enabled) return;
+	if (!g_Enabled) return;
 	
 	for (int i = 0; i < sizeof(g_OwnerEntityList); i++)
 	{
@@ -71,7 +71,7 @@ void SDKHooks_OnEntityCreated(int entity, const char[] classname)
 
 public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	if (DRPlayer(client).CanHideClient(entity))
 	{
@@ -96,7 +96,7 @@ public Action SDKHookCB_ClientSetTransmit(int entity, int client)
 
 public Action SDKHookCB_ClientOnTakeDamageAlive(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	if (DRPlayer(victim).IsActivator() && damagecustom == TF_CUSTOM_BACKSTAB && dr_backstab_damage.FloatValue > 0.0)
 	{
@@ -109,7 +109,7 @@ public Action SDKHookCB_ClientOnTakeDamageAlive(int victim, int &attacker, int &
 
 public Action SDKHookCB_OwnerEntitySetTransmit(int entity, int client)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 	if (IsValidClient(owner) && DRPlayer(client).CanHideClient(owner))
@@ -120,7 +120,7 @@ public Action SDKHookCB_OwnerEntitySetTransmit(int entity, int client)
 
 public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
 	for (int i = 1; i <= MaxClients; i++)
@@ -134,7 +134,7 @@ public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
 
 public Action SDKHookCB_VGUIScreenSetTransmit(int entity, int client)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	int obj = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 	if (IsValidEntity(obj) && HasEntProp(obj, Prop_Send, "m_hBuilder"))
@@ -149,7 +149,7 @@ public Action SDKHookCB_VGUIScreenSetTransmit(int entity, int client)
 
 public Action SDKHookCB_ObjectSetTransmit(int entity, int client)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
 	if (IsValidClient(builder) && DRPlayer(client).CanHideClient(builder))
@@ -166,7 +166,7 @@ public Action SDKHookCB_ObjectSetTransmit(int entity, int client)
 
 public Action SDKHookCB_ThrowerEntitySetTransmit(int entity, int client)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
 	if (IsValidClient(thrower) && DRPlayer(client).CanHideClient(thrower))

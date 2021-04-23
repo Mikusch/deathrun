@@ -99,7 +99,7 @@ public bool MultiTargetFilter_ActivatorTeam(const char[] pattern, ArrayList clie
 
 public Action ConCmd_DeathrunMenu(int client, int args)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	if (client == 0)
 	{
@@ -113,7 +113,7 @@ public Action ConCmd_DeathrunMenu(int client, int args)
 
 public Action ConCmd_QueueMenu(int client, int args)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	if (client == 0)
 	{
@@ -127,7 +127,7 @@ public Action ConCmd_QueueMenu(int client, int args)
 
 public Action ConCmd_PreferencesMenu(int client, int args)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	if (client == 0)
 	{
@@ -141,7 +141,7 @@ public Action ConCmd_PreferencesMenu(int client, int args)
 
 public Action ConCmd_HideTeammates(int client, int args)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	if (client == 0)
 	{
@@ -159,7 +159,7 @@ public Action ConCmd_HideTeammates(int client, int args)
 
 public Action ConCmd_AddQueuePoints(int client, int args)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	if (args < 2)
 	{
@@ -209,7 +209,7 @@ public Action ConCmd_AddQueuePoints(int client, int args)
 
 public Action ConCmd_SetQueuePoints(int client, int args)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	if (args < 2)
 	{
@@ -259,7 +259,7 @@ public Action ConCmd_SetQueuePoints(int client, int args)
 
 public Action CommandListener_JoinTeam(int client, const char[] command, int argc)
 {
-	if(!g_Enabled) return Plugin_Continue;
+	if (!g_Enabled) return Plugin_Continue;
 	
 	char team[64];
 	if (strcmp(command, "spectate") == 0)
