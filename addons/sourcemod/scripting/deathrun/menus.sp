@@ -21,7 +21,7 @@
 
 void Menus_DisplayMainMenu(int client)
 {
-	if(g_Enabled) return;
+	if(!g_Enabled) return;
 	
 	Menu menu = new Menu(MenuHandler_MainMenu, MenuAction_Select | MenuAction_End | MenuAction_DrawItem | MenuAction_DisplayItem);
 	
@@ -76,7 +76,7 @@ public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int pa
 
 void Menus_DisplayQueueMenu(int client)
 {
-	if(g_Enabled) return;
+	if(!g_Enabled) return;
 	
 	ArrayList queue = Queue_GetQueueList();
 	if (queue.Length > 0)
@@ -128,7 +128,7 @@ public int MenuHandler_QueueMenu(Menu menu, MenuAction action, int param1, int p
 
 void Menus_DisplayPreferencesMenu(int client)
 {
-	if(g_Enabled) return;
+	if(!g_Enabled) return;
 	
 	if (DRPlayer(client).Preferences != -1)
 	{
