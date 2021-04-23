@@ -59,8 +59,8 @@ void ConVars_Init()
 	ConVars_Add("mp_teams_unbalance_limit", "0");
 	ConVars_Add("tf_arena_first_blood", "0");
 	ConVars_Add("tf_arena_use_queue", "0");
-	ConVars_Add("tf_avoidteammates_pushaway", "0", false);
-	ConVars_Add("tf_scout_air_dash_count", "0", false);
+	ConVars_Add("tf_avoidteammates_pushaway", "0");
+	ConVars_Add("tf_scout_air_dash_count", "0");
 }
 
 void ConVars_Add(const char[] name, const char[] value, bool enforce = true)
@@ -83,7 +83,7 @@ void ConVars_Enable()
 		
 		info.convar.SetString(info.value);
 		
-		//if (info.enforce)
+		if (info.enforce)
 		info.convar.AddChangeHook(ConVarChanged_GameConVar);
 	}
 }
@@ -95,7 +95,7 @@ void ConVars_Disable()
 		ConVarInfo info;
 		g_GameConVars.GetArray(i, info);
 		
-		//if (info.enforce)
+		if (info.enforce)
 		info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
 		
 		info.convar.SetString(info.initialValue);
