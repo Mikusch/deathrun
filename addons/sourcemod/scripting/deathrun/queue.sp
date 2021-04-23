@@ -37,6 +37,8 @@ ArrayList Queue_GetQueueList()
 
 void Queue_SetNextActivatorsFromQueue()
 {
+	if(!g_IsMapDR) return;
+	
 	g_CurrentActivators.Clear();
 	
 	ArrayList queue = Queue_GetQueueList();
@@ -77,6 +79,8 @@ void Queue_SetNextActivatorsFromQueue()
 
 void Queue_AwardPoints(int client, int points)
 {
+	if(!g_IsMapDR) return;
+	
 	DRPlayer player = DRPlayer(client);
 	
 	if (player.QueuePoints == -1)
@@ -98,6 +102,8 @@ void Queue_AwardPoints(int client, int points)
 
 void Queue_AddPoints(int client, int points)
 {
+	if(!g_IsMapDR) return;
+	
 	DRPlayer player = DRPlayer(client);
 	player.QueuePoints += points;
 	Cookies_SaveQueue(client, player.QueuePoints);
@@ -105,6 +111,8 @@ void Queue_AddPoints(int client, int points)
 
 void Queue_SetPoints(int client, int points)
 {
+	if(!g_IsMapDR) return;
+	
 	DRPlayer player = DRPlayer(client);
 	player.QueuePoints = points;
 	Cookies_SaveQueue(client, player.QueuePoints);
@@ -112,6 +120,8 @@ void Queue_SetPoints(int client, int points)
 
 bool Queue_IsClientAllowed(int client)
 {
+	if(!g_IsMapDR) return false;
+	
 	return IsValidClient(client)
 	 && TF2_GetClientTeam(client) > TFTeam_Spectator	//Is the client not in spectator team?
 	 && DRPlayer(client).QueuePoints != -1	//Does the client have their queue points loaded?

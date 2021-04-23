@@ -83,8 +83,8 @@ void ConVars_Enable()
 		
 		info.convar.SetString(info.value);
 		
-		if (info.enforce)
-			info.convar.AddChangeHook(ConVarChanged_GameConVar);
+		//if (info.enforce)
+		info.convar.AddChangeHook(ConVarChanged_GameConVar);
 	}
 }
 
@@ -95,8 +95,8 @@ void ConVars_Disable()
 		ConVarInfo info;
 		g_GameConVars.GetArray(i, info);
 		
-		if (info.enforce)
-			info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
+		//if (info.enforce)
+		info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
 		
 		info.convar.SetString(info.initialValue);
 	}

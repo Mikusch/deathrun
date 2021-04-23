@@ -39,7 +39,7 @@ void Timers_CreateChatTipTimer(float interval)
 
 public Action Timer_PrintChatTip(Handle timer)
 {
-	if (timer != g_ChatTipTimer)
+	if (!g_IsMapDR || timer != g_ChatTipTimer)
 		return Plugin_Stop;
 	
 	char tip[MAX_BUFFER_LENGTH];

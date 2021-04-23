@@ -141,7 +141,7 @@ public APLRes AskPluginLoad2(Handle self, bool late, char[] error, int err_max)
 	if(late) OnMapStart();
 }
 
-public void PluginStart()
+public void OnPluginStart()
 {
 	LoadTranslations("common.phrases.txt");
 	LoadTranslations("deathrun.phrases.txt");
@@ -169,8 +169,6 @@ public void PluginStart()
 	SDKCalls_Init(gamedata);
 	delete gamedata;
 	
-	ConVars_Enable();
-	
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
@@ -192,11 +190,16 @@ public void OnMapStart()
 	if(StrContains(map, "dr_", false) != -1)
 	{
 		g_IsMapDR = true;
-		PluginStart();
+		//PluginStart();
 		PrecacheScriptSound(GAMESOUND_EXPLOSION);
 		DHooks_HookGamerules();
+		ConVars_Enable();
 	}
-	else g_IsMapDR = false;
+	else
+	{
+		g_IsMapDR = false;
+		OnPluginEnd();
+	}
 }
 
 public void OnClientPutInServer(int client)

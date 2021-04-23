@@ -58,6 +58,8 @@ void DHooks_HookGamerules()
 
 public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 {
+	if(!g_IsMapDR) return MRES_Ignored;
+	
 	int winReason = param.Get(2);
 	
 	//The arena timer has no assigned targetname and doesn't fire its OnFinished output before the round ends, making this the only way to detect the timer stalemate
@@ -86,6 +88,8 @@ public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 
 public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret)
 {
+	if(!g_IsMapDR) return MRES_Ignored;
+	
 	if (IsClientInGame(client))
 	{
 		//Modify player speed based on their class
@@ -105,6 +109,8 @@ public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn r
 
 public MRESReturn DHookCallback_GetMaxHealthForBuffing_Post(int client, DHookReturn ret)
 {
+	if(!g_IsMapDR) return MRES_Ignored;
+	
 	if (DRPlayer(client).IsActivator())
 	{
 		int maxhealth = ret.Value;

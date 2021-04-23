@@ -21,6 +21,8 @@
 
 void Menus_DisplayMainMenu(int client)
 {
+	if(!g_IsMapDR) return;
+	
 	Menu menu = new Menu(MenuHandler_MainMenu, MenuAction_Select | MenuAction_End | MenuAction_DrawItem | MenuAction_DisplayItem);
 	
 	menu.SetTitle("%T", "Menu_Main_Title", client, PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_AUTHOR, PLUGIN_URL);
@@ -74,6 +76,8 @@ public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int pa
 
 void Menus_DisplayQueueMenu(int client)
 {
+	if(!g_IsMapDR) return;
+	
 	ArrayList queue = Queue_GetQueueList();
 	if (queue.Length > 0)
 	{
@@ -124,6 +128,8 @@ public int MenuHandler_QueueMenu(Menu menu, MenuAction action, int param1, int p
 
 void Menus_DisplayPreferencesMenu(int client)
 {
+	if(!g_IsMapDR) return;
+	
 	if (DRPlayer(client).Preferences != -1)
 	{
 		Menu menu = new Menu(MenuHandler_PreferencesMenu, MenuAction_Select | MenuAction_Cancel | MenuAction_End | MenuAction_DisplayItem);

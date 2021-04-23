@@ -26,6 +26,8 @@ void Events_Init()
 
 public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!g_IsMapDR) return Plugin_Continue;
+	
 	int numActivators;
 	
 	//Iterate all chosen activators and check if they are still in-game
@@ -76,10 +78,14 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 		if (IsClientInGame(client) && !DRPlayer(client).IsActivator())
 			SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 	}
+	
+	return Plugin_Continue;
 }
 
 public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!g_IsMapDR) return Plugin_Continue;
+	
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	
 	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
@@ -98,6 +104,8 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 
 public Action EventHook_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!g_IsMapDR) return Plugin_Continue;
+	
 	int userid = event.GetInt("userid");
 	int client = GetClientOfUserId(userid);
 	
@@ -107,10 +115,14 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 		CreateTimer(0.2, Timer_SetThirdPerson, userid);
 	
 	RequestFrame(RequestFrameCallback_VerifyTeam, userid);
+	
+	return Plugin_Continue;
 }
 
 public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!g_IsMapDR) return Plugin_Continue;
+	
 	//Arena has a very dumb logic, if all players from a team leave the round will end and then restart without reseting the game state
 	//Catch that issue and don't run our logic!
 	int red, blue;
@@ -140,18 +152,18 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 					if (team == TFTeam_Runners)
 					{
 						TF2_ChangeClientTeamAlive(client, TFTeam_Activators);
-						return;
+						return Plugin_Continue;
 					}
 					else if (team == TFTeam_Activators)
 					{
 						TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
-						return;
+						return Plugin_Continue;
 					}
 				}
 			}
 		}
 		//If we reach this part, either nobody is in the server or everyone is spectating
-		return;
+		return Plugin_Continue;
 	}
 	
 	//New round has begun
@@ -163,10 +175,14 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 		if (IsClientInGame(client) && TF2_GetClientTeam(client) > TFTeam_Spectator && !DRPlayer(client).IsActivator())
 			TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
 	}
+	
+	return Plugin_Continue;
 }
 
 public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
 {
+	if(!g_IsMapDR) return Plugin_Continue;
+	
 	TFTeam team = view_as<TFTeam>(event.GetInt("team"));
 	
 	for (int client = 1; client <= MaxClients; client++)
@@ -182,10 +198,14 @@ public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool do
 				Queue_AwardPoints(client, dr_queue_points.IntValue);
 		}
 	}
+	
+	return Plugin_Continue;
 }
 
 public void RequestFrameCallback_VerifyTeam(int userid)
 {
+	if(!g_IsMapDR) return;
+	
 	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client) && IsClientInGame(client))
 	{
@@ -213,10 +233,14 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 
 public Action Timer_SetThirdPerson(Handle timer, int userid)
 {
+	if(!g_IsMapDR) return Plugin_Stop;
+	
 	int client = GetClientOfUserId(userid);
 	if (DRPlayer(client).InThirdPerson)
 	{
 		SetVariantInt(1);
 		AcceptEntityInput(client, "SetForcedTauntCam");
 	}
+	
+	return Plugin_Stop;
 }

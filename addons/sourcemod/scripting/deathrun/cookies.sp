@@ -26,6 +26,8 @@ void Cookies_Init()
 
 void Cookies_RefreshQueue(int client)
 {
+	if(!g_IsMapDR) return;
+	
 	char value[16];
 	g_CookieQueuePoints.Get(client, value, sizeof(value));
 	DRPlayer(client).QueuePoints = StringToInt(value);
@@ -33,6 +35,8 @@ void Cookies_RefreshQueue(int client)
 
 void Cookies_SaveQueue(int client, int value)
 {
+	if(!g_IsMapDR) return;
+	
 	if (IsValidClient(client))
 	{
 		char strValue[16];
@@ -43,6 +47,8 @@ void Cookies_SaveQueue(int client, int value)
 
 void Cookies_RefreshPreferences(int client)
 {
+	if(!g_IsMapDR) return;
+	
 	char value[16];
 	g_CookiePreferences.Get(client, value, sizeof(value));
 	DRPlayer(client).Preferences = StringToInt(value);
@@ -50,6 +56,8 @@ void Cookies_RefreshPreferences(int client)
 
 void Cookies_SavePreferences(int client, int value)
 {
+	if(!g_IsMapDR) return;
+	
 	if (IsValidClient(client))
 	{
 		char strValue[16];
