@@ -196,13 +196,13 @@ void Config_Init()
 
 bool Config_GetItemByDefIndex(int defindex, ItemConfig config)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return false;
+	if(g_Enabled) return false;
 	return g_ItemConfig.GetByDefIndex(defindex, config) > 0;
 }
 
 void Config_Apply(int client)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return;
+	if(g_Enabled) return;
 	
 	for (int slot = 0; slot <= ItemSlot_Misc2; slot++)
 	{

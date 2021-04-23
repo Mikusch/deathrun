@@ -58,7 +58,7 @@ void DHooks_HookGamerules()
 
 public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return MRES_Ignored;
+	if(g_Enabled) return MRES_Ignored;
 	
 	int winReason = param.Get(2);
 	
@@ -88,7 +88,7 @@ public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 
 public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return MRES_Ignored;
+	if(g_Enabled) return MRES_Ignored;
 	
 	if (IsClientInGame(client))
 	{
@@ -109,7 +109,7 @@ public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn r
 
 public MRESReturn DHookCallback_GetMaxHealthForBuffing_Post(int client, DHookReturn ret)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return MRES_Ignored;
+	if(g_Enabled) return MRES_Ignored;
 	
 	if (DRPlayer(client).IsActivator())
 	{

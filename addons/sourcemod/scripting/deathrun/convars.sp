@@ -31,7 +31,7 @@ void ConVars_Init()
 {
 	CreateConVar("dr_version", PLUGIN_VERSION, PLUGIN_NAME..." version", FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
 	
-	dr_enabled = CreateConVar("dr_enabled", "1", "Enable Deathrun?");
+	dr_enabled = CreateConVar("dr_enabled", "-1", "Enable Deathrun?", _, true, -1.0, true, 1.0);
 	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to runners at the end of each round.", _, true, 1.0);
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "Interval between helpful tips printed to chat, in seconds. Set to 0 to disable chat tips.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "If enabled, runners will have a glowing outline.");
@@ -50,6 +50,7 @@ void ConVars_Init()
 	dr_backstab_damage = CreateConVar("dr_backstab_damage", "750.0", "Damage dealt to the activator by backstabs. Set to 0 to let the game determine the damage.");
 	dr_speed_modifier[9] = CreateConVar("dr_speed_modifier_engineer", "0.0", "Maximum speed modifier for Engineer, in HU/s.");
 	
+	dr_enabled.AddChangeHook(ConVarChanged_Enabled);
 	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);
 	dr_runner_glow.AddChangeHook(ConVarChanged_RunnerGlow);
 	dr_activator_healthbar.AddChangeHook(ConVarChanged_ActivatorHealthBar);
@@ -100,6 +101,29 @@ void ConVars_Disable()
 		info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
 		
 		info.convar.SetString(info.initialValue);
+	}
+}
+
+public void ConVarChanged_Enabled(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	switch(StringToInt(newValue))
+	{
+		case -1:
+		{
+			OnMapStart();
+		}
+		case 0:
+		{
+			g_Enabled = false;
+			OnPluginEnd();
+		}
+		case 1:
+		{
+			g_Enabled = true;
+			PrecacheScriptSound(GAMESOUND_EXPLOSION);
+			DHooks_HookGamerules();
+			ConVars_Enable();
+		}
 	}
 }
 

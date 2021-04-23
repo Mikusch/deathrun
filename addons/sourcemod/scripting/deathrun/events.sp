@@ -26,7 +26,7 @@ void Events_Init()
 
 public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Continue;
+	if(g_Enabled) return Plugin_Continue;
 	
 	int numActivators;
 	
@@ -84,7 +84,7 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 
 public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool dontBroadcast)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Continue;
+	if(g_Enabled) return Plugin_Continue;
 	
 	int victim = GetClientOfUserId(event.GetInt("userid"));
 	
@@ -104,7 +104,7 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 
 public Action EventHook_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Continue;
+	if(g_Enabled) return Plugin_Continue;
 	
 	int userid = event.GetInt("userid");
 	int client = GetClientOfUserId(userid);
@@ -121,7 +121,7 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 
 public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Continue;
+	if(g_Enabled) return Plugin_Continue;
 	
 	//Arena has a very dumb logic, if all players from a team leave the round will end and then restart without reseting the game state
 	//Catch that issue and don't run our logic!
@@ -181,7 +181,7 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 
 public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Continue;
+	if(g_Enabled) return Plugin_Continue;
 	
 	TFTeam team = view_as<TFTeam>(event.GetInt("team"));
 	
@@ -204,7 +204,7 @@ public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool do
 
 public void RequestFrameCallback_VerifyTeam(int userid)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return;
+	if(g_Enabled) return;
 	
 	int client = GetClientOfUserId(userid);
 	if (IsValidClient(client) && IsClientInGame(client))
@@ -233,7 +233,7 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 
 public Action Timer_SetThirdPerson(Handle timer, int userid)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Stop;
+	if(g_Enabled) return Plugin_Stop;
 	
 	int client = GetClientOfUserId(userid);
 	if (DRPlayer(client).InThirdPerson)

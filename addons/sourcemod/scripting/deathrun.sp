@@ -100,7 +100,7 @@ char g_PreferenceNames[][] =  {
 	"Preference_HideChatTips"
 };
 
-bool g_IsMapDR;
+bool g_Enabled;
 
 ConVar dr_enabled;
 ConVar dr_queue_points;
@@ -190,28 +190,28 @@ public void OnMapStart()
 	char map[5]; GetCurrentMap(map, sizeof(map));
 	if(StrContains(map, "dr_", false) != -1)
 	{
-		g_IsMapDR = true;
+		g_Enabled = true;
 		PrecacheScriptSound(GAMESOUND_EXPLOSION);
 		DHooks_HookGamerules();
 		ConVars_Enable();
 	}
 	else
 	{
-		g_IsMapDR = false;
+		g_Enabled = false;
 		OnPluginEnd();
 	}
 }
 
 public void OnClientPutInServer(int client)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return;
+	if(g_Enabled) return;
 	
 	SDKHooks_OnClientPutInServer(client);
 }
 
 public void OnClientCookiesCached(int client)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return;
+	if(g_Enabled) return;
 	
 	Cookies_RefreshQueue(client);
 	Cookies_RefreshPreferences(client);
@@ -219,7 +219,7 @@ public void OnClientCookiesCached(int client)
 
 public void OnClientDisconnect(int client)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return;
+	if(g_Enabled) return;
 	
 	int index = g_CurrentActivators.FindValue(client);
 	if (index != -1)
@@ -230,7 +230,7 @@ public void OnClientDisconnect(int client)
 
 public void OnGameFrame()
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return;
+	if(g_Enabled) return;
 	
 	if (dr_activator_healthbar.BoolValue)
 	{
@@ -273,14 +273,14 @@ public void OnGameFrame()
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return;
+	if(g_Enabled) return;
 	
 	SDKHooks_OnEntityCreated(entity, classname);
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Continue;
+	if(g_Enabled) return Plugin_Continue;
 	
 	bool changed;
 	
@@ -309,7 +309,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Continue;
+	if(g_Enabled) return Plugin_Continue;
 	
 	if (IsValidClient(entity))
 	{
@@ -342,7 +342,7 @@ public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sampl
 
 static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int client)
 {
-	if(dr_enabled.BoolValue || !g_IsMapDR) return Plugin_Continue;
+	if(g_Enabled) return Plugin_Continue;
 	
 	Action action = Plugin_Continue;
 	
