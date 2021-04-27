@@ -56,8 +56,6 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 	else	//One activator
 	{
 		int activator = g_CurrentActivators.Get(0); //Should be safe
-		char activatorName[MAX_NAME_LENGTH];
-		GetClientName(activator, activatorName, sizeof(activatorName));
 		
 		for (int client = 1; client <= MaxClients; client++)
 		{
@@ -66,7 +64,7 @@ public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool don
 				if (client == activator)
 					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Activator");
 				else
-					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Runners", activatorName);
+					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Runners", activator);
 			}
 		}
 	}
