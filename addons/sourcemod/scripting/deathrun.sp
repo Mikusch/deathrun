@@ -275,6 +275,11 @@ public void OnEntityCreated(int entity, const char[] classname)
 {
 	if (!g_Enabled) return;
 	
+	if(IsValidEntity(entity))
+	{
+		if(!StrContains(classname, "tf_ammo_pack", false)) RemoveEntity(entity);
+	}
+	
 	SDKHooks_OnEntityCreated(entity, classname);
 }
 

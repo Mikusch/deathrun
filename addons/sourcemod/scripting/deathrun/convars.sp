@@ -63,6 +63,7 @@ void ConVars_Init()
 	ConVars_Add("tf_arena_use_queue", "0");
 	ConVars_Add("tf_avoidteammates_pushaway", "0");
 	ConVars_Add("tf_scout_air_dash_count", "0");
+	ConVars_Add("tf_dropped_weapon_lifetime", "0");
 }
 
 void ConVars_Add(const char[] name, const char[] value, bool enforce = true)
