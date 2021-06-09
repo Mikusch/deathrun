@@ -75,7 +75,7 @@
 	}
 	"RoundStart_NewActivator_Runners"
 	{
-		"#format"	"{1:s}"
+		"#format"	"{1:N}"
 		"it"		"{1} diventa l' {blue}Attivatore{default}! Evita di essere ucciso dalle trappole e porta la tua squadra alla vittoria!"
 	}
 	"RoundStart_NewActivator_Activator"

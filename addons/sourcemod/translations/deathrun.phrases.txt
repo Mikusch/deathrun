@@ -75,7 +75,7 @@
 	}
 	"RoundStart_NewActivator_Runners"
 	{
-		"#format"	"{1:s}"
+		"#format"	"{1:N}"
 		"en"		"{1} became the {blue}Activator{default}! Avoid getting killed by the traps and bring your team to victory!"
 	}
 	"RoundStart_NewActivator_Activator"
