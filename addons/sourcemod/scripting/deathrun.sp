@@ -37,7 +37,7 @@
 
 #define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
 
-#define TF_MAXPLAYERS			33
+#define TF_MAXPLAYERS			34
 #define INTEGER_MAX_VALUE		0x7FFFFFFF
 
 // m_lifeState values
