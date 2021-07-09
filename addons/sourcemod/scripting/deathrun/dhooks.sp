@@ -115,7 +115,7 @@ public MRESReturn DHookCallback_GetMaxHealthForBuffing_Post(int client, DHookRet
 				maxhealth += RoundFloat(TF2_GetMaxHealth(i) * dr_activator_health_modifier.FloatValue);
 		}
 		
-		maxhealth /= dr_activator_count.IntValue;
+		maxhealth /= g_CurrentActivators.Length;
 		
 		//Refill the activator's health during preround
 		if (GameRules_GetRoundState() == RoundState_Preround)
