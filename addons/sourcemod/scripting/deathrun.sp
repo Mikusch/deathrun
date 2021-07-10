@@ -37,7 +37,7 @@
 
 #define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
 
-#define TF_MAXPLAYERS			33
+#define TF_MAXPLAYERS			34
 #define INTEGER_MAX_VALUE		0x7FFFFFFF
 
 // m_lifeState values
@@ -100,6 +100,9 @@ char g_PreferenceNames[][] =  {
 	"Preference_HideChatTips"
 };
 
+bool g_Enabled;
+
+ConVar dr_enable;
 ConVar dr_queue_points;
 ConVar dr_chattips_interval;
 ConVar dr_runner_glow;
@@ -134,6 +137,11 @@ public Plugin pluginInfo =  {
 	url = PLUGIN_URL
 };
 
+public APLRes AskPluginLoad2(Handle self, bool late, char[] error, int err_max)
+{
+	if(late) OnMapStart();
+}
+
 public void OnPluginStart()
 {
 	LoadTranslations("common.phrases.txt");
@@ -162,8 +170,6 @@ public void OnPluginStart()
 	SDKCalls_Init(gamedata);
 	delete gamedata;
 	
-	ConVars_Enable();
-	
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
@@ -181,24 +187,40 @@ public void OnPluginEnd()
 
 public void OnMapStart()
 {
-	PrecacheScriptSound(GAMESOUND_EXPLOSION);
-	
-	DHooks_HookGamerules();
+	char map[16]; GetCurrentMap(map, sizeof(map));
+	if(StrContains(map, "dr_", false) != -1 || StrContains(map, "vsh_dr_", false) != -1)
+	{
+		g_Enabled = true;
+		PrecacheScriptSound(GAMESOUND_EXPLOSION);
+		DHooks_HookGamerules();
+		ConVars_Enable();
+	}
+	else
+	{
+		g_Enabled = false;
+		OnPluginEnd();
+	}
 }
 
 public void OnClientPutInServer(int client)
 {
+	if (!g_Enabled) return;
+	
 	SDKHooks_OnClientPutInServer(client);
 }
 
 public void OnClientCookiesCached(int client)
 {
+	if (!g_Enabled) return;
+	
 	Cookies_RefreshQueue(client);
 	Cookies_RefreshPreferences(client);
 }
 
 public void OnClientDisconnect(int client)
 {
+	if (!g_Enabled) return;
+	
 	int index = g_CurrentActivators.FindValue(client);
 	if (index != -1)
 		g_CurrentActivators.Erase(index);
@@ -208,6 +230,8 @@ public void OnClientDisconnect(int client)
 
 public void OnGameFrame()
 {
+	if (!g_Enabled) return;
+	
 	if (dr_activator_healthbar.BoolValue)
 	{
 		int monsterResource = FindEntityByClassname(MaxClients + 1, "monster_resource");
@@ -249,11 +273,20 @@ public void OnGameFrame()
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
+	if (!g_Enabled) return;
+	
+	if(IsValidEntity(entity))
+	{
+		if(!StrContains(classname, "tf_ammo_pack", false)) RemoveEntity(entity);
+	}
+	
 	SDKHooks_OnEntityCreated(entity, classname);
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
+	if (!g_Enabled) return Plugin_Continue;
+	
 	bool changed;
 	
 	int activeWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
@@ -281,6 +314,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
 {
+	if (!g_Enabled) return Plugin_Continue;
+	
 	if (IsValidClient(entity))
 	{
 		return OnClientSoundPlayed(clients, numClients, entity);
@@ -312,6 +347,8 @@ public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sampl
 
 static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int client)
 {
+	if (!g_Enabled) return Plugin_Continue;
+	
 	Action action = Plugin_Continue;
 	
 	//Iterate all clients this sound is played to and remove them from the array if they are hiding other runners

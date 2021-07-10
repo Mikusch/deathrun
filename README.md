@@ -11,6 +11,9 @@ It aims to keep weapon restrictions as little as possible while not ruining the 
 * Configurable round timer (using the `tf_arena_round_time` ConVar)
 * Highly customizable item and plugin configuration
 
+(CUSTOM)
+* Deathrun auto-detection by map name
+
 ## Dependencies
 
 * SourceMod 1.10

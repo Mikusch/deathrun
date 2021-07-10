@@ -39,7 +39,7 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerQueuePoints[this];
+			return g_PlayerQueuePoints[view_as<int>(this)];
 		}
 		public set(int val)
 		{

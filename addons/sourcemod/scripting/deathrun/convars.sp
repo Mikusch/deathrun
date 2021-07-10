@@ -31,6 +31,7 @@ void ConVars_Init()
 {
 	CreateConVar("dr_version", PLUGIN_VERSION, PLUGIN_NAME..." version", FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
 	
+	dr_enable = CreateConVar("dr_enable", "-1", "Force enable Deathrun on map start? (-1 for check dr_ or vsh_dr_ on map start, 0 for force unload, 1 for force load)", _, true, -1.0, true, 1.0);
 	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to runners at the end of each round.", _, true, 1.0);
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "Interval between helpful tips printed to chat, in seconds. Set to 0 to disable chat tips.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "If enabled, runners will have a glowing outline.");
@@ -49,6 +50,7 @@ void ConVars_Init()
 	dr_speed_modifier[8] = CreateConVar("dr_speed_modifier_spy", "0.0", "Maximum speed modifier for Spy, in HU/s.");
 	dr_speed_modifier[9] = CreateConVar("dr_speed_modifier_engineer", "0.0", "Maximum speed modifier for Engineer, in HU/s.");
 	
+	dr_enable.AddChangeHook(ConVarChanged_Enable);
 	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);
 	dr_runner_glow.AddChangeHook(ConVarChanged_RunnerGlow);
 	dr_activator_healthbar.AddChangeHook(ConVarChanged_ActivatorHealthBar);
@@ -59,8 +61,9 @@ void ConVars_Init()
 	ConVars_Add("mp_teams_unbalance_limit", "0");
 	ConVars_Add("tf_arena_first_blood", "0");
 	ConVars_Add("tf_arena_use_queue", "0");
-	ConVars_Add("tf_avoidteammates_pushaway", "0", false);
-	ConVars_Add("tf_scout_air_dash_count", "0", false);
+	ConVars_Add("tf_avoidteammates_pushaway", "0");
+	ConVars_Add("tf_scout_air_dash_count", "0");
+	ConVars_Add("tf_dropped_weapon_lifetime", "0");
 }
 
 void ConVars_Add(const char[] name, const char[] value, bool enforce = true)
@@ -99,6 +102,29 @@ void ConVars_Disable()
 			info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
 		
 		info.convar.SetString(info.initialValue);
+	}
+}
+
+public void ConVarChanged_Enable(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	switch(StringToInt(newValue))
+	{
+		case -1:
+		{
+			OnMapStart();
+		}
+		case 0:
+		{
+			g_Enabled = false;
+			OnPluginEnd();
+		}
+		case 1:
+		{
+			g_Enabled = true;
+			PrecacheScriptSound(GAMESOUND_EXPLOSION);
+			DHooks_HookGamerules();
+			ConVars_Enable();
+		}
 	}
 }
 
