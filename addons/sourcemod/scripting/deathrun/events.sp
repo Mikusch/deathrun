@@ -101,9 +101,6 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	
 	Config_Apply(client);
 	
-	if (DRPlayer(client).InThirdPerson)
-		CreateTimer(0.2, Timer_SetThirdPerson, userid);
-	
 	RequestFrame(RequestFrameCallback_VerifyTeam, userid);
 }
 
@@ -206,15 +203,5 @@ public void RequestFrameCallback_VerifyTeam(int userid)
 				TF2_RespawnPlayer(client);
 			}
 		}
-	}
-}
-
-public Action Timer_SetThirdPerson(Handle timer, int userid)
-{
-	int client = GetClientOfUserId(userid);
-	if (DRPlayer(client).InThirdPerson)
-	{
-		SetVariantInt(1);
-		AcceptEntityInput(client, "SetForcedTauntCam");
 	}
 }

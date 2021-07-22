@@ -17,7 +17,6 @@
 
 int g_PlayerQueuePoints[TF_MAXPLAYERS] =  { -1, ... };
 int g_PlayerPreferences[TF_MAXPLAYERS] =  { -1, ... };
-bool g_PlayerInThirdPerson[TF_MAXPLAYERS];
 bool g_PlayerIsHidingTeammates[TF_MAXPLAYERS];
 
 methodmap DRPlayer
@@ -59,18 +58,6 @@ methodmap DRPlayer
 		}
 	}
 	
-	property bool InThirdPerson
-	{
-		public get()
-		{
-			return g_PlayerInThirdPerson[this];
-		}
-		public set(bool val)
-		{
-			g_PlayerInThirdPerson[this] = val;
-		}
-	}
-	
 	property bool IsHidingTeammates
 	{
 		public get()
@@ -85,7 +72,6 @@ methodmap DRPlayer
 	
 	public void Reset()
 	{
-		this.InThirdPerson = false;
 		this.IsHidingTeammates = false;
 	}
 	
