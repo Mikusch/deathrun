@@ -99,7 +99,7 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	int userid = event.GetInt("userid");
 	int client = GetClientOfUserId(userid);
 	
-	Config_Apply(client);
+	RequestFrame(Config_Apply, client);
 	
 	RequestFrame(RequestFrameCallback_VerifyTeam, userid);
 }

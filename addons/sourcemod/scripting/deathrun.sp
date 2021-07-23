@@ -89,6 +89,12 @@ enum
 	WINREASON_STOPWATCH_PLAYING_ROUNDS
 };
 
+enum EntPropTarget
+{
+	Target_Item,
+	Target_Player
+}
+
 enum PreferenceType
 {
 	Preference_DontBeActivator = (1 << 0), 
