@@ -51,6 +51,7 @@ Using entity properties (advanced):
 	{
 		"1"	// Makes the weapon start already detonated
 		{
+			"target"	"weapon"
 			"name"		"m_iDetonated"
 			"type"		"send"
 			"field_type"	"int"
@@ -82,6 +83,7 @@ These two methods may also be combined. For example, to give Medics a one-time u
 	{
 		"1"	// Sets the ÜberCharge level to 100%
 		{
+			"target"	"weapon"
 			"name"		"m_flChargeLevel"
 			"type"		"send"
 			"field_type"	"float"
