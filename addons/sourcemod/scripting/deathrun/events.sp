@@ -187,7 +187,7 @@ public void RequestFrame_VerifyTeam(int client)
 	
 	if (DRPlayer(client).IsActivator())
 	{
-		if (team == TFTeam_Runners) //Check if player is in the runner team, if so put them back to the activator team
+		if (team == TFTeam_Runners)	//Check if player is in the runner team, if so put them back to the activator team
 		{
 			TF2_ChangeClientTeam(client, TFTeam_Activators);
 			TF2_RespawnPlayer(client);
@@ -195,7 +195,7 @@ public void RequestFrame_VerifyTeam(int client)
 	}
 	else
 	{
-		if (team == TFTeam_Activators) //Check if player is in the activator team, if so put them back to the runner team
+		if (team == TFTeam_Activators)	//Check if player is in the activator team, if so put them back to the runner team
 		{
 			TF2_ChangeClientTeam(client, TFTeam_Runners);
 			TF2_RespawnPlayer(client);
