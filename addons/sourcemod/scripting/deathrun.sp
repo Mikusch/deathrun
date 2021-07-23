@@ -101,7 +101,7 @@ enum PreferenceType
 	Preference_HideChatTips = (1 << 1)
 }
 
-char g_PreferenceNames[][] =  {
+char g_PreferenceNames[][] = {
 	"Preference_DontBeActivator", 
 	"Preference_HideChatTips"
 };
@@ -132,7 +132,7 @@ ArrayList g_CurrentActivators;
 #include "deathrun/stocks.sp"
 #include "deathrun/timers.sp"
 
-public Plugin pluginInfo =  {
+public Plugin pluginInfo = {
 	name = PLUGIN_NAME, 
 	author = PLUGIN_AUTHOR, 
 	description = "Team Fortress 2 Deathrun", 
