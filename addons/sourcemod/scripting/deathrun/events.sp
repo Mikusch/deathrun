@@ -205,8 +205,8 @@ public void RequestFrame_VerifyTeam(int client)
 
 public void RequestFrame_AddActivatorHealth(int client)
 {
-	//If the player respawns during a round, grant the activator some health back
-	if (GameRules_GetRoundState() == RoundState_Stalemate)
+	//If a runner respawns during the round, grant the activator some health back
+	if (!DRPlayer(client).IsActivator() && GameRules_GetRoundState() == RoundState_Stalemate)
 	{
 		int healthToAdd = RoundToCeil(float(TF2_GetMaxHealth(client)) / float(g_CurrentActivators.Length));
 		for (int i = 0; i < g_CurrentActivators.Length; i++)
