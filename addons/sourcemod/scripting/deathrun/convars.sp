@@ -39,7 +39,7 @@ void ConVars_Init()
 	dr_activator_healthbar = CreateConVar("dr_activator_healthbar", "1", "If enabled, the activator health will be displayed on screen.");
 	dr_backstab_damage = CreateConVar("dr_backstab_damage", "750.0", "Damage dealt to the activator by backstabs. Set to 0 to let the game determine the damage.");
 	dr_speed_modifier[0] = CreateConVar("dr_speed_modifier", "0.0", "Maximum speed modifier for all classes, in HU/s.");
-	dr_speed_modifier[1] = CreateConVar("dr_speed_modifier_scout", "-80.0", "Maximum speed modifier for Scout, in HU/s.");
+	dr_speed_modifier[1] = CreateConVar("dr_speed_modifier_scout", "0.0", "Maximum speed modifier for Scout, in HU/s.");
 	dr_speed_modifier[2] = CreateConVar("dr_speed_modifier_sniper", "0.0", "Maximum speed modifier for Sniper, in HU/s.");
 	dr_speed_modifier[3] = CreateConVar("dr_speed_modifier_soldier", "0.0", "Maximum speed modifier for Soldier, in HU/s.");
 	dr_speed_modifier[4] = CreateConVar("dr_speed_modifier_demoman", "0.0", "Maximum speed modifier for Demoman, in HU/s.");

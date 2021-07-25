@@ -17,8 +17,8 @@
 
 enum struct ItemAttributeConfig
 {
-	char name[256];			/*< Attribute name */
-	float value;			/*< Attribute value */
+	char name[256];	/*< Attribute name */
+	float value;	/*< Attribute value */
 	
 	void ReadConfig(KeyValues kv)
 	{
@@ -29,21 +29,34 @@ enum struct ItemAttributeConfig
 
 enum struct ItemEntPropConfig
 {
+	EntPropTarget target;		/*< Property target */
 	char name[256];				/*< Property name */
 	PropType type;				/*< Property type */
 	PropFieldType fieldType;	/*< Property field type */
 	char value[256];			/*< Property value */
+	int element;				/*< Property element, if it is an array */
 	
 	void ReadConfig(KeyValues kv)
 	{
+		char target[16];
+		kv.GetString("target", target, sizeof(target));
+		if (StrEqual(target, "item") || StrEqual(target, "weapon"))
+			this.target = Target_Item;
+		else if (StrEqual(target, "player") || StrEqual(target, "client"))
+			this.target = Target_Player;
+		else
+			LogError("Invalid prop target: %s", target);
+		
 		kv.GetString("name", this.name, 256);
 		
-		char type[256];
+		char type[16];
 		kv.GetString("type", type, sizeof(type));
-		if (StrEqual(type, "send"))
+		if (StrEqual(type, "send") || StrEqual(type, "netprop"))
 			this.type = Prop_Send;
-		else if (StrEqual(type, "data"))
+		else if (StrEqual(type, "data") || StrEqual(type, "datamap"))
 			this.type = Prop_Data;
+		else
+			LogError("Invalid prop type: %s", type);
 		
 		char fieldType[256];
 		kv.GetString("field_type", fieldType, sizeof(fieldType));
@@ -55,8 +68,12 @@ enum struct ItemEntPropConfig
 			this.fieldType = PropField_Vector;
 		else if (StrEqual(fieldType, "string"))
 			this.fieldType = PropField_String;
+		else
+			LogError("Invalid prop field type: %s", fieldType);
 		
 		kv.GetString("value", this.value, 256);
+		
+		this.element = kv.GetNum("element");
 	}
 }
 
@@ -242,7 +259,13 @@ void Config_Apply(int client)
 					ItemEntPropConfig entprop;
 					if (config.entprops.GetArray(i, entprop, sizeof(entprop)) > 0)
 					{
-						if (!HasEntProp(item, entprop.type, entprop.name))
+						int entity;
+						if (entprop.target == Target_Item)
+							entity = item;
+						else if (entprop.target == Target_Player)
+							entity = client;
+						
+						if (!HasEntProp(entity, entprop.type, entprop.name))
 						{
 							LogError("Invalid entity property: %s", entprop.name);
 							continue;
@@ -252,21 +275,21 @@ void Config_Apply(int client)
 						{
 							case PropField_Integer:
 							{
-								SetEntProp(item, entprop.type, entprop.name, StringToInt(entprop.value));
+								SetEntProp(entity, entprop.type, entprop.name, StringToInt(entprop.value), _, entprop.element);
 							}
 							case PropField_Float:
 							{
-								SetEntPropFloat(item, entprop.type, entprop.name, StringToFloat(entprop.value));
+								SetEntPropFloat(entity, entprop.type, entprop.name, StringToFloat(entprop.value), entprop.element);
 							}
 							case PropField_Vector:
 							{
 								float vector[3];
 								StringToVector(entprop.value, vector);
-								SetEntPropVector(item, entprop.type, entprop.name, vector);
+								SetEntPropVector(entity, entprop.type, entprop.name, vector, entprop.element);
 							}
 							case PropField_String:
 							{
-								SetEntPropString(item, entprop.type, entprop.name, entprop.value);
+								SetEntPropString(entity, entprop.type, entprop.name, entprop.value, entprop.element);
 							}
 						}
 					}

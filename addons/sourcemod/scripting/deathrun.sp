@@ -30,7 +30,7 @@
 
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
-#define PLUGIN_VERSION		"1.5.1"
+#define PLUGIN_VERSION		"1.6.0"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
 #define PLUGIN_TAG		"[{primary}" ... PLUGIN_NAME ... "{default}]"
@@ -89,13 +89,19 @@ enum
 	WINREASON_STOPWATCH_PLAYING_ROUNDS
 };
 
+enum EntPropTarget
+{
+	Target_Item,
+	Target_Player
+}
+
 enum PreferenceType
 {
 	Preference_DontBeActivator = (1 << 0), 
 	Preference_HideChatTips = (1 << 1)
 }
 
-char g_PreferenceNames[][] =  {
+char g_PreferenceNames[][] = {
 	"Preference_DontBeActivator", 
 	"Preference_HideChatTips"
 };
@@ -126,7 +132,7 @@ ArrayList g_CurrentActivators;
 #include "deathrun/stocks.sp"
 #include "deathrun/timers.sp"
 
-public Plugin pluginInfo =  {
+public Plugin pluginInfo = {
 	name = PLUGIN_NAME, 
 	author = PLUGIN_AUTHOR, 
 	description = "Team Fortress 2 Deathrun", 

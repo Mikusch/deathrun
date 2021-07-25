@@ -99,9 +99,9 @@ public Action EventHook_PostInventoryApplication(Event event, const char[] name,
 	int userid = event.GetInt("userid");
 	int client = GetClientOfUserId(userid);
 	
-	Config_Apply(client);
-	
-	RequestFrame(RequestFrameCallback_VerifyTeam, userid);
+	RequestFrame(Config_Apply, client);
+	RequestFrame(RequestFrame_VerifyTeam, client);
+	RequestFrame(RequestFrame_AddActivatorHealth, client);
 }
 
 public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
@@ -179,29 +179,41 @@ public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool do
 	}
 }
 
-public void RequestFrameCallback_VerifyTeam(int userid)
+public void RequestFrame_VerifyTeam(int client)
 {
-	int client = GetClientOfUserId(userid);
-	if (IsValidClient(client) && IsClientInGame(client))
+	TFTeam team = TF2_GetClientTeam(client);
+	if (team <= TFTeam_Spectator)
+		return;
+	
+	if (DRPlayer(client).IsActivator())
 	{
-		TFTeam team = TF2_GetClientTeam(client);
-		if (team <= TFTeam_Spectator)return;
-		
-		if (DRPlayer(client).IsActivator())
+		if (team == TFTeam_Runners)	//Check if player is in the runner team, if so put them back to the activator team
 		{
-			if (team == TFTeam_Runners)	//Check if player is in the runner team, if so put them back to the activator team
-			{
-				TF2_ChangeClientTeam(client, TFTeam_Activators);
-				TF2_RespawnPlayer(client);
-			}
+			TF2_ChangeClientTeam(client, TFTeam_Activators);
+			TF2_RespawnPlayer(client);
 		}
-		else
+	}
+	else
+	{
+		if (team == TFTeam_Activators)	//Check if player is in the activator team, if so put them back to the runner team
 		{
-			if (team == TFTeam_Activators)	//Check if player is in the activator team, if so put them back to the runner team
-			{
-				TF2_ChangeClientTeam(client, TFTeam_Runners);
-				TF2_RespawnPlayer(client);
-			}
+			TF2_ChangeClientTeam(client, TFTeam_Runners);
+			TF2_RespawnPlayer(client);
+		}
+	}
+}
+
+public void RequestFrame_AddActivatorHealth(int client)
+{
+	//If a runner respawns during the round, grant the activator some health back
+	if (!DRPlayer(client).IsActivator() && GameRules_GetRoundState() == RoundState_Stalemate)
+	{
+		int healthToAdd = RoundToCeil(float(TF2_GetMaxHealth(client)) / float(g_CurrentActivators.Length));
+		for (int i = 0; i < g_CurrentActivators.Length; i++)
+		{
+			int activator = g_CurrentActivators.Get(i);
+			if (IsClientInGame(activator))
+				SetEntityHealth(activator, GetEntProp(activator, Prop_Data, "m_iHealth") + healthToAdd);
 		}
 	}
 }
