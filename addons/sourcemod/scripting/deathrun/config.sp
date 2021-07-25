@@ -34,6 +34,7 @@ enum struct ItemEntPropConfig
 	PropType type;				/*< Property type */
 	PropFieldType fieldType;	/*< Property field type */
 	char value[256];			/*< Property value */
+	int element;				/*< Property element, if it is an array */
 	
 	void ReadConfig(KeyValues kv)
 	{
@@ -50,9 +51,9 @@ enum struct ItemEntPropConfig
 		
 		char type[16];
 		kv.GetString("type", type, sizeof(type));
-		if (StrEqual(type, "send"))
+		if (StrEqual(type, "send") || StrEqual(type, "netprop"))
 			this.type = Prop_Send;
-		else if (StrEqual(type, "data"))
+		else if (StrEqual(type, "data") || StrEqual(type, "datamap"))
 			this.type = Prop_Data;
 		else
 			LogError("Invalid prop type: %s", type);
@@ -71,6 +72,8 @@ enum struct ItemEntPropConfig
 			LogError("Invalid prop field type: %s", fieldType);
 		
 		kv.GetString("value", this.value, 256);
+		
+		this.element = kv.GetNum("element");
 	}
 }
 
@@ -272,21 +275,21 @@ void Config_Apply(int client)
 						{
 							case PropField_Integer:
 							{
-								SetEntProp(entity, entprop.type, entprop.name, StringToInt(entprop.value));
+								SetEntProp(entity, entprop.type, entprop.name, StringToInt(entprop.value), _, entprop.element);
 							}
 							case PropField_Float:
 							{
-								SetEntPropFloat(entity, entprop.type, entprop.name, StringToFloat(entprop.value));
+								SetEntPropFloat(entity, entprop.type, entprop.name, StringToFloat(entprop.value), entprop.element);
 							}
 							case PropField_Vector:
 							{
 								float vector[3];
 								StringToVector(entprop.value, vector);
-								SetEntPropVector(entity, entprop.type, entprop.name, vector);
+								SetEntPropVector(entity, entprop.type, entprop.name, vector, entprop.element);
 							}
 							case PropField_String:
 							{
-								SetEntPropString(entity, entprop.type, entprop.name, entprop.value);
+								SetEntPropString(entity, entprop.type, entprop.name, entprop.value, entprop.element);
 							}
 						}
 					}
