@@ -218,6 +218,9 @@ bool Config_GetItemByDefIndex(int defindex, ItemConfig config)
 
 void Config_Apply(int client)
 {
+	if (!IsClientInGame(client))
+		return;
+	
 	for (int slot = 0; slot <= ItemSlot_Misc2; slot++)
 	{
 		int item = TF2_GetItemInSlot(client, slot);

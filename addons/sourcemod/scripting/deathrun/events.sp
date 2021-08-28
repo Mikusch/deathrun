@@ -181,6 +181,9 @@ public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool do
 
 public void RequestFrame_VerifyTeam(int client)
 {
+	if (!IsClientInGame(client))
+		return;
+	
 	TFTeam team = TF2_GetClientTeam(client);
 	if (team <= TFTeam_Spectator)
 		return;
@@ -205,6 +208,9 @@ public void RequestFrame_VerifyTeam(int client)
 
 public void RequestFrame_AddActivatorHealth(int client)
 {
+	if (!IsClientInGame(client))
+		return;
+	
 	//If a runner respawns during the round, grant the activator some health back
 	if (!DRPlayer(client).IsActivator() && GameRules_GetRoundState() == RoundState_Stalemate)
 	{
