@@ -96,8 +96,7 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 
 public Action EventHook_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
 {
-	int userid = event.GetInt("userid");
-	int client = GetClientOfUserId(userid);
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	RequestFrame(Config_Apply, client);
 	RequestFrame(RequestFrame_VerifyTeam, client);
