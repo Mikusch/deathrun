@@ -30,7 +30,7 @@
 
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
-#define PLUGIN_VERSION		"1.6.0"
+#define PLUGIN_VERSION		"1.6.1"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
 #define PLUGIN_TAG		"[{primary}" ... PLUGIN_NAME ... "{default}]"

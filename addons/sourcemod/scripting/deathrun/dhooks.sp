@@ -86,7 +86,7 @@ public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
 
 public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret)
 {
-	if (IsClientInGame(client))
+	if (GameRules_GetRoundState() != RoundState_Preround && IsClientInGame(client))
 	{
 		//Modify player speed based on their class
 		TFClassType class = TF2_GetPlayerClass(client);
