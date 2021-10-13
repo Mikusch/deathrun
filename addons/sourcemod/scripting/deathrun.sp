@@ -168,8 +168,6 @@ public void OnPluginStart()
 	SDKCalls_Init(gamedata);
 	delete gamedata;
 	
-	ConVars_Enable();
-	
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (IsClientInGame(client))
@@ -190,6 +188,11 @@ public void OnMapStart()
 	PrecacheScriptSound(GAMESOUND_EXPLOSION);
 	
 	DHooks_HookGamerules();
+}
+
+public void OnConfigsExecuted()
+{
+	ConVars_Enable();
 }
 
 public void OnClientPutInServer(int client)
