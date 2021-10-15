@@ -180,7 +180,7 @@ public void OnPluginStart()
 
 public void OnPluginEnd()
 {
-	ConVars_Disable();
+	ConVars_ToggleAll(false);
 }
 
 public void OnMapStart()
@@ -192,7 +192,7 @@ public void OnMapStart()
 
 public void OnConfigsExecuted()
 {
-	ConVars_Enable();
+	ConVars_ToggleAll(true);
 }
 
 public void OnClientPutInServer(int client)

@@ -15,28 +15,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define MAX_COMMAND_LENGTH 1024
+#define MAX_COMMAND_LENGTH	1024
 
 enum struct ConVarInfo
 {
-	ConVar convar;
+	char name[64];
 	char value[MAX_COMMAND_LENGTH];
 	char initialValue[MAX_COMMAND_LENGTH];
-	bool enforce;
+	bool enabled;
 }
 
-static ArrayList g_GameConVars;
+static StringMap g_GameConVars;
 
 void ConVars_Init()
 {
-	CreateConVar("dr_version", PLUGIN_VERSION, PLUGIN_NAME..." version", FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
+	CreateConVar("dr_version", PLUGIN_VERSION, PLUGIN_NAME ... " version", FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
 	
 	dr_queue_points = CreateConVar("dr_queue_points", "15", "Amount of queue points awarded to runners at the end of each round.", _, true, 1.0);
 	dr_chattips_interval = CreateConVar("dr_chattips_interval", "240", "Interval between helpful tips printed to chat, in seconds. Set to 0 to disable chat tips.");
+	dr_chattips_interval.AddChangeHook(OnConVarChanged_ChatTipsInterval);
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "If enabled, runners will have a glowing outline.");
+	dr_runner_glow.AddChangeHook(OnConVarChanged_RunnerGlow);
 	dr_activator_count = CreateConVar("dr_activator_count", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
 	dr_activator_health_modifier = CreateConVar("dr_activator_health_modifier", "1.0", "Modifier of the health the activator receives from runners.", _, true, 0.0);
 	dr_activator_healthbar = CreateConVar("dr_activator_healthbar", "1", "If enabled, the activator health will be displayed on screen.");
+	dr_activator_healthbar.AddChangeHook(OnConVarChanged_ActivatorHealthBar);
 	dr_backstab_damage = CreateConVar("dr_backstab_damage", "750.0", "Damage dealt to the activator by backstabs. Set to 0 to let the game determine the damage.");
 	dr_speed_modifier[0] = CreateConVar("dr_speed_modifier", "0.0", "Maximum speed modifier for all classes, in HU/s.");
 	dr_speed_modifier[1] = CreateConVar("dr_speed_modifier_scout", "0.0", "Maximum speed modifier for Scout, in HU/s.");
@@ -49,78 +52,111 @@ void ConVars_Init()
 	dr_speed_modifier[8] = CreateConVar("dr_speed_modifier_spy", "0.0", "Maximum speed modifier for Spy, in HU/s.");
 	dr_speed_modifier[9] = CreateConVar("dr_speed_modifier_engineer", "0.0", "Maximum speed modifier for Engineer, in HU/s.");
 	
-	dr_chattips_interval.AddChangeHook(ConVarChanged_ChatTipsInterval);
-	dr_runner_glow.AddChangeHook(ConVarChanged_RunnerGlow);
-	dr_activator_healthbar.AddChangeHook(ConVarChanged_ActivatorHealthBar);
+	g_GameConVars = new StringMap();
 	
-	g_GameConVars = new ArrayList(sizeof(ConVarInfo));
-	
-	ConVars_Add("mp_autoteambalance", "0");
-	ConVars_Add("mp_teams_unbalance_limit", "0");
-	ConVars_Add("tf_arena_first_blood", "0");
-	ConVars_Add("tf_arena_use_queue", "0");
-	ConVars_Add("tf_avoidteammates_pushaway", "0", false);
-	ConVars_Add("tf_scout_air_dash_count", "0", false);
+	//Track all ConVars not controlled by this plugin
+	ConVars_Track("mp_autoteambalance", "0");
+	ConVars_Track("mp_teams_unbalance_limit", "0");
+	ConVars_Track("tf_arena_first_blood", "0");
+	ConVars_Track("tf_arena_use_queue", "0");
+	ConVars_Track("tf_avoidteammates_pushaway", "0");
+	ConVars_Track("tf_scout_air_dash_count", "0");
+	ConVars_Track("tf_solidobjects", "0");
 }
 
-void ConVars_Add(const char[] name, const char[] value, bool enforce = true)
+void ConVars_Track(const char[] name, const char[] value)
+{
+	ConVar convar = FindConVar(name);
+	if (convar)
+	{
+		//Store ConVar information
+		ConVarInfo info;
+		strcopy(info.name, sizeof(info.name), name);
+		strcopy(info.value, sizeof(info.value), value);
+		
+		g_GameConVars.SetArray(name, info, sizeof(info));
+	}
+	else
+	{
+		LogError("The ConVar %s could not be found", name);
+	}
+}
+
+void ConVars_ToggleAll(bool enable)
+{
+	StringMapSnapshot snapshot = g_GameConVars.Snapshot();
+	for (int i = 0; i < snapshot.Length; i++)
+	{
+		int size = snapshot.KeyBufferSize(i);
+		char[] key = new char[size];
+		snapshot.GetKey(i, key, size);
+		
+		if (enable)
+			ConVars_Enable(key);
+		else
+			ConVars_Disable(key);
+	}
+	delete snapshot;
+}
+
+void ConVars_Enable(const char[] name)
 {
 	ConVarInfo info;
-	info.convar = FindConVar(name);
-	strcopy(info.value, sizeof(info.value), value);
-	info.enforce = enforce;
-	g_GameConVars.PushArray(info);
-}
-
-void ConVars_Enable()
-{
-	for (int i = 0; i < g_GameConVars.Length; i++)
+	if (g_GameConVars.GetArray(name, info, sizeof(info)) && !info.enabled)
 	{
-		ConVarInfo info;
-		g_GameConVars.GetArray(i, info);
-		info.convar.GetString(info.initialValue, sizeof(info.initialValue));
-		g_GameConVars.SetArray(i, info);
+		ConVar convar = FindConVar(info.name);
 		
-		info.convar.SetString(info.value);
+		//Store the current value so we can later reset the ConVar to it
+		convar.GetString(info.initialValue, sizeof(info.initialValue));
+		info.enabled = true;
+		g_GameConVars.SetArray(name, info, sizeof(info));
 		
-		if (info.enforce)
-			info.convar.AddChangeHook(ConVarChanged_GameConVar);
+		//Update the current value
+		convar.SetString(info.value);
+		convar.AddChangeHook(OnConVarChanged_GameConVar);
 	}
 }
 
-void ConVars_Disable()
+void ConVars_Disable(const char[] name)
 {
-	for (int i = 0; i < g_GameConVars.Length; i++)
+	ConVarInfo info;
+	if (g_GameConVars.GetArray(name, info, sizeof(info)) && info.enabled)
 	{
-		ConVarInfo info;
-		g_GameConVars.GetArray(i, info);
+		ConVar convar = FindConVar(info.name);
 		
-		if (info.enforce)
-			info.convar.RemoveChangeHook(ConVarChanged_GameConVar);
+		info.enabled = false;
+		g_GameConVars.SetArray(name, info, sizeof(info));
 		
-		info.convar.SetString(info.initialValue);
+		//Restore the convar value
+		convar.RemoveChangeHook(OnConVarChanged_GameConVar);
+		convar.SetString(info.initialValue);
 	}
 }
 
-public void ConVarChanged_GameConVar(ConVar convar, const char[] oldValue, const char[] newValue)
+public void OnConVarChanged_GameConVar(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	int index = g_GameConVars.FindValue(convar, ConVarInfo::convar);
-	if (index != -1)
+	char name[64];
+	convar.GetName(name, sizeof(name));
+	
+	ConVarInfo info;
+	if (g_GameConVars.GetArray(name, info, sizeof(info)))
 	{
-		ConVarInfo info;
-		g_GameConVars.GetArray(index, info);
-		
 		if (!StrEqual(newValue, info.value))
-			info.convar.SetString(info.value);
+		{
+			strcopy(info.initialValue, sizeof(info.initialValue), newValue);
+			g_GameConVars.SetArray(name, info, sizeof(info));
+			
+			convar.SetString(info.value);
+		}
 	}
 }
 
-public void ConVarChanged_ChatTipsInterval(ConVar convar, const char[] oldValue, const char[] newValue)
+public void OnConVarChanged_ChatTipsInterval(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	Timers_CreateChatTipTimer(StringToFloat(newValue));
 }
 
-public void ConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, const char[] newValue)
+public void OnConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	for (int client = 1; client <= MaxClients; client++)
 	{
@@ -129,7 +165,7 @@ public void ConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, const
 	}
 }
 
-public void ConVarChanged_ActivatorHealthBar(ConVar convar, const char[] oldValue, const char[] newValue)
+public void OnConVarChanged_ActivatorHealthBar(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (!StringToInt(newValue))
 	{
