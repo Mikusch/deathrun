@@ -16,9 +16,9 @@
  */
 
 static char g_CommandPrefixes[][] =  {
-	"dr", 
-	"dr_", 
-	"deathrun", 
+	"dr",
+	"dr_",
+	"deathrun",
 	"deathrun_"
 };
 
@@ -53,6 +53,7 @@ void Console_Init()
 	AddCommandListener(CommandListener_JoinTeam, "jointeam");
 	AddCommandListener(CommandListener_JoinTeam, "autoteam");
 	AddCommandListener(CommandListener_JoinTeam, "spectate");
+	AddCommandListener(CommandListener_Build, "build");
 }
 
 void RegConsoleCmd2(const char[] cmd, ConCmd callback)
@@ -247,14 +248,14 @@ public Action ConCmd_SetQueuePoints(int client, int args)
 
 public Action CommandListener_JoinTeam(int client, const char[] command, int argc)
 {
-	char team[64];
-	if (strcmp(command, "spectate") == 0)
+	char team[16];
+	if (StrEqual(command, "spectate"))
 		Format(team, sizeof(team), command);
 	
-	if (strcmp(command, "jointeam") == 0 && argc > 0)
+	if (argc > 0 && StrEqual(command, "jointeam"))
 		GetCmdArg(1, team, sizeof(team));
 	
-	if (strcmp(team, "spectate") == 0)
+	if (StrEqual(team, "spectate"))
 	{
 		RoundState roundState = GameRules_GetRoundState();
 		if (DRPlayer(client).IsActivator() && IsPlayerAlive(client) && (roundState == RoundState_Stalemate || roundState == RoundState_Preround))
@@ -275,4 +276,18 @@ public Action CommandListener_JoinTeam(int client, const char[] command, int arg
 	ShowVGUIPanel(client, TF2_GetClientTeam(client) == TFTeam_Red ? "class_red" : "class_blue");
 	
 	return Plugin_Handled;
+}
+
+public Action CommandListener_Build(int client, const char[] command, int argc)
+{
+	char arg[16];
+	if (argc > 0 && GetCmdArg(1, arg, sizeof(arg)) > 0)
+	{
+		//Prevent Engineers from building teleporters
+		TFObjectType type = view_as<TFObjectType>(StringToInt(arg));
+		if (type == TFObject_Teleporter)
+			return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
 }
