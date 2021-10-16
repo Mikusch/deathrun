@@ -280,13 +280,16 @@ public Action CommandListener_JoinTeam(int client, const char[] command, int arg
 
 public Action CommandListener_Build(int client, const char[] command, int argc)
 {
-	char arg[16];
-	if (argc > 0 && GetCmdArg(1, arg, sizeof(arg)) > 0)
+	if (TF2_GetPlayerClass(client) == TFClass_Engineer)
 	{
-		//Prevent Engineers from building teleporters
-		TFObjectType type = view_as<TFObjectType>(StringToInt(arg));
-		if (type == TFObject_Teleporter)
-			return Plugin_Handled;
+		char arg[16];
+		if (argc > 0 && GetCmdArg(1, arg, sizeof(arg)) > 0)
+		{
+			//Prevent Engineers from building teleporters
+			TFObjectType type = view_as<TFObjectType>(StringToInt(arg));
+			if (type == TFObject_Teleporter || type == TFObject_Sapper)
+				return Plugin_Handled;
+		}
 	}
 	
 	return Plugin_Continue;
