@@ -38,11 +38,11 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerQueuePoints[this];
+			return g_PlayerQueuePoints[this.Client];
 		}
 		public set(int val)
 		{
-			g_PlayerQueuePoints[this] = val;
+			g_PlayerQueuePoints[this.Client] = val;
 		}
 	}
 	
@@ -50,11 +50,11 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerPreferences[this];
+			return g_PlayerPreferences[this.Client];
 		}
 		public set(int val)
 		{
-			g_PlayerPreferences[this] = val;
+			g_PlayerPreferences[this.Client] = val;
 		}
 	}
 	
@@ -62,11 +62,11 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerIsHidingTeammates[this];
+			return g_PlayerIsHidingTeammates[this.Client];
 		}
 		public set(bool val)
 		{
-			g_PlayerIsHidingTeammates[this] = val;
+			g_PlayerIsHidingTeammates[this.Client] = val;
 		}
 	}
 	

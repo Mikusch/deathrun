@@ -120,6 +120,8 @@ public int MenuHandler_QueueMenu(Menu menu, MenuAction action, int param1, int p
 			delete menu;
 		}
 	}
+	
+	return 0;
 }
 
 void Menus_DisplayPreferencesMenu(int client)

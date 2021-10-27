@@ -30,7 +30,7 @@
 
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
-#define PLUGIN_VERSION		"1.6.1"
+#define PLUGIN_VERSION		"1.6.2"
 #define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
 
 #define PLUGIN_TAG		"[{primary}" ... PLUGIN_NAME ... "{default}]"
@@ -113,7 +113,7 @@ ConVar dr_activator_count;
 ConVar dr_activator_health_modifier;
 ConVar dr_activator_healthbar;
 ConVar dr_backstab_damage;
-ConVar dr_speed_modifier[view_as<int>(TFClassType)];
+ConVar dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
 
 ArrayList g_CurrentActivators;
 
