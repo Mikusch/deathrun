@@ -13,7 +13,7 @@ It aims to keep weapon restrictions as little as possible while not ruining the 
 
 ## Dependencies
 
-* SourceMod 1.10
+* SourceMod 1.10+
 * [DHooks with Detour Support](https://forums.alliedmods.net/showpost.php?p=2588686&postcount=589)
 * [TF2Attributes](https://forums.alliedmods.net/showthread.php?t=210221)
 * [More Colors](https://forums.alliedmods.net/showthread.php?t=185016) (compile only)
