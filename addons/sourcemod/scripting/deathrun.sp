@@ -113,7 +113,7 @@ ConVar dr_activator_count;
 ConVar dr_activator_health_modifier;
 ConVar dr_activator_healthbar;
 ConVar dr_backstab_damage;
-ConVar dr_speed_modifier[view_as<int>(TFClassType)];
+ConVar dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
 
 ArrayList g_CurrentActivators;
 

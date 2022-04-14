@@ -24,7 +24,7 @@ void Events_Init()
 	HookEvent("teamplay_round_win", EventHook_TeamplayRoundWin);
 }
 
-public Action EventHook_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
+public void EventHook_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	int numActivators;
 	
@@ -94,7 +94,7 @@ public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool don
 	return Plugin_Continue;
 }
 
-public Action EventHook_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
+public void EventHook_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
@@ -134,18 +134,18 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 					if (team == TFTeam_Runners)
 					{
 						TF2_ChangeClientTeamAlive(client, TFTeam_Activators);
-						return;
+						return Plugin_Continue;
 					}
 					else if (team == TFTeam_Activators)
 					{
 						TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
-						return;
+						return Plugin_Continue;
 					}
 				}
 			}
 		}
 		//If we reach this part, either nobody is in the server or everyone is spectating
-		return;
+		return Plugin_Continue;
 	}
 	
 	//New round has begun
@@ -157,9 +157,11 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 		if (IsClientInGame(client) && TF2_GetClientTeam(client) > TFTeam_Spectator && !DRPlayer(client).IsActivator())
 			TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
 	}
+	
+	return Plugin_Continue;
 }
 
-public Action EventHook_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
+public void EventHook_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
 {
 	TFTeam team = view_as<TFTeam>(event.GetInt("team"));
 	
