@@ -172,9 +172,6 @@ public void OnPluginStart()
 	{
 		if (IsClientInGame(client))
 			OnClientPutInServer(client);
-		
-		if (AreClientCookiesCached(client))
-			OnClientCookiesCached(client);
 	}
 }
 
@@ -198,6 +195,9 @@ public void OnConfigsExecuted()
 public void OnClientPutInServer(int client)
 {
 	SDKHooks_OnClientPutInServer(client);
+	
+	if (AreClientCookiesCached(client))
+		OnClientCookiesCached(client);
 }
 
 public void OnClientCookiesCached(int client)
