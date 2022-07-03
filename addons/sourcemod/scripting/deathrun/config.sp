@@ -47,7 +47,7 @@ enum struct ItemEntPropConfig
 		else
 			LogError("Invalid prop target: %s", target);
 		
-		kv.GetString("name", this.name, 256);
+		kv.GetString("name", this.name, sizeof(this.name));
 		
 		char type[16];
 		kv.GetString("type", type, sizeof(type));
@@ -71,7 +71,7 @@ enum struct ItemEntPropConfig
 		else
 			LogError("Invalid prop field type: %s", fieldType);
 		
-		kv.GetString("value", this.value, 256);
+		kv.GetString("value", this.value, sizeof(this.value));
 		
 		this.element = kv.GetNum("element");
 	}
