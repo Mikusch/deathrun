@@ -219,7 +219,7 @@ public void OnGameFrame()
 {
 	if (dr_activator_healthbar.BoolValue)
 	{
-		int monsterResource = FindEntityByClassname(MaxClients + 1, "monster_resource");
+		int monsterResource = FindEntityByClassname(-1, "monster_resource");
 		if (monsterResource != -1)
 		{
 			int maxhealth, health;

@@ -169,7 +169,7 @@ public void OnConVarChanged_ActivatorHealthBar(ConVar convar, const char[] oldVa
 {
 	if (!StringToInt(newValue))
 	{
-		int monsterResource = FindEntityByClassname(MaxClients + 1, "monster_resource");
+		int monsterResource = FindEntityByClassname(-1, "monster_resource");
 		if (monsterResource != -1)
 			SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
 	}
