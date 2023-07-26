@@ -117,7 +117,7 @@ public MRESReturn DHookCallback_GetMaxHealthForBuffing_Post(int client, DHookRet
 		
 		maxhealth /= g_CurrentActivators.Length;
 		
-		//Refill the activator's health during preround
+		// Refill the activator's health during preround
 		if (GameRules_GetRoundState() == RoundState_Preround)
 			SetEntityHealth(client, maxhealth);
 		

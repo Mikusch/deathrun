@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-int g_PlayerQueuePoints[TF_MAXPLAYERS + 1] = { -1, ... };
-int g_PlayerPreferences[TF_MAXPLAYERS + 1] = { -1, ... };
-bool g_PlayerIsHidingTeammates[TF_MAXPLAYERS + 1];
+int g_PlayerQueuePoints[MAXPLAYERS + 1] = { -1, ... };
+int g_PlayerPreferences[MAXPLAYERS + 1] = { -1, ... };
+bool g_PlayerIsHidingTeammates[MAXPLAYERS + 1];
 
 methodmap DRPlayer
 {

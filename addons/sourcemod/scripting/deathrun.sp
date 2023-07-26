@@ -16,6 +16,7 @@
  */
 
 #pragma semicolon 1 
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
@@ -26,8 +27,6 @@
 #include <tf2attributes>
 #include <morecolors>
 
-#pragma newdecls required
-
 #define PLUGIN_NAME			"Deathrun Neu"
 #define PLUGIN_AUTHOR		"Mikusch"
 #define PLUGIN_VERSION		"1.7.0"
@@ -37,7 +36,6 @@
 
 #define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
 
-#define TF_MAXPLAYERS			33
 #define INTEGER_MAX_VALUE		0x7FFFFFFF
 
 // m_lifeState values
@@ -101,7 +99,8 @@ enum PreferenceType
 	Preference_HideChatTips = (1 << 1)
 }
 
-char g_PreferenceNames[][] = {
+char g_PreferenceNames[][] =
+{
 	"Preference_DontBeActivator", 
 	"Preference_HideChatTips"
 };
@@ -132,7 +131,8 @@ ArrayList g_CurrentActivators;
 #include "deathrun/stocks.sp"
 #include "deathrun/timers.sp"
 
-public Plugin pluginInfo = {
+public Plugin pluginInfo =
+{
 	name = PLUGIN_NAME, 
 	author = PLUGIN_AUTHOR, 
 	description = "Team Fortress 2 Deathrun", 
@@ -263,7 +263,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-	bool changed;
+	bool changed = false;
 	
 	int activeWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 	if (activeWeapon == -1)
@@ -323,7 +323,7 @@ static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int 
 {
 	Action action = Plugin_Continue;
 	
-	//Iterate all clients this sound is played to and remove them from the array if they are hiding other runners
+	// Iterate all clients this sound is played to and remove them from the array if they are hiding other runners
 	for (int i = 0; i < numClients; i++)
 	{
 		if (DRPlayer(clients[i]).CanHideClient(client))
