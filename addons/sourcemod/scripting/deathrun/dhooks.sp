@@ -111,7 +111,7 @@ public MRESReturn DHookCallback_GetMaxHealthForBuffing_Post(int client, DHookRet
 		
 		for (int i = 1; i <= MaxClients; i++)
 		{
-			if (client != i && IsValidClient(i) && IsPlayerAlive(i) && !DRPlayer(i).IsActivator())
+			if (client != i && IsValidClient(i) && IsPlayerAlive(i) && !DRPlayer(i).IsActivator() && dr_activator_scale_health.IntValue == 1)
 				maxhealth += RoundFloat(TF2_GetMaxHealth(i) * dr_activator_health_modifier.FloatValue);
 		}
 		
