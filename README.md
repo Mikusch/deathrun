@@ -114,6 +114,7 @@ Any item definition indexes specified in a map-specific item configuration will 
   chat tips.
 - `dr_runner_glow ( def. "0" )` - If enabled, runners will have a glowing outline.
 - `dr_activator_count ( def. "1" )` - Amount of activators chosen at the start of a round.
+- `dr_activator_scale_health ( def. "0" )` - Whether to scale activator's health with the set modifier or not. Set to 1 in order to scale, and 0 to keep class default health.
 - `dr_activator_health_modifier ( def. "1.0" )` - Modifier of the health the activator receives from runners.
 - `dr_activator_healthbar ( def. "1" )` - If enabled, the activator health will be displayed on screen.
 - `dr_backstab_damage ( def. "750.0" )` - Damage dealt to the activator by backstabs. Set to 0 to let the game determine the damage.
