@@ -37,6 +37,7 @@ void ConVars_Init()
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "If enabled, runners will have a glowing outline.");
 	dr_runner_glow.AddChangeHook(OnConVarChanged_RunnerGlow);
 	dr_activator_count = CreateConVar("dr_activator_count", "1", "Amount of activators chosen at the start of a round.", _, true, 1.0, true, float(MaxClients - 1));
+	dr_activator_scale_health = CreateConVar("dr_activator_scale_health", "0", "Whether to scale the health of the activator or not.", _);
 	dr_activator_health_modifier = CreateConVar("dr_activator_health_modifier", "1.0", "Modifier of the health the activator receives from runners.", _, true, 0.0);
 	dr_activator_healthbar = CreateConVar("dr_activator_healthbar", "1", "If enabled, the activator health will be displayed on screen.");
 	dr_activator_healthbar.AddChangeHook(OnConVarChanged_ActivatorHealthBar);
