@@ -6,11 +6,11 @@
 	}
 	"Command_HideTeammates_Enabled"
 	{
-		"ru"	"Ваши товарищи по команде теперь {secondary}невидимы {default}для вас."
+		"ru"	"Ваши союзники теперь {secondary}невидимы {default}для вас."
 	}
 	"Command_HideTeammates_Disabled"
 	{
-		"ru"	"Ваши товарищи по команде теперь {secondary}видны {default}для вас."
+		"ru"	"Ваши союзники теперь {secondary}видны {default}для вас."
 	}
 	
 	"ChatTip_Deathrun"
@@ -19,7 +19,7 @@
 	}
 	"ChatTip_HideTeammates"
 	{
-		"ru"	"{positive}СОВЕТ: {default}Не видно в людных местах? Вы можете скрыть товарищей по команде, мешающим вам, с помощью команды {secondary}/drhide{default}."
+		"ru"	"{positive}СОВЕТ: {default}Не видно в людных местах? Вы можете скрыть союзников, мешающим вам, с помощью команды {secondary}/drhide{default}."
 	}
 	"ChatTip_ActivatorWeapons"
 	{
@@ -31,11 +31,11 @@
 	}
 	"ChatTip_DisableChatTips"
 	{
-		"ru"	"{positive}СОВЕТ: {default}Вы можете отключить эти подсказки в чате, изменив польз. настройки с помощью команды {secondary}/drsettings{default}."
+		"ru"	"{positive}СОВЕТ: {default}Вы можете отключить эти подсказки в чате, изменив свои настройки с помощью команды {secondary}/drsettings{default}."
 	}
 	"ChatTip_DisableActivator"
 	{
-		"ru"	"{positive}СОВЕТ: {default}Не хотите играть за {blue}активатора{default}? Измените свои польз. настройки с помощью команды {secondary}/drsettings{default}."
+		"ru"	"{positive}СОВЕТ: {default}Не хотите играть за {blue}активатора{default}? Измените свои настройки с помощью команды {secondary}/drsettings{default}."
 	}
 	
 	"RoundWin_Activator"
@@ -48,7 +48,7 @@
 	}
 	"RoundStart_NewActivator_Runners"
 	{
-		"ru"	"{1} стал {blue}активатором{default}! Избегайте попадания в ловушки и приведите свою команду к победе!"
+		"ru"	"{1} становится {blue}активатором{default}! Избегайте попадания в ловушки и приведите свою команду к победе!"
 	}
 	"RoundStart_NewActivator_Activator"
 	{
@@ -56,7 +56,7 @@
 	}
 	"RoundStart_MultipleActivators_Activator"
 	{
-		"ru"	"Вы стали {blue}активатором{default}! Работайте вместе со своими товарищами по команде, чтобы остановить бегунов!"
+		"ru"	"Вы стали {blue}активатором{default}! Работайте вместе со своими союзниками, чтобы остановить бегунов!"
 	}
 	"RoundStart_MultipleActivators_Runners"
 	{
@@ -69,11 +69,11 @@
 	
 	"Preferences_Enabled"
 	{
-		"ru"	"Вы успешно {positive}включили {default}настройку {secondary}{1}{default}."
+		"ru"	"Вы успешно {positive}включили {default}настройку: {secondary}{1}{default}."
 	}
 	"Preferences_Disabled"
 	{
-		"ru"	"Вы успешно {negative}отключили {default}настройку {secondary}{1}{default}."
+		"ru"	"Вы успешно {negative}отключили {default}настройку: {secondary}{1}{default}."
 	}
 	
 	"Preference_DontBeActivator"
@@ -87,7 +87,7 @@
 	
 	"Queue_NoPointsAwarded_NotLoaded"
 	{
-		"ru"	"Вы не получили очков в очереди, потому что серверу не удалось загрузить ваши очки очереди."
+		"ru"	"Вы не получили очков в очереди. Серверу не удалось загрузить ваши очки очереди."
 	}
 	"Queue_NoPointsAwarded_Preferences"
 	{
@@ -95,16 +95,16 @@
 	}
 	"Queue_PointsAwarded"
 	{
-		"ru"	"Вы получили {positive}{1} {default}очков очереди (Всего: {positive}{2}{default})."
+		"ru"	"Вы получили {positive}{1} {default}очк. очереди (Всего: {positive}{2}{default})."
 	}
 	"Queue_ChosenAsRandomActivator"
 	{
-		"ru"	"Вы были случайно выбраны, чтобы стать {blue}активатором, {default}потому что на сервере не было других допустимых игроков. Ваши очки в очереди не израсходованы."
+		"ru"	"Вы были случайно выбраны на место {blue}активатора{default}, потому что на сервере не было других допустимых игроков. Очки в очереди не израсходованы."
 	}
 	
 	"Menu_Main_Title"
 	{
-		"ru"	"{1} ({2}) от {3}\n{4}"
+		"ru"	"{1} ({2}). Автор: {3}\n{4}"
 	}
 	"Menu_Main_Queue"
 	{
@@ -116,7 +116,7 @@
 	}
 	"Menu_Main_HideTeammates"
 	{
-		"ru"	"Скрыть товарищей по команде (/drhide)"
+		"ru"	"Скрыть союзников (/drhide)"
 	}
 	"Menu_Queue_Title"
 	{
