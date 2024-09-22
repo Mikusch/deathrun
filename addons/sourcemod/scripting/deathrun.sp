@@ -1,343 +1,179 @@
-/*
- * Copyright (C) 2020  Mikusch
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-#pragma semicolon 1 
 #pragma newdecls required
+#pragma semicolon 1
 
-#include <sourcemod>
+#include <clientprefs>
 #include <sdktools>
 #include <sdkhooks>
-#include <clientprefs>
 #include <tf2_stocks>
-#include <dhooks>
+#include <tf2utils>
 #include <tf2attributes>
+#include <tf2items>
+#include <pluginstatemanager>
 #include <morecolors>
 
-#define PLUGIN_NAME			"Deathrun Neu"
-#define PLUGIN_AUTHOR		"Mikusch"
-#define PLUGIN_VERSION		"1.7.0"
-#define PLUGIN_URL			"https://github.com/Mikusch/deathrun"
+#define PLUGIN_VERSION	"2.0.0"
 
-#define PLUGIN_TAG		"[{primary}" ... PLUGIN_NAME ... "{default}]"
+ArrayList g_hItemData;
+ArrayList g_hCurrentActivators;
 
-#define GAMESOUND_EXPLOSION		"MVM.BombExplodes"
+ConVar sm_dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
+ConVar sm_dr_queue_points;
+ConVar sm_dr_activator_speed_buff;
+ConVar sm_dr_activator_count;
+ConVar sm_dr_activator_health_modifier;
+ConVar sm_dr_backstab_damage;
+ConVar sm_dr_disable_regen;
 
-#define INTEGER_MAX_VALUE		0x7FFFFFFF
+#include "deathrun/shareddefs.sp"
 
-// m_lifeState values
-#define LIFE_ALIVE				0 // alive
-#define LIFE_DYING				1 // playing death animation or still falling off of a ledge waiting to hit ground
-#define LIFE_DEAD				2 // dead. lying still.
-#define LIFE_RESPAWNABLE		3
-#define LIFE_DISCARDBODY		4
-
-const TFTeam TFTeam_Runners = TFTeam_Red;
-const TFTeam TFTeam_Activators = TFTeam_Blue;
-
-enum
-{
-	ItemSlot_Primary = 0, 
-	ItemSlot_Secondary, 
-	ItemSlot_Melee, 
-	ItemSlot_PDABuild, 
-	ItemSlot_PDADisguise = 3, 
-	ItemSlot_PDADestroy, 
-	ItemSlot_InvisWatch = 4, 
-	ItemSlot_BuilderEngie, 
-	ItemSlot_Unknown1, 
-	ItemSlot_Head, 
-	ItemSlot_Misc1, 
-	ItemSlot_Action, 
-	ItemSlot_Misc2
-};
-
-// TF2 win reasons (from teamplayroundbased_gamerules.h)
-enum
-{
-	WINREASON_NONE = 0, 
-	WINREASON_ALL_POINTS_CAPTURED, 
-	WINREASON_OPPONENTS_DEAD, 
-	WINREASON_FLAG_CAPTURE_LIMIT, 
-	WINREASON_DEFEND_UNTIL_TIME_LIMIT, 
-	WINREASON_STALEMATE, 
-	WINREASON_TIMELIMIT, 
-	WINREASON_WINLIMIT, 
-	WINREASON_WINDIFFLIMIT, 
-	WINREASON_RD_REACTOR_CAPTURED, 
-	WINREASON_RD_CORES_COLLECTED, 
-	WINREASON_RD_REACTOR_RETURNED, 
-	WINREASON_PD_POINTS, 
-	WINREASON_SCORED, 
-	WINREASON_STOPWATCH_WATCHING_ROUNDS, 
-	WINREASON_STOPWATCH_WATCHING_FINAL_ROUND, 
-	WINREASON_STOPWATCH_PLAYING_ROUNDS
-};
-
-enum EntPropTarget
-{
-	Target_Item,
-	Target_Player
-}
-
-enum PreferenceType
-{
-	Preference_DontBeActivator = (1 << 0), 
-	Preference_HideChatTips = (1 << 1)
-}
-
-char g_PreferenceNames[][] =
-{
-	"Preference_DontBeActivator", 
-	"Preference_HideChatTips"
-};
-
-ConVar dr_queue_points;
-ConVar dr_chattips_interval;
-ConVar dr_runner_glow;
-ConVar dr_activator_count;
-ConVar dr_activator_health_modifier;
-ConVar dr_activator_healthbar;
-ConVar dr_backstab_damage;
-ConVar dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
-
-ArrayList g_CurrentActivators;
-
-#include "deathrun/player.sp"
-
-#include "deathrun/console.sp"
+#include "deathrun/clientprefs.sp"
+#include "deathrun/commands.sp"
 #include "deathrun/config.sp"
-#include "deathrun/cookies.sp"
 #include "deathrun/convars.sp"
 #include "deathrun/dhooks.sp"
 #include "deathrun/events.sp"
+#include "deathrun/hooks.sp"
 #include "deathrun/menus.sp"
+#include "deathrun/player.sp"
 #include "deathrun/queue.sp"
-#include "deathrun/sdkcalls.sp"
 #include "deathrun/sdkhooks.sp"
-#include "deathrun/stocks.sp"
-#include "deathrun/timers.sp"
+#include "deathrun/util.sp"
 
 public Plugin pluginInfo =
 {
-	name = PLUGIN_NAME, 
-	author = PLUGIN_AUTHOR, 
-	description = "Team Fortress 2 Deathrun", 
-	version = PLUGIN_VERSION, 
-	url = PLUGIN_URL
+	name = "Deathrun Neu",
+	author = "Mikusch",
+	description = "Team Fortress 2 Deathrun",
+	version = PLUGIN_VERSION,
+	url = "https://github.com/Mikusch/deathrun"
 };
 
 public void OnPluginStart()
 {
-	LoadTranslations("common.phrases.txt");
-	LoadTranslations("deathrun.phrases.txt");
+	GameData gameconf = new GameData("deathrun");
+	if (!gameconf)
+		SetFailState("Failed to find deathrun gamedata");
 	
-	CAddColor("primary", 0x4B69FF);
-	CAddColor("secondary", 0xFF9F4B);
-	CAddColor("positive", 0x00C851);
-	CAddColor("negative", 0xFF4444);
+	LoadTranslations("common.phrases");
+	LoadTranslations("deathrun.phrases");
 	
-	AddNormalSoundHook(OnSoundPlayed);
+	PSM_Init("sm_dr_enabled", gameconf);
+	PSM_AddPluginStateChangedHook(OnPluginStateChanged);
 	
-	g_CurrentActivators = new ArrayList();
-	
-	Console_Init();
-	Cookies_Init();
+	ClientPrefs_Init();
+	Commands_Init();
 	Config_Init();
 	ConVars_Init();
+	DHooks_Init();
 	Events_Init();
-	Timers_Init();
+	Hooks_Init();
+	Queue_Init();
 	
-	GameData gamedata = new GameData("deathrun");
-	if (gamedata == null)
-		SetFailState("Could not find deathrun gamedata");
-	DHooks_Init(gamedata);
-	SDKCalls_Init(gamedata);
-	delete gamedata;
-	
-	for (int client = 1; client <= MaxClients; client++)
-	{
-		if (IsClientInGame(client))
-			OnClientPutInServer(client);
-	}
+	delete gameconf;
 }
 
 public void OnPluginEnd()
 {
-	ConVars_ToggleAll(false);
-}
-
-public void OnMapStart()
-{
-	PrecacheScriptSound(GAMESOUND_EXPLOSION);
+	if (!PSM_IsEnabled())
+		return;
 	
-	DHooks_HookGamerules();
-}
-
-public void OnConfigsExecuted()
-{
-	ConVars_ToggleAll(true);
+	PSM_SetPluginState(false);
 }
 
 public void OnClientPutInServer(int client)
 {
-	SDKHooks_OnClientPutInServer(client);
+	if (!PSM_IsEnabled())
+		return;
 	
 	if (AreClientCookiesCached(client))
 		OnClientCookiesCached(client);
 }
 
+public void OnMapStart()
+{
+	SDKHooks_OnMapStart();
+	
+	g_hCurrentActivators.Clear();
+}
+
+public void OnConfigsExecuted()
+{
+	PSM_TogglePluginState();
+}
+
 public void OnClientCookiesCached(int client)
 {
-	Cookies_RefreshQueue(client);
-	Cookies_RefreshPreferences(client);
-}
-
-public void OnClientDisconnect(int client)
-{
-	int index = g_CurrentActivators.FindValue(client);
-	if (index != -1)
-		g_CurrentActivators.Erase(index);
+	if (!PSM_IsEnabled())
+		return;
 	
-	DRPlayer(client).Reset();
-}
-
-public void OnGameFrame()
-{
-	if (dr_activator_healthbar.BoolValue)
-	{
-		int monsterResource = FindEntityByClassname(-1, "monster_resource");
-		if (monsterResource != -1)
-		{
-			int maxhealth, health;
-			
-			for (int client = 1; client <= MaxClients; client++)
-			{
-				if (IsClientInGame(client) && DRPlayer(client).IsActivator())
-				{
-					if (IsPlayerAlive(client))
-						health += GetEntProp(client, Prop_Send, "m_iHealth");
-					
-					maxhealth += TF2_GetMaxHealth(client);
-				}
-			}
-			
-			static float nextHealthBarHideTime;
-			static int oldHealthBarValue;
-			
-			int healthBarValue = Min(RoundFloat(float(health) / float(maxhealth) * 255), 255);
-			
-			if (GameRules_GetRoundState() == RoundState_Preround || (oldHealthBarValue != 0 && oldHealthBarValue != healthBarValue))
-			{
-				nextHealthBarHideTime = GetGameTime() + 10.0;
-				oldHealthBarValue = healthBarValue;
-				
-				SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", healthBarValue);
-			}
-			else if (nextHealthBarHideTime <= GetGameTime())
-			{
-				//Hide the health bar if it hasn't changed in a while
-				SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
-			}
-		}
-	}
+	ClientPrefs_OnClientCookiesCached(client);
 }
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	SDKHooks_OnEntityCreated(entity, classname);
+	if (!PSM_IsEnabled())
+		return;
+	
+	SDKHooks_HookEntity(entity, classname);
 }
 
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+public void OnEntityDestroyed(int entity)
 {
-	bool changed = false;
+	if (!PSM_IsEnabled())
+		return;
 	
-	int activeWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
-	if (activeWeapon == -1)
+	PSM_SDKUnhook(entity);
+}
+
+void OnPluginStateChanged(bool enabled)
+{
+	if (!enabled)
+		return;
+	
+	int entity = -1;
+	while ((entity = FindEntityByClassname(entity, "*")) != -1)
+	{
+		char classname[64];
+		if (!GetEntityClassname(entity, classname, sizeof(classname)))
+			continue;
+		
+		OnEntityCreated(entity, classname);
+	}
+	
+	for (int client = 1; client <= MaxClients; ++client)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		OnClientPutInServer(client);
+	}
+}
+
+public Action TF2_OnPlayerTeleport(int client, int teleporter, bool &result)
+{
+	if (!PSM_IsEnabled())
 		return Plugin_Continue;
 	
-	ItemConfig config;
-	if (Config_GetItemByDefIndex(GetEntProp(activeWeapon, Prop_Send, "m_iItemDefinitionIndex"), config))
-	{
-		if (buttons & IN_ATTACK && config.blockPrimaryAttack)
-		{
-			buttons &= ~IN_ATTACK;
-			changed = true;
-		}
-		
-		if (buttons & IN_ATTACK2 && config.blockSecondaryAttack)
-		{
-			buttons &= ~IN_ATTACK2;
-			changed = true;
-		}
-	}
+	if (GetEntProp(teleporter, Prop_Send, "m_bWasMapPlaced"))
+		return Plugin_Continue;
 	
-	return changed ? Plugin_Changed : Plugin_Continue;
+	// Prevent player-built teleporters from actually teleporting
+	result = false;
+	return Plugin_Changed;
 }
 
-public Action OnSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
+public Action TF2Items_OnGiveNamedItem(int client, char[] classname, int itemDefIndex, Handle &item)
 {
-	if (IsValidClient(entity))
-	{
-		return OnClientSoundPlayed(clients, numClients, entity);
-	}
-	else if (IsValidEntity(entity))
-	{
-		if (HasEntProp(entity, Prop_Send, "m_hBuilder"))
-		{
-			int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
-			if (IsValidClient(builder))
-				return OnClientSoundPlayed(clients, numClients, builder);
-		}
-		else if (HasEntProp(entity, Prop_Send, "m_hThrower"))
-		{
-			int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
-			if (IsValidClient(thrower))
-				return OnClientSoundPlayed(clients, numClients, thrower);
-		}
-		else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
-		{
-			int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
-			if (IsValidClient(owner))
-				return OnClientSoundPlayed(clients, numClients, owner);
-		}
-	}
+	if (!PSM_IsEnabled())
+		return Plugin_Continue;
 	
-	return Plugin_Continue;
-}
-
-static Action OnClientSoundPlayed(int clients[MAXPLAYERS], int &numClients, int client)
-{
-	Action action = Plugin_Continue;
+	int index = g_hItemData.FindValue(itemDefIndex, ItemData::def_index);
+	if (index == -1)
+		return Plugin_Continue;
 	
-	// Iterate all clients this sound is played to and remove them from the array if they are hiding other runners
-	for (int i = 0; i < numClients; i++)
-	{
-		if (DRPlayer(clients[i]).CanHideClient(client))
-		{
-			for (int j = i; j < numClients - 1; j++)
-			{
-				clients[j] = clients[j + 1];
-			}
-			
-			numClients--;
-			i--;
-			action = Plugin_Changed;
-		}
-	}
+	ItemData data;
+	if (!g_hItemData.GetArray(index, data))
+		return Plugin_Continue;
 	
-	return action;
+	return data.remove ? Plugin_Handled : Plugin_Continue;
 }

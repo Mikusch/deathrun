@@ -1,114 +1,25 @@
-/*
- * Copyright (C) 2020  Mikusch
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+#pragma newdecls required
+#pragma semicolon 1
 
 void Events_Init()
 {
-	HookEvent("arena_round_start", EventHook_ArenaRoundStart);
-	HookEvent("player_death", EventHook_PlayerDeath_Pre, EventHookMode_Pre);
-	HookEvent("post_inventory_application", EventHook_PostInventoryApplication);
-	HookEvent("teamplay_round_start", EventHook_TeamplayRoundStart);
-	HookEvent("teamplay_round_win", EventHook_TeamplayRoundWin);
+	PSM_AddEventHook("teamplay_round_start", OnGameEvent_teamplay_round_start);
+	PSM_AddEventHook("arena_round_start", OnGameEvent_arena_round_start);
+	PSM_AddEventHook("arena_win_panel", OnGameEvent_arena_win_panel);
+	PSM_AddEventHook("post_inventory_application", OnGameEvent_post_inventory_application);
+	PSM_AddEventHook("player_spawn", OnGameEvent_player_spawn);
+	PSM_AddEventHook("player_death", OnGameEvent_player_death);
 }
 
-public void EventHook_ArenaRoundStart(Event event, const char[] name, bool dontBroadcast)
+static Action OnGameEvent_teamplay_round_start(Event event, const char[] name, bool dontBroadcast)
 {
-	int numActivators;
+	if (GameRules_GetProp("m_bInWaitingForPlayers"))
+		return Plugin_Continue;
 	
-	//Iterate all chosen activators and check if they are still in-game
-	for (int i = 0; i < g_CurrentActivators.Length; i++)
-	{
-		int activator = g_CurrentActivators.Get(i);
-		if (IsClientInGame(activator))
-			numActivators++;
-	}
-	
-	if (numActivators > 1)	//Multiple activators
-	{
-		for (int client = 1; client <= MaxClients; client++)
-		{
-			if (IsClientInGame(client))
-			{
-				if (DRPlayer(client).IsActivator())
-					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_MultipleActivators_Activator");
-				else
-					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_MultipleActivators_Runners");
-			}
-		}
-	}
-	else if (numActivators < 1)	//No activators
-	{
-		CPrintToChatAll(PLUGIN_TAG ... " %t", "RoundStart_Activator_Disconnected", FindConVar("mp_bonusroundtime").IntValue);
-	}
-	else	//One activator
-	{
-		int activator = g_CurrentActivators.Get(0); //Should be safe
-		
-		for (int client = 1; client <= MaxClients; client++)
-		{
-			if (IsClientInGame(client))
-			{
-				if (client == activator)
-					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Activator");
-				else
-					CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundStart_NewActivator_Runners", activator);
-			}
-		}
-	}
-	
-	for (int client = 1; client <= MaxClients; client++)
-	{
-		if (IsClientInGame(client) && !DRPlayer(client).IsActivator())
-			SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
-	}
-}
-
-public Action EventHook_PlayerDeath_Pre(Event event, const char[] name, bool dontBroadcast)
-{
-	int victim = GetClientOfUserId(event.GetInt("userid"));
-	
-	if (GameRules_GetRoundState() == RoundState_Stalemate && !DRPlayer(victim).IsActivator())
-	{
-		//Rewrite death event to credit activator
-		if (g_CurrentActivators.Length == 1)
-		{
-			int activator = g_CurrentActivators.Get(0);
-			event.SetInt("attacker", GetClientUserId(activator));
-			return Plugin_Changed;
-		}
-	}
-	
-	return Plugin_Continue;
-}
-
-public void EventHook_PostInventoryApplication(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	
-	RequestFrame(Config_Apply, client);
-	RequestFrame(RequestFrame_VerifyTeam, client);
-	RequestFrame(RequestFrame_AddActivatorHealth, client);
-}
-
-public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool dontBroadcast)
-{
-	//Arena has a very dumb logic, if all players from a team leave the round will end and then restart without reseting the game state
-	//Catch that issue and don't run our logic!
+	// Arena has very dumb logic, if all players from a team leave the round will end and then restart without resetting the game state
+	// Catch that issue and don't run our logic!
 	int red, blue;
-	for (int client = 1; client <= MaxClients; client++)
+	for (int client = 1; client <= MaxClients; ++client)
 	{
 		if (IsClientInGame(client))
 		{
@@ -120,16 +31,16 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 		}
 	}
 	
-	//Both teams must have at least one player
+	// Both teams must have at least one player
 	if (red == 0 || blue == 0)
 	{
-		if (red + blue >= 2)	//If we have atleast 2 players in red or blue, force one person to the other team and try again
+		if (red + blue >= 2)	// If we have atleast 2 players in red or blue, force one person to the other team and try again
 		{
-			for (int client = 1; client <= MaxClients; client++)
+			for (int client = 1; client <= MaxClients; ++client)
 			{
 				if (IsClientInGame(client))
 				{
-					//Once we found someone who is in red or blue, swap their team
+					// Once we found someone who is in red or blue, swap their team
 					TFTeam team = TF2_GetClientTeam(client);
 					if (team == TFTeam_Runners)
 					{
@@ -144,83 +55,119 @@ public Action EventHook_TeamplayRoundStart(Event event, const char[] name, bool 
 				}
 			}
 		}
-		//If we reach this part, either nobody is in the server or everyone is spectating
+		
+		// If we reach this part, either nobody is in the server or everyone is spectating
 		return Plugin_Continue;
 	}
 	
-	//New round has begun
-	Queue_SetNextActivatorsFromQueue();
+	// New round has begun
+	SetNextActivatorsFromQueue();
 	
-	for (int client = 1; client <= MaxClients; client++)
+	for (int client = 1; client <= MaxClients; ++client)
 	{
-		//Put every non-activators in the runners team
-		if (IsClientInGame(client) && TF2_GetClientTeam(client) > TFTeam_Spectator && !DRPlayer(client).IsActivator())
-			TF2_ChangeClientTeamAlive(client, TFTeam_Runners);
+		if (!IsClientInGame(client))
+			continue;
+		
+		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
+			continue;
+		
+		// Put every non-activator in the runners team
+		TF2_ChangeClientTeamAlive(client, DRPlayer(client).IsActivator() ? TFTeam_Activators : TFTeam_Runners);
 	}
 	
 	return Plugin_Continue;
 }
 
-public void EventHook_TeamplayRoundWin(Event event, const char[] name, bool dontBroadcast)
+static void OnGameEvent_arena_round_start(Event event, const char[] name, bool dontBroadcast)
 {
-	TFTeam team = view_as<TFTeam>(event.GetInt("team"));
-	
-	for (int client = 1; client <= MaxClients; client++)
+	if (sm_dr_activator_speed_buff.BoolValue)
 	{
-		if (IsClientInGame(client))
+		for (int client = 1; client <= MaxClients; ++client)
 		{
-			if (team == TFTeam_Activators)
-				CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundWin_Activator");
-			else if (team == TFTeam_Runners)
-				CPrintToChat(client, PLUGIN_TAG ... " %t", "RoundWin_Runners");
+			if (!IsClientInGame(client))
+				continue;
 			
-			if (TF2_GetClientTeam(client) == TFTeam_Runners)
-				Queue_AwardPoints(client, dr_queue_points.IntValue);
+			if (!DRPlayer(client).IsActivator())
+				continue;
+			
+			TF2_AddCondition(client, TFCond_SpeedBuffAlly);
+		}
+	}
+	
+	for (int client = 1; client <= MaxClients; ++client)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		switch (TF2_GetClientTeam(client))
+		{
+			case TFTeam_Runners:
+			{
+				CPrintToChat(client, "%s %t", PLUGIN_TAG, "Selected As Runner");
+			}
+			case TFTeam_Activators:
+			{
+				CPrintToChat(client, "%s %t", PLUGIN_TAG, "Selected As Activator");
+			}
 		}
 	}
 }
 
-public void RequestFrame_VerifyTeam(int client)
+static void OnGameEvent_arena_win_panel(Event event, const char[] name, bool dontBroadcast)
 {
-	if (!IsClientInGame(client))
-		return;
+	int points = sm_dr_queue_points.IntValue;
 	
-	TFTeam team = TF2_GetClientTeam(client);
-	if (team <= TFTeam_Spectator)
-		return;
-	
-	if (DRPlayer(client).IsActivator())
+	// Award queue points
+	ArrayList queue = Queue_GetQueueList();
+	for (int i = 0; i < queue.Length; ++i)
 	{
-		if (team == TFTeam_Runners)	//Check if player is in the runner team, if so put them back to the activator team
-		{
-			TF2_ChangeClientTeam(client, TFTeam_Activators);
-			TF2_RespawnPlayer(client);
-		}
+		int client = queue.Get(i, QueueData::client);
+		DRPlayer(client).AddQueuePoints(points);
+		
+		CPrintToChat(client, "%s %t", PLUGIN_TAG, "Queue Points Earned", points, DRPlayer(client).m_nQueuePoints);
 	}
-	else
+	delete queue;
+}
+
+static void OnGameEvent_post_inventory_application(Event event, const char[] name, bool dontBroadcast)
+{
+	RequestFrame(Config_ApplyItemAttributes, event.GetInt("userid"));
+}
+
+static void OnGameEvent_player_spawn(Event event, const char[] name, bool dontBroadcast)
+{
+	// We already refill health during preround (see GetMaxHealthForBuffing)
+	if (GameRules_GetRoundState() == RoundState_Preround)
+		return;
+	
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if (client == 0)
+		return;
+	
+	for (int i = 0; i < g_hCurrentActivators.Length; ++i)
 	{
-		if (team == TFTeam_Activators)	//Check if player is in the activator team, if so put them back to the runner team
-		{
-			TF2_ChangeClientTeam(client, TFTeam_Runners);
-			TF2_RespawnPlayer(client);
-		}
+		int activator = g_hCurrentActivators.Get(i);
+		
+		int healthToAdd = TF2_GetPlayerMaxHealth(client) / g_hCurrentActivators.Length;
+		SetEntityHealth(activator, TF2_GetPlayerMaxHealth(activator) + healthToAdd);
 	}
 }
 
-public void RequestFrame_AddActivatorHealth(int client)
+static Action OnGameEvent_player_death(Event event, const char[] name, bool dontBroadcast)
 {
-	if (!IsClientInGame(client))
-		return;
+	int victim = GetClientOfUserId(event.GetInt("userid"));
+	if (victim == 0)
+		return Plugin_Continue;
 	
-	//If a runner respawns during the round, grant the activator some health back
-	if (!DRPlayer(client).IsActivator() && GameRules_GetRoundState() == RoundState_Stalemate)
+	if (GameRules_GetRoundState() == RoundState_Stalemate)
+		return Plugin_Continue;
+	
+	if (!DRPlayer(victim).IsActivator() && g_hCurrentActivators.Length == 1)
 	{
-		int healthToAdd = RoundToCeil(float(TF2_GetMaxHealth(client)) / float(g_CurrentActivators.Length));
-		for (int i = 0; i < g_CurrentActivators.Length; i++)
-		{
-			int activator = g_CurrentActivators.Get(i);
-			if (IsClientInGame(activator))
-				SetEntityHealth(activator, GetEntProp(activator, Prop_Data, "m_iHealth") + healthToAdd);
-		}
+		int activator = g_hCurrentActivators.Get(0);
+		event.SetInt("attacker", GetClientUserId(activator));
+		return Plugin_Changed;
 	}
+	
+	return Plugin_Continue;
 }

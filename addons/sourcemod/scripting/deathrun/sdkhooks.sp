@@ -1,159 +1,178 @@
-/*
- * Copyright (C) 2020  Mikusch
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+#pragma newdecls required
+#pragma semicolon 1
 
-static char g_OwnerEntityList[][] =  {
-	"env_sniperdot", 
-	"halloween_souls_pack", 
-	"light_dynamic", 
-	"info_particle_system", 
-	"item_healthkit", 
-	"tf_ammo_pack", 
-	"tf_bonus_duck_pickup", 
-	"tf_flame", 
+static char g_aOwnerEntityList[][] =
+{
+	"env_sniperdot",
+	"halloween_souls_pack",
+	"light_dynamic",
+	"info_particle_system",
+	"item_healthkit",
+	"tf_ammo_pack",
+	"tf_bonus_duck_pickup",
 	"tf_halloween_pickup"
 };
 
-void SDKHooks_OnClientPutInServer(int client)
+static float g_flButtonDamagedTime;
+
+void SDKHooks_OnMapStart()
 {
-	SDKHook(client, SDKHook_SetTransmit, SDKHookCB_ClientSetTransmit);
-	SDKHook(client, SDKHook_OnTakeDamageAlive, SDKHookCB_ClientOnTakeDamageAlive);
+	g_flButtonDamagedTime = 0.0;
 }
 
-void SDKHooks_OnEntityCreated(int entity, const char[] classname)
+void SDKHooks_HookEntity(int entity, const char[] classname)
 {
-	for (int i = 0; i < sizeof(g_OwnerEntityList); i++)
+	if (IsEntityClient(entity))
 	{
-		if (StrContains(classname, g_OwnerEntityList[i]) != -1)
-		{
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnerEntitySetTransmit);
-		}
+		PSM_SDKHook(entity, SDKHook_SetTransmit, OnClientSetTransmit);
+		PSM_SDKHook(entity, SDKHook_OnTakeDamageAlive, OnClientOnTakeDamageAlive);
 	}
-	
-	if (StrEqual(classname, "tf_dropped_weapon"))
+	else if (StrEqual(classname, "func_button"))
 	{
-		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_DroppedWeaponSetTransmit);
+		PSM_SDKHook(entity, SDKHook_OnTakeDamage, OnButtonTakeDamage);
 	}
-	
-	if (StrEqual(classname, "vgui_screen"))
+	else if (StrEqual(classname, "func_tracktrain") || StrEqual(classname, "func_tanktrain"))
 	{
-		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_VGUIScreenSetTransmit);
+		PSM_SDKHook(entity, SDKHook_SpawnPost, OnTrackTrainSpawnPost);
 	}
-	
-	if (strncmp(classname, "obj_", 4) == 0)
+	else if (StrEqual(classname, "tf_dropped_weapon"))
 	{
-		SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ObjectSetTransmit);
+		PSM_SDKHook(entity, SDKHook_SetTransmit, OnDroppedWeaponSetTransmit);
 	}
-	
-	if (strncmp(classname, "tf_projectile_", 14) == 0)
+	else if (!strncmp(classname, "obj_", 4))
+	{
+		PSM_SDKHook(entity, SDKHook_SpawnPost, OnObjectSpawnPost);
+		PSM_SDKHook(entity, SDKHook_SetTransmit, OnObjectSetTransmit);
+	}
+	else if (!strncmp(classname, "tf_projectile_", 14))
 	{
 		if (HasEntProp(entity, Prop_Send, "m_hThrower"))
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_ThrowerEntitySetTransmit);
+			SDKHook(entity, SDKHook_SetTransmit, OnThrowerEntitySetTransmit);
 		else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
-			SDKHook(entity, SDKHook_SetTransmit, SDKHookCB_OwnerEntitySetTransmit);
+			SDKHook(entity, SDKHook_SetTransmit, OnOwnerEntitySetTransmit);
+	}
+	else if (StrEqual(classname, "tf_ragdoll"))
+	{
+		PSM_SDKHook(entity, SDKHook_SetTransmit, OnRagdollSetTransmit);
+	}
+	else
+	{
+		for (int i = 0; i < sizeof(g_aOwnerEntityList); ++i)
+		{
+			if (StrEqual(classname, g_aOwnerEntityList[i]))
+			{
+				SDKHook(entity, SDKHook_SetTransmit, OnOwnerEntitySetTransmit);
+			}
+		}
 	}
 }
 
-public Action SDKHookCB_ClientSetTransmit(int entity, int client)
+static Action OnClientSetTransmit(int entity, int client)
 {
-	if (DRPlayer(client).CanHideClient(entity))
+	if (IsEntityClient(entity) && DRPlayer(client).ShouldHideClient(entity))
 	{
-		//Force player's items to not transmit
-		for (int slot = 0; slot <= ItemSlot_Misc2; slot++)
-		{
-			int item = TF2_GetItemInSlot(entity, slot);
-			if (IsValidEntity(item))
-				SetEdictFlags(item, (GetEdictFlags(item) & ~FL_EDICT_ALWAYS));
-		}
-		
-		//Force disguise weapon to not transmit
-		int disguiseWeapon = GetEntPropEnt(entity, Prop_Send, "m_hDisguiseWeapon");
-		if (IsValidEntity(disguiseWeapon))
-			SetEdictFlags(disguiseWeapon, (GetEdictFlags(disguiseWeapon) & ~FL_EDICT_ALWAYS));
-		
+		RemoveEdictFlagFromChildren(entity, FL_EDICT_ALWAYS);
 		return Plugin_Handled;
 	}
 	
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_ClientOnTakeDamageAlive(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+static Action OnClientOnTakeDamageAlive(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
-	if (DRPlayer(victim).IsActivator() && damagecustom == TF_CUSTOM_BACKSTAB && dr_backstab_damage.FloatValue > 0.0)
+	if (DRPlayer(victim).IsActivator() && damagecustom == TF_CUSTOM_BACKSTAB && sm_dr_backstab_damage.FloatValue > 0.0)
 	{
-		damage = dr_backstab_damage.FloatValue;
+		damage = sm_dr_backstab_damage.FloatValue;
 		return Plugin_Changed;
 	}
 	
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_OwnerEntitySetTransmit(int entity, int client)
+static Action OnButtonTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
-	if (IsValidClient(owner) && DRPlayer(client).CanHideClient(owner))
+	// Some maps allow runners to activate traps with explosives, either by lobbing them over walls or because the map has very thin barriers.
+	// There is no good reason for RED to activate buttons with blast damage, so just prevent this.
+	if (0 < attacker <= MaxClients && TF2_GetClientTeam(attacker) == TFTeam_Runners && damagetype & DMG_BLAST)
 		return Plugin_Handled;
 	
-	return Plugin_Continue;
-}
-
-public Action SDKHookCB_DroppedWeaponSetTransmit(int entity, int client)
-{
-	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (IsClientConnected(i) && (IsFakeClient(i) || GetSteamAccountID(i, false) == accountID) && DRPlayer(client).CanHideClient(i))
-			return Plugin_Handled;
-	}
+	// Prevent multiple buttons from being hit at the same time
+	if (g_flButtonDamagedTime == GetGameTime() && view_as<TOGGLE_STATE>(GetEntProp(victim, Prop_Data, "m_toggle_state")) == TS_AT_BOTTOM)
+		return Plugin_Handled;
+	
+	g_flButtonDamagedTime = GetGameTime();
 	
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_VGUIScreenSetTransmit(int entity, int client)
+static void OnObjectSpawnPost(int entity)
 {
-	int obj = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
-	if (IsValidEntity(obj) && HasEntProp(obj, Prop_Send, "m_hBuilder"))
-	{
-		int builder = GetEntPropEnt(obj, Prop_Send, "m_hBuilder");
-		if (IsValidClient(builder) && DRPlayer(client).CanHideClient(builder))
-			return Plugin_Handled;
-	}
+	if (GetEntProp(entity, Prop_Send, "m_bWasMapPlaced"))
+		return;
 	
-	return Plugin_Continue;
+	SetVariantInt(SOLID_TO_PLAYER_NO);
+	AcceptEntityInput(entity, "SetSolidToPlayer");
 }
 
-public Action SDKHookCB_ObjectSetTransmit(int entity, int client)
+static Action OnObjectSetTransmit(int entity, int client)
 {
 	int builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
-	if (IsValidClient(builder) && DRPlayer(client).CanHideClient(builder))
+	if (IsEntityClient(builder) && DRPlayer(client).ShouldHideClient(builder))
 	{
-		//Level 3 sentry guns always transmit
+		// Level 3 Sentry Guns always transmit
 		if (TF2_GetObjectType(entity) == TFObject_Sentry && GetEntProp(entity, Prop_Send, "m_iUpgradeLevel") == 3)
 			SetEdictFlags(entity, (GetEdictFlags(entity) & ~FL_EDICT_ALWAYS));
 		
+		RemoveEdictFlagFromChildren(entity, FL_EDICT_ALWAYS);
 		return Plugin_Handled;
 	}
 	
 	return Plugin_Continue;
 }
 
-public Action SDKHookCB_ThrowerEntitySetTransmit(int entity, int client)
+static void OnTrackTrainSpawnPost(int entity)
+{
+	// This spawnflag is set by default but there is no sensible reason to want this in TF2
+	SetEntProp(entity, Prop_Data, "m_spawnflags", GetEntProp(entity, Prop_Data, "m_spawnflags") | SF_TRACKTRAIN_NOCONTROL);
+}
+
+static Action OnDroppedWeaponSetTransmit(int entity, int client)
+{
+	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
+	for (int i = 1; i <= MaxClients; ++i)
+	{
+		if (IsClientConnected(i) && (IsFakeClient(i) || GetSteamAccountID(i, false) == accountID) && DRPlayer(client).ShouldHideClient(i))
+			return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
+static Action OnThrowerEntitySetTransmit(int entity, int client)
 {
 	int thrower = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
-	if (IsValidClient(thrower) && DRPlayer(client).CanHideClient(thrower))
+	if (IsEntityClient(thrower) && DRPlayer(client).ShouldHideClient(thrower))
+		return Plugin_Handled;
+	
+	return Plugin_Continue;
+}
+
+static Action OnOwnerEntitySetTransmit(int entity, int client)
+{
+	int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+	if (IsEntityClient(owner) && DRPlayer(client).ShouldHideClient(owner))
+		return Plugin_Handled;
+	
+	return Plugin_Continue;
+}
+
+static Action OnRagdollSetTransmit(int entity, int client)
+{
+	// CTFRagdoll will only call into SetTransmit once if we don't remove FL_EDICT_ALWAYS
+	SetEdictFlags(entity, (GetEdictFlags(entity) & ~FL_EDICT_ALWAYS));
+	
+	int owner = GetEntPropEnt(entity, Prop_Send, "m_hPlayer");
+	if (IsEntityClient(owner) && DRPlayer(client).ShouldHideClient(owner))
 		return Plugin_Handled;
 	
 	return Plugin_Continue;

@@ -2,71 +2,65 @@
 {
 	"tf"
 	{
-		"Offsets"
-		{
-			"CTeamplayRoundBasedRules::SetWinningTeam"
-			{
-				"linux"		"165"
-				"windows"	"164"
-			}
-		}
 		"Signatures"
 		{
-			"CTFPlayer::GetEquippedWearableForLoadoutSlot"
+			"CObjectDispenser::CouldHealTarget(CBaseEntity *)"
 			{
-				"linux"		"@_ZN9CTFPlayer33GetEquippedWearableForLoadoutSlotEi"
-				"windows"	"\x55\x8B\xEC\x83\xEC\x08\x8B\xC1\x53\x56\x33\xF6"
+				"library"	"server"
+				"linux"		"@_ZN16CObjectDispenser15CouldHealTargetEP11CBaseEntity"
+				"windows"	"\x55\x8B\xEC\x53\x56\x8B\x75\x08\x57\x8B\xF9\x8B\x87\x38\x01\x00\x00"
 			}
-			"CTFPlayer::TeamFortress_CalculateMaxSpeed"
+			"CTFPlayer::GetMaxHealthForBuffing()"
 			{
+				"library"	"server"
+				"linux"		"@_ZN9CTFPlayer22GetMaxHealthForBuffingEv"
+				"windows"	"\x55\x8B\xEC\x83\xEC\x24\x53\x56\x57\x8B\xF9\xFF\xB7\xC8\x22\x00\x00"
+			}
+			"CTFPlayer::TeamFortress_CalculateMaxSpeed(bool)"
+			{
+				"library"	"server"
 				"linux"		"@_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
 				"windows"	"\x55\x8B\xEC\x83\xEC\x18\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A"
 			}
-			"CTFPlayer::GetMaxHealthForBuffing"
+			"CTFPlayer::RegenThink()"
 			{
-				"linux"		"@_ZN9CTFPlayer22GetMaxHealthForBuffingEv"
-				"windows"	"\x55\x8B\xEC\x83\xEC\x24\x53\x56\x57\x8B\xF9\xFF\xB7\xC8\x22\x00\x00"
+				"library"	"server"
+				"linux"		"@_ZN9CTFPlayer10RegenThinkEv"
+				"windows"	"\x55\x8B\xEC\x83\xEC\x7C\x56\x8B\xF1"
+			}
+			"CTeamplayRoundBasedRules::SetInWaitingForPlayers(bool)"
+			{
+				"library"	"server"
+				"linux"		"@_ZN24CTeamplayRoundBasedRules22SetInWaitingForPlayersEb"
+				"windows"	"\x55\x8B\xEC\x51\x56\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x84\xC0\x0F\x85\x2A\x2A\x2A\x2A"
 			}
 		}
 		"Functions"
 		{
-			"CTeamplayRoundBasedRules::SetWinningTeam"
+			"CObjectDispenser::CouldHealTarget(CBaseEntity *)"
 			{
-				"offset"	"CTeamplayRoundBasedRules::SetWinningTeam"
-				"hooktype"	"gamerules"
-				"return"	"void"
-				"this"		"ignore"
+				"signature"	"CObjectDispenser::CouldHealTarget(CBaseEntity *)"
+				"callconv"	"thiscall"
+				"return"	"bool"
+				"this"		"entity"
 				"arguments"
 				{
-					"team"
+					"pTarget"
 					{
-						"type"	"int"
-					}
-					"iWinReason"
-					{
-						"type"	"int"
-					}
-					"bForceMapReset"
-					{
-						"type"	"bool"
-					}
-					"bSwitchTeams"
-					{
-						"type"	"bool"
-					}
-					"bDontAddScore"
-					{
-						"type"	"bool"
-					}
-					"bFinal"
-					{
-						"type"	"bool"
+						"type"	"cbaseentity"
 					}
 				}
 			}
-			"CTFPlayer::TeamFortress_CalculateMaxSpeed"
+			"CTFPlayer::GetMaxHealthForBuffing()"
 			{
-				"signature"	"CTFPlayer::TeamFortress_CalculateMaxSpeed"
+				"signature"	"CTFPlayer::GetMaxHealthForBuffing()"
+				"callconv"	"thiscall"
+				"return"	"int"
+				"this"		"entity"
+			}
+			"CTFPlayer::TeamFortress_CalculateMaxSpeed(bool)"
+			{
+				"signature"	"CTFPlayer::TeamFortress_CalculateMaxSpeed(bool)"
 				"callconv"	"thiscall"
 				"return"	"float"
 				"this"		"entity"
@@ -78,12 +72,26 @@
 					}
 				}
 			}
-			"CTFPlayer::GetMaxHealthForBuffing"
+			"CTFPlayer::RegenThink()"
 			{
-				"signature"	"CTFPlayer::GetMaxHealthForBuffing"
+				"signature"	"CTFPlayer::RegenThink()"
 				"callconv"	"thiscall"
-				"return"	"int"
+				"return"	"void"
 				"this"		"entity"
+			}
+			"CTeamplayRoundBasedRules::SetInWaitingForPlayers(bool)"
+			{
+				"signature"	"CTeamplayRoundBasedRules::SetInWaitingForPlayers(bool)"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"ignore"
+				"arguments"
+				{
+					"bWaitingForPlayers"
+					{
+						"type"	"bool"
+					}
+				}
 			}
 		}
 	}
