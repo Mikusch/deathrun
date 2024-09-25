@@ -110,6 +110,9 @@ static void OnObjectSpawnPost(int entity)
 	if (GetEntProp(entity, Prop_Send, "m_bWasMapPlaced"))
 		return;
 	
+	if (TF2_GetObjectType(entity) == TFObject_Teleporter && sm_dr_allow_teleporters.BoolValue)
+		return;
+	
 	SetVariantInt(SOLID_TO_PLAYER_NO);
 	AcceptEntityInput(entity, "SetSolidToPlayer");
 }

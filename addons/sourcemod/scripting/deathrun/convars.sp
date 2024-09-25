@@ -21,6 +21,7 @@ void ConVars_Init()
 	sm_dr_activator_health_modifier = CreateConVar("sm_dr_activator_health_modifier", "1.0", "Modifier of the health the activator receives from runners.", _, true, 0.0);
 	sm_dr_backstab_damage = CreateConVar("sm_dr_backstab_damage", "750", "Damage dealt to the activator by backstabs. Set to 0 to let the game determine the damage.", _, true, 0.0);
 	sm_dr_disable_regen = CreateConVar("sm_dr_disable_regen", "1", "Whether to disable passive health regeneration.");
+	sm_dr_allow_teleporters = CreateConVar("sm_dr_allow_teleporters", "0", "Whether to allow players to use player-built teleporters.");
 	
 	PSM_AddEnforcedConVar("mp_autoteambalance", "0");
 	PSM_AddEnforcedConVar("mp_teams_unbalance_limit", "0");

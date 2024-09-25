@@ -23,6 +23,7 @@ ConVar sm_dr_activator_count;
 ConVar sm_dr_activator_health_modifier;
 ConVar sm_dr_backstab_damage;
 ConVar sm_dr_disable_regen;
+ConVar sm_dr_allow_teleporters;
 
 #include "deathrun/shareddefs.sp"
 
@@ -152,6 +153,9 @@ void OnPluginStateChanged(bool enabled)
 public Action TF2_OnPlayerTeleport(int client, int teleporter, bool &result)
 {
 	if (!PSM_IsEnabled())
+		return Plugin_Continue;
+	
+	if (sm_dr_allow_teleporters.BoolValue)
 		return Plugin_Continue;
 	
 	if (GetEntProp(teleporter, Prop_Send, "m_bWasMapPlaced"))
