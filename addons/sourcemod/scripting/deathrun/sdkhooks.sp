@@ -55,6 +55,10 @@ void SDKHooks_HookEntity(int entity, const char[] classname)
 	{
 		PSM_SDKHook(entity, SDKHook_SetTransmit, OnRagdollSetTransmit);
 	}
+	else if (StrEqual(classname, "vgui_screen"))
+	{
+		SDKHook(entity, SDKHook_SetTransmit, OnVGUIScreenSetTransmit);
+	}
 	else
 	{
 		for (int i = 0; i < sizeof(g_aOwnerEntityList); ++i)
@@ -177,6 +181,19 @@ static Action OnRagdollSetTransmit(int entity, int client)
 	int owner = GetEntPropEnt(entity, Prop_Send, "m_hPlayer");
 	if (IsEntityClient(owner) && DRPlayer(client).ShouldHideClient(owner))
 		return Plugin_Handled;
+	
+	return Plugin_Continue;
+}
+
+static Action OnVGUIScreenSetTransmit(int entity, int client)
+{
+	int obj = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+	if (IsValidEntity(obj) && HasEntProp(obj, Prop_Send, "m_hBuilder"))
+	{
+		int builder = GetEntPropEnt(obj, Prop_Send, "m_hBuilder");
+		if (IsEntityClient(builder) && DRPlayer(client).ShouldHideClient(builder))
+			return Plugin_Handled;
+	}
 	
 	return Plugin_Continue;
 }
