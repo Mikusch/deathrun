@@ -15,6 +15,8 @@
 
 ArrayList g_itemData;
 ArrayList g_currentActivators;
+Handle g_chatHintTimer;
+int g_lastShownHint;
 
 ConVar sm_dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
 ConVar sm_dr_queue_points;
@@ -27,6 +29,7 @@ ConVar sm_dr_activator_health_modifier;
 ConVar sm_dr_disable_regen;
 ConVar sm_dr_allow_teleporters;
 ConVar sm_dr_waiting_for_players;
+ConVar sm_dr_chat_hint_interval;
 
 #include "deathrun/shareddefs.sp"
 
@@ -131,25 +134,31 @@ public void OnEntityDestroyed(int entity)
 
 void OnPluginStateChanged(bool enabled)
 {
-	if (!enabled)
-		return;
-	
-	int entity = -1;
-	while ((entity = FindEntityByClassname(entity, "*")) != -1)
+	if (enabled)
 	{
-		char classname[64];
-		if (!GetEntityClassname(entity, classname, sizeof(classname)))
-			continue;
+		int entity = -1;
+		while ((entity = FindEntityByClassname(entity, "*")) != -1)
+		{
+			char classname[64];
+			if (!GetEntityClassname(entity, classname, sizeof(classname)))
+				continue;
+			
+			OnEntityCreated(entity, classname);
+		}
 		
-		OnEntityCreated(entity, classname);
+		for (int client = 1; client <= MaxClients; ++client)
+		{
+			if (!IsClientInGame(client))
+				continue;
+			
+			OnClientPutInServer(client);
+		}
+		
+		g_chatHintTimer = CreateTimer(sm_dr_chat_hint_interval.FloatValue, Timer_DisplayChatHint, _, TIMER_REPEAT);
 	}
-	
-	for (int client = 1; client <= MaxClients; ++client)
+	else
 	{
-		if (!IsClientInGame(client))
-			continue;
-		
-		OnClientPutInServer(client);
+		delete g_chatHintTimer;
 	}
 }
 
@@ -183,4 +192,14 @@ public Action TF2Items_OnGiveNamedItem(int client, char[] classname, int itemDef
 		return Plugin_Continue;
 	
 	return data.remove ? Plugin_Handled : Plugin_Continue;
+}
+
+static void Timer_DisplayChatHint(Handle timer)
+{
+	char phrase[256];
+	Format(phrase, sizeof(phrase), "Chat Hint %d", ++g_lastShownHint);
+	CPrintToChatAll("%s %t", PLUGIN_TAG, phrase);
+	
+	if (g_lastShownHint == MAX_CHAT_HINTS)
+		g_lastShownHint = 0;
 }

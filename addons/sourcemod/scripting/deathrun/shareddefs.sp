@@ -18,6 +18,8 @@
 
 #define DMG_MELEE	DMG_BLAST_SURFACE
 
+#define MAX_CHAT_HINTS	4 // keep in sync with amount of phrases in deathrun.phrases.txt
+
 enum TOGGLE_STATE
 {
 	TS_AT_TOP, 

@@ -55,4 +55,24 @@
 		"#format"	"{1:d},{2:d}"
 		"en"		"You have been awarded {green}{1} {default}queue points (Total: {green}{2}{default})."
 	}
+	"Chat Hint Prefix"
+	{
+		"en"	"{green}PROTIP: {default}"
+	}
+	"Chat Hint 1"
+	{
+		"en"		"As an {blue}ACTIVATOR{default}, you can utilize ranged weapons to activate traps from a distance."
+	}
+	"Chat Hint 2"
+	{
+		"en"		"You can check the activator queue with the {cyan}/queue{default} command."
+	}
+	"Chat Hint 3"
+	{
+		"en"		"You can edit your preferences using the {cyan}/settings{default} command."
+	}
+	"Chat Hint 4"
+	{
+		"en"		"You can hide other players using the {cyan}/settings{default} menu, or by binding a key to the {cyan}+sm_hideplayers{default} command."
+	}
 }
