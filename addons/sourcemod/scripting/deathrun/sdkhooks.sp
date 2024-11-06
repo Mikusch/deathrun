@@ -91,9 +91,8 @@ static Action OnClientOnTakeDamageAlive(int victim, int &attacker, int &inflicto
 
 static Action OnButtonTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	// Some maps allow runners to activate traps with explosives, either by lobbing them over walls or because the map has very thin barriers.
-	// There is no good reason for RED to activate buttons with blast damage, so just prevent this.
-	if (0 < attacker <= MaxClients && TF2_GetClientTeam(attacker) == TFTeam_Runners && damagetype & DMG_BLAST)
+	// Some maps allow runners to activate traps with ranged weapons
+	if (!sm_dr_runner_allow_button_presses.BoolValue && 0 < attacker <= MaxClients && TF2_GetClientTeam(attacker) == TFTeam_Runners && !(damagetype & DMG_MELEE))
 		return Plugin_Handled;
 	
 	// Prevent multiple buttons from being hit at the same time

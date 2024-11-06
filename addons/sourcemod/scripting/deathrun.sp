@@ -18,6 +18,7 @@ ArrayList g_hCurrentActivators;
 
 ConVar sm_dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
 ConVar sm_dr_queue_points;
+ConVar sm_dr_runner_allow_button_presses;
 ConVar sm_dr_activator_speed_buff;
 ConVar sm_dr_activator_count;
 ConVar sm_dr_activator_health_modifier;

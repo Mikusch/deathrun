@@ -92,10 +92,16 @@ void Menus_DisplayPreferencesMenu(int client)
 	menu.SetTitle("%T", "Preferences Menu: Title", client);
 	menu.ExitBackButton = true;
 	
-	// TODO: Automate this?
-	menu.AddItem("1", "Preference: Disable Activator");
+	AddPreferenceToMenu(menu, Preference_DisableActivatorQueue, "Preference: Disable Activator");
 	
 	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+static void AddPreferenceToMenu(Menu menu, Preference preference, const char[] display)
+{
+	char info[32];
+	if (IntToString(view_as<int>(preference), info, sizeof(info)))
+		menu.AddItem(info, display);
 }
 
 static int MenuHandler_PreferencesMenu(Menu menu, MenuAction action, int param1, int param2)
