@@ -143,10 +143,10 @@ enum struct ItemData
 			int prefab = kv.GetNum("prefab", -1);
 			if (prefab != -1)
 			{
-				int index = g_hItemData.FindValue(prefab, ItemData::def_index);
+				int index = g_itemData.FindValue(prefab, ItemData::def_index);
 				
 				ItemData data;
-				if (index != -1 && g_hItemData.GetArray(index, data))
+				if (index != -1 && g_itemData.GetArray(index, data))
 				{
 					this.CopyFrom(data);
 				}
@@ -228,7 +228,7 @@ void Config_Init()
 	KeyValues kv = new KeyValues("items");
 	if (kv.ImportFromFile(file))
 	{
-		g_hItemData = new ArrayList(sizeof(ItemData));
+		g_itemData = new ArrayList(sizeof(ItemData));
 		
 		if (kv.GotoFirstSubKey(false))
 		{
@@ -236,7 +236,7 @@ void Config_Init()
 			{
 				ItemData item;
 				if (item.Parse(kv))
-					g_hItemData.PushArray(item);
+					g_itemData.PushArray(item);
 			}
 			while (kv.GotoNextKey(false));
 			kv.GoBack();
@@ -283,12 +283,12 @@ void Config_ApplyItemAttributes(int userid)
 		int item = myItems.Get(i);
 		int def_index = GetEntProp(item, Prop_Send, "m_iItemDefinitionIndex");
 		
-		int index = g_hItemData.FindValue(def_index, ItemData::def_index);
+		int index = g_itemData.FindValue(def_index, ItemData::def_index);
 		if (index == -1)
 			continue;
 		
 		ItemData data;
-		if (!g_hItemData.GetArray(index, data))
+		if (!g_itemData.GetArray(index, data))
 			continue;
 		
 		if (data.attributes)

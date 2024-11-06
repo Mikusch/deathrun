@@ -1,7 +1,7 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-static int g_nPrevGameType;
+static int g_prevGameType;
 
 void DHooks_Init()
 {
@@ -51,7 +51,7 @@ static MRESReturn CTFPlayer_GetMaxHealthForBuffing_Post(int player, DHookReturn 
 		maxhealth += RoundFloat(TF2_GetPlayerMaxHealth(client) * sm_dr_activator_health_modifier.FloatValue);
 	}
 	
-	maxhealth /= g_hCurrentActivators.Length;
+	maxhealth /= g_currentActivators.Length;
 	
 	// Refill the activator's health during preround
 	if (GameRules_GetRoundState() == RoundState_Preround)
@@ -87,7 +87,7 @@ static MRESReturn CTFPlayer_RegenThink_Pre(int player)
 
 static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Pre(DHookParam params)
 {
-	g_nPrevGameType = GameRules_GetProp("m_nGameType");
+	g_prevGameType = GameRules_GetProp("m_nGameType");
 	GameRules_SetProp("m_nGameType", 0);
 	
 	bool bWaitingForPlayers = params.Get(1);
@@ -100,7 +100,7 @@ static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Pre(DHookParam
 
 static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Post(DHookParam params)
 {
-	GameRules_SetProp("m_nGameType", g_nPrevGameType);
+	GameRules_SetProp("m_nGameType", g_prevGameType);
 	
 	return MRES_Handled;
 }

@@ -59,8 +59,8 @@ void Menus_DisplayQueueMenu(int client)
 		Menu menu = new Menu(MenuHandler_QueueMenu, MenuAction_Cancel | MenuAction_End);
 		menu.ExitBackButton = true;
 		
-		if (DRPlayer(client).m_nQueuePoints != -1)
-			menu.SetTitle("%T\n%T", "Queue Menu: Title", client, "Your Queue Points", client, DRPlayer(client).m_nQueuePoints);
+		if (DRPlayer(client).QueuePoints != -1)
+			menu.SetTitle("%T\n%T", "Queue Menu: Title", client, "Your Queue Points", client, DRPlayer(client).QueuePoints);
 		else
 			menu.SetTitle("%T\n%T", "Queue Menu: Title", client, "Queue Not Loaded", client);
 		

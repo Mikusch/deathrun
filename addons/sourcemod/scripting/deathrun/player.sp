@@ -1,8 +1,8 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-static int m_nQueuePoints[MAXPLAYERS + 1];
-static bool m_bHidingPlayers[MAXPLAYERS + 1];
+static int m_queuePoints[MAXPLAYERS + 1];
+static bool m_isHidingPlayers[MAXPLAYERS + 1];
 static int m_preferences[MAXPLAYERS + 1];
 
 methodmap DRPlayer
@@ -20,15 +20,15 @@ methodmap DRPlayer
 		}
 	}
 	
-	property int m_nQueuePoints
+	property int QueuePoints
 	{
 		public get()
 		{
-			return m_nQueuePoints[this.entindex];
+			return m_queuePoints[this.entindex];
 		}
-		public set(int nQueuePoints)
+		public set(int queuePoints)
 		{
-			m_nQueuePoints[this.entindex] = nQueuePoints;
+			m_queuePoints[this.entindex] = queuePoints;
 		}
 	}
 	
@@ -36,15 +36,15 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return m_bHidingPlayers[this.entindex];
+			return m_isHidingPlayers[this.entindex];
 		}
 		public set(bool isHidingPlayers)
 		{
-			m_bHidingPlayers[this.entindex] = isHidingPlayers;
+			m_isHidingPlayers[this.entindex] = isHidingPlayers;
 		}
 	}
 	
-	property int m_preferences
+	property int Preferences
 	{
 		public get()
 		{
@@ -58,20 +58,20 @@ methodmap DRPlayer
 	
 	public void Init()
 	{
-		this.m_nQueuePoints = 0;
+		this.QueuePoints = 0;
 		this.IsHidingPlayers = false;
-		this.m_preferences = 0;
+		this.Preferences = 0;
 	}
 	
 	public bool SetPreference(Preference preference, bool enable)
 	{
-		if (this.m_preferences == -1)
+		if (this.Preferences == -1)
 			return false;
 		
 		if (enable)
-			this.m_preferences |= view_as<int>(preference);
+			this.Preferences |= view_as<int>(preference);
 		else
-			this.m_preferences &= ~view_as<int>(preference);
+			this.Preferences &= ~view_as<int>(preference);
 		
 		ClientPrefs_SavePreferences(this.entindex);
 		
@@ -80,7 +80,7 @@ methodmap DRPlayer
 	
 	public bool HasPreference(Preference preference)
 	{
-		return this.m_preferences != -1 && this.m_preferences & view_as<int>(preference) != 0;
+		return this.Preferences != -1 && this.Preferences & view_as<int>(preference) != 0;
 	}
 	
 	public void RemoveItem(int item)
@@ -126,17 +126,17 @@ methodmap DRPlayer
 	
 	public bool IsActivator()
 	{
-		return g_hCurrentActivators.FindValue(this.entindex) != -1;
+		return g_currentActivators.FindValue(this.entindex) != -1;
 	}
 	
 	public void AddQueuePoints(int nQueuePoints)
 	{
-		this.SetQueuePoints(this.m_nQueuePoints + nQueuePoints);
+		this.SetQueuePoints(this.QueuePoints + nQueuePoints);
 	}
 	
 	public void SetQueuePoints(int nQueuePoints)
 	{
-		this.m_nQueuePoints = nQueuePoints;
+		this.QueuePoints = nQueuePoints;
 		ClientPrefs_SaveQueuePoints(this.entindex);
 	}
 }

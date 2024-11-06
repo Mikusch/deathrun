@@ -13,16 +13,17 @@
 
 #define PLUGIN_VERSION	"2.0.0"
 
-ArrayList g_hItemData;
-ArrayList g_hCurrentActivators;
+ArrayList g_itemData;
+ArrayList g_currentActivators;
 
 ConVar sm_dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
 ConVar sm_dr_queue_points;
-ConVar sm_dr_runner_allow_button_presses;
+ConVar sm_dr_runner_backstab_damage;
+ConVar sm_dr_runner_allow_button_damage;
+ConVar sm_dr_runner_glow;
 ConVar sm_dr_activator_speed_buff;
 ConVar sm_dr_activator_count;
 ConVar sm_dr_activator_health_modifier;
-ConVar sm_dr_backstab_damage;
 ConVar sm_dr_disable_regen;
 ConVar sm_dr_allow_teleporters;
 
@@ -95,7 +96,7 @@ public void OnMapStart()
 {
 	SDKHooks_OnMapStart();
 	
-	g_hCurrentActivators.Clear();
+	g_currentActivators.Clear();
 }
 
 public void OnConfigsExecuted()
@@ -172,12 +173,12 @@ public Action TF2Items_OnGiveNamedItem(int client, char[] classname, int itemDef
 	if (!PSM_IsEnabled())
 		return Plugin_Continue;
 	
-	int index = g_hItemData.FindValue(itemDefIndex, ItemData::def_index);
+	int index = g_itemData.FindValue(itemDefIndex, ItemData::def_index);
 	if (index == -1)
 		return Plugin_Continue;
 	
 	ItemData data;
-	if (!g_hItemData.GetArray(index, data))
+	if (!g_itemData.GetArray(index, data))
 		return Plugin_Continue;
 	
 	return data.remove ? Plugin_Handled : Plugin_Continue;

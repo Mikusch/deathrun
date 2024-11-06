@@ -9,7 +9,7 @@ enum struct QueueData
 
 void Queue_Init()
 {
-	g_hCurrentActivators = new ArrayList();
+	g_currentActivators = new ArrayList();
 }
 
 ArrayList Queue_GetQueueList()
@@ -24,7 +24,7 @@ ArrayList Queue_GetQueueList()
 		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
 			continue;
 		
-		int points = DRPlayer(client).m_nQueuePoints;
+		int points = DRPlayer(client).QueuePoints;
 		if (points == -1)
 			continue;
 		
@@ -44,7 +44,7 @@ ArrayList Queue_GetQueueList()
 
 void SetNextActivatorsFromQueue()
 {
-	g_hCurrentActivators.Clear();
+	g_currentActivators.Clear();
 	
 	ArrayList queue = Queue_GetQueueList();
 	
@@ -53,7 +53,7 @@ void SetNextActivatorsFromQueue()
 	{
 		int client = queue.Get(i, QueueData::client);
 		DRPlayer(client).SetQueuePoints(0);
-		g_hCurrentActivators.Push(client);
+		g_currentActivators.Push(client);
 	}
 	
 	delete queue;

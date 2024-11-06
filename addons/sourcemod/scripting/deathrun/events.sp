@@ -124,7 +124,7 @@ static void OnGameEvent_arena_win_panel(Event event, const char[] name, bool don
 		int client = queue.Get(i, QueueData::client);
 		DRPlayer(client).AddQueuePoints(points);
 		
-		CPrintToChat(client, "%s %t", PLUGIN_TAG, "Queue Points Earned", points, DRPlayer(client).m_nQueuePoints);
+		CPrintToChat(client, "%s %t", PLUGIN_TAG, "Queue Points Earned", points, DRPlayer(client).QueuePoints);
 	}
 	delete queue;
 }
@@ -136,20 +136,25 @@ static void OnGameEvent_post_inventory_application(Event event, const char[] nam
 
 static void OnGameEvent_player_spawn(Event event, const char[] name, bool dontBroadcast)
 {
-	// We already refill health during preround (see GetMaxHealthForBuffing)
-	if (GameRules_GetRoundState() == RoundState_Preround)
-		return;
-	
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	if (client == 0)
 		return;
 	
-	for (int i = 0; i < g_hCurrentActivators.Length; ++i)
+	if (!DRPlayer(client).IsActivator() && sm_dr_runner_glow.BoolValue)
 	{
-		int activator = g_hCurrentActivators.Get(i);
-		
-		int healthToAdd = TF2_GetPlayerMaxHealth(client) / g_hCurrentActivators.Length;
-		SetEntityHealth(activator, TF2_GetPlayerMaxHealth(activator) + healthToAdd);
+		SetEntProp(client, Prop_Send, "m_bGlowEnabled", true);
+	}
+	
+	// We already refill health during preround (see GetMaxHealthForBuffing)
+	if (GameRules_GetRoundState() != RoundState_Preround)
+	{
+		for (int i = 0; i < g_currentActivators.Length; ++i)
+		{
+			int activator = g_currentActivators.Get(i);
+			
+			int healthToAdd = TF2_GetPlayerMaxHealth(client) / g_currentActivators.Length;
+			SetEntityHealth(activator, TF2_GetPlayerMaxHealth(activator) + healthToAdd);
+		}
 	}
 }
 
@@ -162,9 +167,9 @@ static Action OnGameEvent_player_death(Event event, const char[] name, bool dont
 	if (GameRules_GetRoundState() == RoundState_Stalemate)
 		return Plugin_Continue;
 	
-	if (!DRPlayer(victim).IsActivator() && g_hCurrentActivators.Length == 1)
+	if (!DRPlayer(victim).IsActivator() && g_currentActivators.Length == 1)
 	{
-		int activator = g_hCurrentActivators.Get(0);
+		int activator = g_currentActivators.Get(0);
 		event.SetInt("attacker", GetClientUserId(activator));
 		return Plugin_Changed;
 	}

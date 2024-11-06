@@ -1,7 +1,7 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-static char g_aOwnerEntityList[][] =
+static char g_ownerEntityList[][] =
 {
 	"env_sniperdot",
 	"halloween_souls_pack",
@@ -13,11 +13,11 @@ static char g_aOwnerEntityList[][] =
 	"tf_halloween_pickup"
 };
 
-static float g_flButtonDamagedTime;
+static float g_buttonDamagedTime;
 
 void SDKHooks_OnMapStart()
 {
-	g_flButtonDamagedTime = 0.0;
+	g_buttonDamagedTime = 0.0;
 }
 
 void SDKHooks_HookEntity(int entity, const char[] classname)
@@ -57,9 +57,9 @@ void SDKHooks_HookEntity(int entity, const char[] classname)
 	}
 	else
 	{
-		for (int i = 0; i < sizeof(g_aOwnerEntityList); ++i)
+		for (int i = 0; i < sizeof(g_ownerEntityList); ++i)
 		{
-			if (StrEqual(classname, g_aOwnerEntityList[i]))
+			if (StrEqual(classname, g_ownerEntityList[i]))
 			{
 				SDKHook(entity, SDKHook_SetTransmit, OnOwnerEntitySetTransmit);
 			}
@@ -80,9 +80,9 @@ static Action OnClientSetTransmit(int entity, int client)
 
 static Action OnClientOnTakeDamageAlive(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
-	if (DRPlayer(victim).IsActivator() && damagecustom == TF_CUSTOM_BACKSTAB && sm_dr_backstab_damage.FloatValue > 0.0)
+	if (DRPlayer(victim).IsActivator() && damagecustom == TF_CUSTOM_BACKSTAB && sm_dr_runner_backstab_damage.FloatValue > 0.0)
 	{
-		damage = sm_dr_backstab_damage.FloatValue;
+		damage = sm_dr_runner_backstab_damage.FloatValue;
 		return Plugin_Changed;
 	}
 	
@@ -92,14 +92,14 @@ static Action OnClientOnTakeDamageAlive(int victim, int &attacker, int &inflicto
 static Action OnButtonTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
 	// Some maps allow runners to activate traps with ranged weapons
-	if (!sm_dr_runner_allow_button_presses.BoolValue && 0 < attacker <= MaxClients && TF2_GetClientTeam(attacker) == TFTeam_Runners && !(damagetype & DMG_MELEE))
+	if (!sm_dr_runner_allow_button_damage.BoolValue && (0 < attacker <= MaxClients) && !DRPlayer(attacker).IsActivator() && !(damagetype & DMG_MELEE))
 		return Plugin_Handled;
 	
 	// Prevent multiple buttons from being hit at the same time
-	if (g_flButtonDamagedTime == GetGameTime() && view_as<TOGGLE_STATE>(GetEntProp(victim, Prop_Data, "m_toggle_state")) == TS_AT_BOTTOM)
+	if (g_buttonDamagedTime == GetGameTime() && view_as<TOGGLE_STATE>(GetEntProp(victim, Prop_Data, "m_toggle_state")) == TS_AT_BOTTOM)
 		return Plugin_Handled;
 	
-	g_flButtonDamagedTime = GetGameTime();
+	g_buttonDamagedTime = GetGameTime();
 	
 	return Plugin_Continue;
 }
