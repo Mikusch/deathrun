@@ -26,6 +26,7 @@ ConVar sm_dr_runner_glow;
 ConVar sm_dr_activator_speed_buff;
 ConVar sm_dr_activator_count;
 ConVar sm_dr_activator_health_modifier;
+ConVar sm_dr_activator_allow_healthkits;
 ConVar sm_dr_disable_regen;
 ConVar sm_dr_allow_teleporters;
 ConVar sm_dr_waiting_for_players;

@@ -55,6 +55,10 @@ void SDKHooks_HookEntity(int entity, const char[] classname)
 	{
 		SDKHook(entity, SDKHook_SetTransmit, OnVGUIScreenSetTransmit);
 	}
+	else if (!strncmp(classname, "item_healthkit_", 15))
+	{
+		SDKHook(entity, SDKHook_Touch, OnHealthKitTouch);
+	}
 	else
 	{
 		for (int i = 0; i < sizeof(g_ownerEntityList); ++i)
@@ -183,6 +187,14 @@ static Action OnVGUIScreenSetTransmit(int entity, int client)
 		if (IsEntityClient(builder) && DRPlayer(client).ShouldHideClient(builder))
 			return Plugin_Handled;
 	}
+	
+	return Plugin_Continue;
+}
+
+static Action OnHealthKitTouch(int entity, int other)
+{
+	if ((0 < other <= MaxClients) && DRPlayer(other).IsActivator() && !sm_dr_activator_allow_healthkits.BoolValue)
+		return Plugin_Handled;
 	
 	return Plugin_Continue;
 }
