@@ -21,6 +21,10 @@
 	{
 		"en"		"Edit preferences"
 	}
+	"Main Menu: Hide Players"
+	{
+		"en"		"Hide other players"
+	}
 	"Queue Menu: Title"
 	{
 		"en"		"Activator Queue"

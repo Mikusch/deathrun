@@ -3,6 +3,7 @@
 
 #define INFO_QUEUE			"queue"
 #define INFO_PREFERENCES	"preferences"
+#define INFO_HIDEPLAYERS	"hideplayers"
 
 void Menus_DisplayMainMenu(int client)
 {
@@ -12,6 +13,7 @@ void Menus_DisplayMainMenu(int client)
 	
 	menu.AddItem(INFO_QUEUE, "Main Menu: Queue");
 	menu.AddItem(INFO_PREFERENCES, "Main Menu: Preferences");
+	menu.AddItem(INFO_HIDEPLAYERS, "Main Menu: Hide Players");
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }
@@ -32,6 +34,11 @@ public int MenuHandler_MainMenu(Menu menu, MenuAction action, int param1, int pa
 			else if (StrEqual(info, INFO_PREFERENCES))
 			{
 				Menus_DisplayPreferencesMenu(param1);
+			}
+			else if (StrEqual(info, INFO_HIDEPLAYERS))
+			{
+				FakeClientCommand(param1, "sm_hideplayers");
+				Menus_DisplayMainMenu(param1);
 			}
 		}
 		case MenuAction_End:
