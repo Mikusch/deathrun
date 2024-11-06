@@ -87,6 +87,9 @@ static MRESReturn CTFPlayer_RegenThink_Pre(int player)
 
 static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Pre(DHookParam params)
 {
+	if (!sm_dr_waiting_for_players.BoolValue)
+		return MRES_Ignored;
+	
 	g_prevGameType = GameRules_GetProp("m_nGameType");
 	GameRules_SetProp("m_nGameType", 0);
 	
@@ -100,6 +103,9 @@ static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Pre(DHookParam
 
 static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Post(DHookParam params)
 {
+	if (!sm_dr_waiting_for_players.BoolValue)
+		return MRES_Ignored;
+	
 	GameRules_SetProp("m_nGameType", g_prevGameType);
 	
 	return MRES_Handled;

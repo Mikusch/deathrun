@@ -24,6 +24,7 @@ void ConVars_Init()
 	sm_dr_activator_health_modifier = CreateConVar("sm_dr_activator_health_modifier", "1.0", "Percentage of health the activator gains from every runner.", _, true, 0.0);
 	sm_dr_disable_regen = CreateConVar("sm_dr_disable_regen", "1", "Whether to disable passive health regeneration.");
 	sm_dr_allow_teleporters = CreateConVar("sm_dr_allow_teleporters", "0", "Whether to allow players to use player-built teleporters.");
+	sm_dr_waiting_for_players = CreateConVar("sm_dr_waiting_for_players", "1", "Whether there should be a 'Waiting For Players' period at the start of each map.");
 	
 	PSM_AddEnforcedConVar("mp_autoteambalance", "0");
 	PSM_AddEnforcedConVar("mp_teams_unbalance_limit", "0");

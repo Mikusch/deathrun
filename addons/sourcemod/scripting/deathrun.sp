@@ -26,6 +26,7 @@ ConVar sm_dr_activator_count;
 ConVar sm_dr_activator_health_modifier;
 ConVar sm_dr_disable_regen;
 ConVar sm_dr_allow_teleporters;
+ConVar sm_dr_waiting_for_players;
 
 #include "deathrun/shareddefs.sp"
 
