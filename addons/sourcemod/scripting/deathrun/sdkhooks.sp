@@ -31,10 +31,6 @@ void SDKHooks_HookEntity(int entity, const char[] classname)
 	{
 		PSM_SDKHook(entity, SDKHook_OnTakeDamage, OnButtonTakeDamage);
 	}
-	else if (StrEqual(classname, "func_tracktrain") || StrEqual(classname, "func_tanktrain"))
-	{
-		PSM_SDKHook(entity, SDKHook_SpawnPost, OnTrackTrainSpawnPost);
-	}
 	else if (StrEqual(classname, "tf_dropped_weapon"))
 	{
 		PSM_SDKHook(entity, SDKHook_SetTransmit, OnDroppedWeaponSetTransmit);
@@ -135,12 +131,6 @@ static Action OnObjectSetTransmit(int entity, int client)
 	}
 	
 	return Plugin_Continue;
-}
-
-static void OnTrackTrainSpawnPost(int entity)
-{
-	// This spawnflag is set by default but there is no sensible reason to want this in TF2
-	SetEntProp(entity, Prop_Data, "m_spawnflags", GetEntProp(entity, Prop_Data, "m_spawnflags") | SF_TRACKTRAIN_NOCONTROL);
 }
 
 static Action OnDroppedWeaponSetTransmit(int entity, int client)
