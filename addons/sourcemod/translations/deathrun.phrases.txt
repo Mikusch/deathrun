@@ -53,7 +53,7 @@
 	"Queue Points Earned"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"You have been awarded {green}{1} {default}queue points (Total: {green}{2}{default})."
+		"en"		"You have been awarded {green}{1}{default} queue points (Total: {green}{2}{default})."
 	}
 	"Chat Hint Prefix"
 	{
@@ -65,14 +65,14 @@
 	}
 	"Chat Hint 2"
 	{
-		"en"		"You can check the activator queue with the {cyan}/queue{default} command."
+		"en"		"You can check the current activator queue using the {cyan}/queue{default} command."
 	}
 	"Chat Hint 3"
 	{
-		"en"		"You can edit your preferences using the {cyan}/settings{default} command."
+		"en"		"You can edit your user preferences using the {cyan}/settings{default} command."
 	}
 	"Chat Hint 4"
 	{
-		"en"		"You can hide other players using the {cyan}/settings{default} menu, or by binding a key to the {cyan}+sm_hideplayers{default} command."
+		"en"		"Can't see in crowded areas? Hide other players using the {cyan}/settings{default] menu or by binding a key to the {cyan}+sm_hideplayers{default} command."
 	}
 }

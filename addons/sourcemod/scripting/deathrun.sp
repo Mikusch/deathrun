@@ -197,10 +197,14 @@ public Action TF2Items_OnGiveNamedItem(int client, char[] classname, int itemDef
 
 static void Timer_DisplayChatHint(Handle timer)
 {
-	char phrase[256];
+	char phrase[64];
 	Format(phrase, sizeof(phrase), "Chat Hint %d", ++g_lastShownHint);
-	CPrintToChatAll("%s %t", PLUGIN_TAG, phrase);
 	
-	if (g_lastShownHint == MAX_CHAT_HINTS)
+	if (!TranslationPhraseExists(phrase))
+	{
 		g_lastShownHint = 0;
+		return;
+	}
+	
+	CPrintToChatAll("%s %t", PLUGIN_TAG, phrase);
 }
