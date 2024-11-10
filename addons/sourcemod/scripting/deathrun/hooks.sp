@@ -38,7 +38,7 @@ static Action CommandListener_JoinTeam(int client, const char[] command, int arg
 	else
 		TF2_ChangeClientTeam(client, TFTeam_Runners);
 	
-	//ShowVGUIPanel(client, TF2_GetClientTeam(client) == TFTeam_Red ? "class_red" : "class_blue");
+	ShowVGUIPanel(client, TF2_GetClientTeam(client) == TFTeam_Red ? "class_red" : "class_blue");
 	
 	return Plugin_Handled;
 }
