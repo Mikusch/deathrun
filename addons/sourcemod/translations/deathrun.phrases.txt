@@ -15,15 +15,15 @@
 	}
 	"Main Menu: Queue"
 	{
-		"en"		"View activator queue"
+		"en"		"View activator queue (!queue)"
 	}
 	"Main Menu: Preferences"
 	{
-		"en"		"Edit preferences"
+		"en"		"Edit user preferences (!settings)"
 	}
 	"Main Menu: Hide Players"
 	{
-		"en"		"Hide other players"
+		"en"		"Toggle teammate visibility (!hideplayers)"
 	}
 	"Queue Menu: Title"
 	{
@@ -33,10 +33,6 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Your queue points: {1}"
-	}
-	"Queue Not Loaded"
-	{
-		"en"		"Your queue points are still loading, please wait a moment."
 	}
 	"No Players In Queue"
 	{
