@@ -10,6 +10,7 @@
 #include <tf2items>
 #include <pluginstatemanager>
 #include <morecolors>
+#include <tf_econ_data>
 
 #define PLUGIN_VERSION	"2.0.0"
 
@@ -191,6 +192,31 @@ public Action TF2Items_OnGiveNamedItem(int client, char[] classname, int itemDef
 	ItemData data;
 	if (!g_itemData.GetArray(index, data))
 		return Plugin_Continue;
+	
+	if (data.replacement_defindex != -1)
+	{
+		char translatedWeaponName[64];
+		if (TF2Econ_GetItemClassName(data.replacement_defindex, translatedWeaponName, sizeof(translatedWeaponName)))
+		{
+			TF2Econ_TranslateWeaponEntForClass(translatedWeaponName, sizeof(translatedWeaponName), TF2_GetPlayerClass(client));
+			
+			int minLevel, maxLevel;
+			TF2Econ_GetItemLevelRange(data.replacement_defindex, minLevel, maxLevel);
+			
+			// Create a default item
+			Handle newItem = TF2Items_CreateItem(OVERRIDE_ALL | PRESERVE_ATTRIBUTES);
+			TF2Items_SetItemIndex(newItem, data.replacement_defindex);
+			TF2Items_SetClassname(newItem, translatedWeaponName);
+			TF2Items_SetLevel(newItem, GetRandomInt(minLevel, maxLevel));
+			
+			item = newItem;
+			return Plugin_Changed;
+		}
+		else
+		{
+			LogError("Invalid item definition index %d", data.replacement_defindex);
+		}
+	}
 	
 	return data.remove ? Plugin_Handled : Plugin_Continue;
 }

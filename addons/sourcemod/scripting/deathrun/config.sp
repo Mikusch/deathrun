@@ -128,6 +128,7 @@ enum struct ItemData
 	ArrayList attributes;
 	ArrayList netprops;
 	bool remove;
+	int replacement_defindex;
 	
 	bool Parse(KeyValues kv)
 	{
@@ -200,6 +201,7 @@ enum struct ItemData
 			}
 			
 			this.remove = kv.GetNum("remove", this.remove) != 0;
+			this.replacement_defindex = kv.GetNum("replacement_defindex", -1);
 			
 			return true;
 		}
