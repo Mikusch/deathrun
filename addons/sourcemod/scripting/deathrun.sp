@@ -8,9 +8,9 @@
 #include <tf2utils>
 #include <tf2attributes>
 #include <tf2items>
+#include <tf_econ_data>
 #include <pluginstatemanager>
 #include <morecolors>
-#include <tf_econ_data>
 
 #define PLUGIN_VERSION	"2.0.0"
 
