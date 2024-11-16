@@ -220,6 +220,7 @@ enum struct ItemData
 			this.netprops = data.netprops.Clone();
 		
 		this.remove = data.remove;
+		this.replacement_defindex = data.replacement_defindex;
 	}
 }
 
