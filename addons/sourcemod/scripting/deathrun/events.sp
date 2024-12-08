@@ -81,7 +81,7 @@ static Action OnGameEvent_player_death(Event event, const char[] name, bool dont
 	if (victim == 0)
 		return Plugin_Continue;
 	
-	if (GameRules_GetRoundState() == RoundState_Stalemate)
+	if (GameRules_GetRoundState() != RoundState_Stalemate)
 		return Plugin_Continue;
 	
 	if (g_currentActivators.Length == 1)
