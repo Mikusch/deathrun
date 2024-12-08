@@ -84,10 +84,14 @@ static Action OnGameEvent_player_death(Event event, const char[] name, bool dont
 	if (GameRules_GetRoundState() == RoundState_Stalemate)
 		return Plugin_Continue;
 	
-	if (!DRPlayer(victim).IsActivator() && g_currentActivators.Length == 1)
+	if (g_currentActivators.Length == 1)
 	{
 		int activator = g_currentActivators.Get(0);
-		event.SetInt("attacker", GetClientUserId(activator));
+		if (victim != activator && IsPlayerAlive(activator))
+		{
+			event.SetInt("attacker", GetClientUserId(activator));
+		}
+		
 		return Plugin_Changed;
 	}
 	
