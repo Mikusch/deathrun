@@ -3,6 +3,9 @@
 
 static int g_prevGameType;
 
+static DynamicHook g_CTeamplayRoundBasedRules_BHavePlayers;
+static DynamicHook g_CTeamplayRoundBasedRules_RoundRespawn;
+
 void DHooks_Init()
 {
 	PSM_AddDynamicDetourFromConf("CObjectDispenser::CouldHealTarget(CBaseEntity *)", _, CObjectDispenser_CouldHealTarget_Post);
@@ -10,6 +13,15 @@ void DHooks_Init()
 	PSM_AddDynamicDetourFromConf("CTFPlayer::TeamFortress_CalculateMaxSpeed(bool)", _, CTFPlayer_TeamFortress_CalculateMaxSpeed_Post);
 	PSM_AddDynamicDetourFromConf("CTFPlayer::RegenThink()", CTFPlayer_RegenThink_Pre);
 	PSM_AddDynamicDetourFromConf("CTeamplayRoundBasedRules::SetInWaitingForPlayers(bool)", CTeamplayRoundBasedRules_SetInWaitingForPlayers_Pre, CTeamplayRoundBasedRules_SetInWaitingForPlayers_Post);
+	
+	g_CTeamplayRoundBasedRules_BHavePlayers = PSM_AddDynamicHookFromConf("CTeamplayRoundBasedRules::BHavePlayers()");
+	g_CTeamplayRoundBasedRules_RoundRespawn = PSM_AddDynamicHookFromConf("CTeamplayRoundBasedRules::RoundRespawn()");
+}
+
+void DHooks_OnMapStart()
+{
+	PSM_DHookGameRules(g_CTeamplayRoundBasedRules_BHavePlayers, Hook_Pre, CTeamplayRoundBasedRules_BHavePlayers_Pre);
+	PSM_DHookGameRules(g_CTeamplayRoundBasedRules_RoundRespawn, Hook_Pre, CTeamplayRoundBasedRules_RoundRespawn_Pre);
 }
 
 static MRESReturn CObjectDispenser_CouldHealTarget_Post(int dispenser, DHookReturn ret, DHookParam params)
@@ -109,4 +121,52 @@ static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Post(DHookPara
 	GameRules_SetProp("m_nGameType", g_prevGameType);
 	
 	return MRES_Handled;
+}
+
+static MRESReturn CTeamplayRoundBasedRules_BHavePlayers_Pre(DHookReturn ret)
+{
+	int totalPlayers = 0;
+	
+	for (int client = 1; client < MaxClients; client++)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
+			continue;
+		
+		totalPlayers++;
+	}
+	
+	if (sm_dr_activator_count.IntValue >= totalPlayers || Queue_GetPlayersInQueue() < sm_dr_activator_count.IntValue)
+	{
+		ret.Value = false;
+		return MRES_Supercede;
+	}
+	
+	ret.Value = true;
+	return MRES_Supercede;
+}
+
+// RoundRespawn will restart waiting for players if any team has no players in it.
+// This was easily triggered by players leaving the activator team, so we have to choose a new one before that logic runs.
+static MRESReturn CTeamplayRoundBasedRules_RoundRespawn_Pre()
+{
+	if (GameRules_GetProp("m_bInWaitingForPlayers"))
+		return MRES_Ignored;
+	
+	Queue_SelectNextActivators();
+	
+	for (int client = 1; client <= MaxClients; ++client)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
+			continue;
+		
+		TF2_ChangeClientTeamAlive(client, DRPlayer(client).IsActivator() ? TFTeam_Activators : TFTeam_Runners);
+	}
+	
+	return MRES_Ignored;
 }

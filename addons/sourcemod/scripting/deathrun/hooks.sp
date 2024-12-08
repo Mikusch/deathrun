@@ -12,10 +12,7 @@ void Hooks_Init()
 
 static Action CommandListener_JoinTeam(int client, const char[] command, int argc)
 {
-	if (GameRules_GetRoundState() == RoundState_Pregame)
-		return Plugin_Continue;
-	
-	if (GameRules_GetProp("m_bInWaitingForPlayers"))
+	if (GameRules_GetRoundState() == RoundState_Pregame || GameRules_GetProp("m_bInWaitingForPlayers"))
 		return Plugin_Continue;
 	
 	char team[16];

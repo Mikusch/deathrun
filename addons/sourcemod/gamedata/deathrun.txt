@@ -35,6 +35,21 @@
 				"windows"	"\x55\x8B\xEC\x51\x56\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x84\xC0\x0F\x85\x2A\x2A\x2A\x2A"
 			}
 		}
+		"Offsets"
+		{
+			"CTeamplayRoundBasedRules::BHavePlayers()"
+			{
+				"library"	"server"
+				"linux"		"230"
+				"windows"	"228"
+			}
+			"CTeamplayRoundBasedRules::RoundRespawn()"
+			{
+				"library"	"server"
+				"linux"		"231"
+				"windows"	"229"
+			}
+		}
 		"Functions"
 		{
 			"CObjectDispenser::CouldHealTarget(CBaseEntity *)"
@@ -92,6 +107,20 @@
 						"type"	"bool"
 					}
 				}
+			}
+			"CTeamplayRoundBasedRules::BHavePlayers()"
+			{
+				"offset"	"CTeamplayRoundBasedRules::BHavePlayers()"
+				"hooktype"	"gamerules"
+				"return"	"bool"
+				"this"		"ignore"
+			}
+			"CTeamplayRoundBasedRules::RoundRespawn()"
+			{
+				"offset"	"CTeamplayRoundBasedRules::RoundRespawn()"
+				"hooktype"	"gamerules"
+				"return"	"void"
+				"this"		"ignore"
 			}
 		}
 	}

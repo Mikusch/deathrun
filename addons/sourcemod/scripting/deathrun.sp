@@ -99,7 +99,11 @@ public void OnClientPutInServer(int client)
 
 public void OnMapStart()
 {
+	if (!PSM_IsEnabled())
+		return;
+	
 	SDKHooks_OnMapStart();
+	DHooks_OnMapStart();
 	
 	g_currentActivators.Clear();
 }
@@ -156,6 +160,8 @@ void OnPluginStateChanged(bool enabled)
 		}
 		
 		g_chatHintTimer = CreateTimer(sm_dr_chat_hint_interval.FloatValue, Timer_DisplayChatHint, _, TIMER_REPEAT);
+		
+		OnMapStart();
 	}
 	else
 	{

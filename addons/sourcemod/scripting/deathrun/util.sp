@@ -53,14 +53,8 @@ void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 	if (class == TFClass_Unknown)
 		TF2_SetPlayerClass(client, view_as<TFClassType>(GetRandomInt(view_as<int>(TFClass_Unknown) + 1, view_as<int>(TFClass_Engineer))));
 	
-	// Already in same team
-	if (TF2_GetClientTeam(client) == team)
-		return;
-	
 	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
 	TF2_ChangeClientTeam(client, team);
-	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_ALIVE);
-	
 	TF2_RespawnPlayer(client);
 }
 
