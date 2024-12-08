@@ -86,9 +86,9 @@ methodmap DRPlayer
 			case Preference_DisableActivatorSpeedBoost:
 			{
 				if (enable)
-					TF2_AddCondition(this.entindex, TFCond_SpeedBuffAlly);
-				else
 					TF2_RemoveCondition(this.entindex, TFCond_SpeedBuffAlly);
+				else
+					TF2_AddCondition(this.entindex, TFCond_SpeedBuffAlly);
 			}
 		}
 	}
