@@ -71,7 +71,7 @@ methodmap DRPlayer
 			this.Preferences &= ~view_as<int>(preference);
 		
 		ClientPrefs_SavePreferences(this.entindex);
-		this.OnPreferenceToggled(preference, enable);
+		this.OnPreferencesChanged(preference);
 	}
 	
 	public bool HasPreference(Preference preference)
@@ -79,16 +79,16 @@ methodmap DRPlayer
 		return this.Preferences != -1 && this.Preferences & view_as<int>(preference) != 0;
 	}
 	
-	public void OnPreferenceToggled(Preference preference, bool enable)
+	public void OnPreferencesChanged(Preference preference)
 	{
 		switch (preference)
 		{
-			case Preference_DisableActivatorSpeedBoost:
+			case Preference_DisableActivatorSpeedBuff:
 			{
-				if (enable)
-					TF2_RemoveCondition(this.entindex, TFCond_SpeedBuffAlly);
-				else
+				if (sm_dr_activator_speed_buff.BoolValue && this.IsActivator() && !this.HasPreference(preference))
 					TF2_AddCondition(this.entindex, TFCond_SpeedBuffAlly);
+				else
+					TF2_RemoveCondition(this.entindex, TFCond_SpeedBuffAlly);
 			}
 		}
 	}

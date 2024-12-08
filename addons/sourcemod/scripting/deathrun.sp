@@ -24,6 +24,7 @@ ConVar sm_dr_queue_points;
 ConVar sm_dr_runner_backstab_damage;
 ConVar sm_dr_runner_allow_button_damage;
 ConVar sm_dr_runner_glow;
+ConVar sm_dr_activator_speed_buff;
 ConVar sm_dr_activator_count;
 ConVar sm_dr_activator_health_modifier;
 ConVar sm_dr_activator_allow_healthkits;
@@ -67,6 +68,7 @@ public void OnPluginStart()
 	
 	PSM_Init("sm_dr_enabled", gameconf);
 	PSM_AddPluginStateChangedHook(OnPluginStateChanged);
+	PSM_AddPluginStateChangedHook(ConVars_OnPluginStateChanged);
 	
 	ClientPrefs_Init();
 	Commands_Init();
@@ -159,7 +161,7 @@ void OnPluginStateChanged(bool enabled)
 			OnClientPutInServer(client);
 		}
 		
-		g_chatHintTimer = CreateTimer(sm_dr_chat_hint_interval.FloatValue, Timer_DisplayChatHint, _, TIMER_REPEAT);
+		g_chatHintTimer = CreateChatHintTimer(sm_dr_chat_hint_interval.FloatValue);
 		
 		OnMapStart();
 	}
@@ -226,6 +228,16 @@ public Action TF2Items_OnGiveNamedItem(int client, char[] classname, int itemDef
 	return data.remove ? Plugin_Handled : Plugin_Continue;
 }
 
+Handle CreateChatHintTimer(float interval)
+{
+	delete g_chatHintTimer;
+	
+	if (interval > 0.0)
+		return CreateTimer(interval, Timer_DisplayChatHint, _, TIMER_REPEAT);
+	else
+		return null;
+}
+
 static void Timer_DisplayChatHint(Handle timer)
 {
 	char phrase[64];
@@ -237,5 +249,14 @@ static void Timer_DisplayChatHint(Handle timer)
 		return;
 	}
 	
-	CPrintToChatAll("%s %t", PLUGIN_TAG, phrase);
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		if (DRPlayer(client).HasPreference(Preference_DisableChatHints))
+			continue;
+		
+		CPrintToChat(client, "%s %t", PLUGIN_TAG, phrase);
+	}
 }

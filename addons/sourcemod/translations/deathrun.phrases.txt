@@ -50,6 +50,10 @@
 	{
 		"en"		"Disable activator speed boost"
 	}
+	"Preference: Disable Chat Hints"
+	{
+		"en"		"Disable chat hints"
+	}
 	"Queue Points Earned"
 	{
 		"#format"	"{1:d},{2:d}"

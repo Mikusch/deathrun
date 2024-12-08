@@ -21,8 +21,7 @@ static void OnGameEvent_arena_round_start(Event event, const char[] name, bool d
 		{
 			CPrintToChat(client, "%s %t", PLUGIN_TAG, "Selected As Activator");
 			
-			if (!DRPlayer(client).HasPreference(Preference_DisableActivatorSpeedBoost))
-				TF2_AddCondition(client, TFCond_SpeedBuffAlly);
+			DRPlayer(client).OnPreferencesChanged(Preference_DisableActivatorSpeedBuff);
 		}
 		else
 		{
@@ -58,9 +57,9 @@ static void OnGameEvent_player_spawn(Event event, const char[] name, bool dontBr
 	if (client == 0)
 		return;
 	
-	if (!DRPlayer(client).IsActivator() && sm_dr_runner_glow.BoolValue)
+	if (!DRPlayer(client).IsActivator())
 	{
-		SetEntProp(client, Prop_Send, "m_bGlowEnabled", true);
+		SetEntProp(client, Prop_Send, "m_bGlowEnabled", sm_dr_runner_glow.BoolValue);
 	}
 	
 	// We already refill health during preround (see GetMaxHealthForBuffing)

@@ -19,6 +19,7 @@ void ConVars_Init()
 	sm_dr_runner_backstab_damage = CreateConVar("sm_dr_runner_backstab_damage", "750", "Damage dealt to the activator by backstabs. Set to 0 to use the default damage calculation.", _, true, 0.0);
 	sm_dr_runner_allow_button_damage = CreateConVar("sm_dr_runner_allow_button_damage", "1", "Whether runners are allowed to damage buttons with ranged weapons.");
 	sm_dr_runner_glow = CreateConVar("sm_dr_runner_glow", "0", "Whether runners should have a glowing outline.");
+	sm_dr_activator_speed_buff = CreateConVar("sm_dr_activator_speed_buff", "1", "Whether activators should have a speed buff effect.");
 	sm_dr_activator_count = CreateConVar("sm_dr_activator_count", "1", "Amount of activators.", _, true, 1.0);
 	sm_dr_activator_health_modifier = CreateConVar("sm_dr_activator_health_modifier", "1.0", "Percentage of health the activator gains from every runner.", _, true, 0.0);
 	sm_dr_activator_allow_healthkits = CreateConVar("sm_dr_activator_allow_healthkits", "0", "Whether the activator is allowed to pick up health kits.");
@@ -34,4 +35,53 @@ void ConVars_Init()
 	PSM_AddEnforcedConVar("tf_avoidteammates_pushaway", "0");
 	PSM_AddEnforcedConVar("tf_scout_air_dash_count", "0");
 	PSM_AddEnforcedConVar("tf_solidobjects", "0");
+}
+
+void ConVars_OnPluginStateChanged(bool enabled)
+{
+	if (enabled)
+	{
+		sm_dr_activator_speed_buff.AddChangeHook(OnConVarChanged_ActivatorSpeedBuff);
+		sm_dr_runner_glow.AddChangeHook(OnConVarChanged_RunnerGlow);
+		sm_dr_chat_hint_interval.AddChangeHook(OnConVarChanged_ChatHintInterval);
+	}
+	else
+	{
+		sm_dr_activator_speed_buff.RemoveChangeHook(OnConVarChanged_ActivatorSpeedBuff);
+		sm_dr_runner_glow.RemoveChangeHook(OnConVarChanged_RunnerGlow);
+		sm_dr_chat_hint_interval.RemoveChangeHook(OnConVarChanged_ChatHintInterval);
+	}
+}
+
+static void OnConVarChanged_ActivatorSpeedBuff(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		DRPlayer(client).OnPreferencesChanged(Preference_DisableActivatorSpeedBuff);
+	}
+}
+
+static void OnConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		if (DRPlayer(client).IsActivator())
+			continue;
+		
+		if (!IsPlayerAlive(client))
+			continue;
+		
+		SetEntProp(client, Prop_Send, "m_bGlowEnabled", convar.BoolValue);
+	}
+}
+
+static void OnConVarChanged_ChatHintInterval(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	g_chatHintTimer = CreateChatHintTimer(convar.FloatValue);
 }

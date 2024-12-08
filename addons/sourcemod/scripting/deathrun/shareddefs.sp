@@ -137,7 +137,8 @@ enum
 enum Preference
 {
 	Preference_DisableActivatorQueue = (1 << 0),
-	Preference_DisableActivatorSpeedBoost = (1 << 1),
+	Preference_DisableActivatorSpeedBuff = (1 << 1),
+	Preference_DisableChatHints = (1 << 2),
 }
 
 const TFTeam TFTeam_Runners = TFTeam_Red;
