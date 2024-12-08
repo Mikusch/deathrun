@@ -55,6 +55,11 @@
 		"#format"	"{1:d},{2:d}"
 		"en"		"You have been awarded {green}{1}{default} queue points (Total: {green}{2}{default})."
 	}
+	"Added Queue Points"
+	{
+		"#format"	"{1:d},{2:t}"
+		"en"		"Added {green}{1}{default} queue points to {cyan}{2}{default}."
+	}
 	"Chat Hint Prefix"
 	{
 		"en"	"{green}PROTIP: {default}"
