@@ -63,24 +63,34 @@ methodmap DRPlayer
 		this.Preferences = 0;
 	}
 	
-	public bool SetPreference(Preference preference, bool enable)
+	public void SetPreference(Preference preference, bool enable)
 	{
-		if (this.Preferences == -1)
-			return false;
-		
 		if (enable)
 			this.Preferences |= view_as<int>(preference);
 		else
 			this.Preferences &= ~view_as<int>(preference);
 		
 		ClientPrefs_SavePreferences(this.entindex);
-		
-		return true;
+		this.OnPreferenceToggled(preference, enable);
 	}
 	
 	public bool HasPreference(Preference preference)
 	{
 		return this.Preferences != -1 && this.Preferences & view_as<int>(preference) != 0;
+	}
+	
+	public void OnPreferenceToggled(Preference preference, bool enable)
+	{
+		switch (preference)
+		{
+			case Preference_DisableActivatorSpeedBoost:
+			{
+				if (enable)
+					TF2_AddCondition(this.entindex, TFCond_SpeedBuffAlly);
+				else
+					TF2_RemoveCondition(this.entindex, TFCond_SpeedBuffAlly);
+			}
+		}
 	}
 	
 	public void RemoveItem(int item)

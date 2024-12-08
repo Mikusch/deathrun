@@ -136,7 +136,8 @@ enum
 
 enum Preference
 {
-	Preference_DisableActivatorQueue = (1 << 0)
+	Preference_DisableActivatorQueue = (1 << 0),
+	Preference_DisableActivatorSpeedBoost = (1 << 1),
 }
 
 const TFTeam TFTeam_Runners = TFTeam_Red;

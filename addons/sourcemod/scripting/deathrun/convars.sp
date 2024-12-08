@@ -19,7 +19,6 @@ void ConVars_Init()
 	sm_dr_runner_backstab_damage = CreateConVar("sm_dr_runner_backstab_damage", "750", "Damage dealt to the activator by backstabs. Set to 0 to use the default damage calculation.", _, true, 0.0);
 	sm_dr_runner_allow_button_damage = CreateConVar("sm_dr_runner_allow_button_damage", "1", "Whether runners are allowed to damage buttons with ranged weapons.");
 	sm_dr_runner_glow = CreateConVar("sm_dr_runner_glow", "0", "Whether runners should have a glowing outline.");
-	sm_dr_activator_speed_buff = CreateConVar("sm_dr_activator_speed_buff", "1", "Whether activators should have a speed buff effect.");
 	sm_dr_activator_count = CreateConVar("sm_dr_activator_count", "1", "Amount of activators.", _, true, 1.0);
 	sm_dr_activator_health_modifier = CreateConVar("sm_dr_activator_health_modifier", "1.0", "Percentage of health the activator gains from every runner.", _, true, 0.0);
 	sm_dr_activator_allow_healthkits = CreateConVar("sm_dr_activator_allow_healthkits", "0", "Whether the activator is allowed to pick up health kits.");

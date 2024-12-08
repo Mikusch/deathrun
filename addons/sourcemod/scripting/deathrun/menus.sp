@@ -95,7 +95,8 @@ void Menus_DisplayPreferencesMenu(int client)
 	menu.SetTitle("%T", "Preferences Menu: Title", client);
 	menu.ExitBackButton = true;
 	
-	AddPreferenceToMenu(menu, Preference_DisableActivatorQueue, "Preference: Disable Activator");
+	AddPreferenceToMenu(menu, Preference_DisableActivatorQueue, "Preference: Disable Activator Queue");
+	AddPreferenceToMenu(menu, Preference_DisableActivatorSpeedBoost, "Preference: Disable Activator Speed Boost");
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }

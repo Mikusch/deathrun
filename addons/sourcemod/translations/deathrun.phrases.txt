@@ -42,9 +42,13 @@
 	{
 		"en"		"Preferences"
 	}
-	"Preference: Disable Activator"
+	"Preference: Disable Activator Queue"
 	{
 		"en"		"Disable playing as activator"
+	}
+	"Preference: Disable Activator Speed Boost"
+	{
+		"en"		"Disable activator speed boost"
 	}
 	"Queue Points Earned"
 	{

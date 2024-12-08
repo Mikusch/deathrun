@@ -80,35 +80,21 @@ static Action OnGameEvent_teamplay_round_start(Event event, const char[] name, b
 
 static void OnGameEvent_arena_round_start(Event event, const char[] name, bool dontBroadcast)
 {
-	if (sm_dr_activator_speed_buff.BoolValue)
-	{
-		for (int client = 1; client <= MaxClients; ++client)
-		{
-			if (!IsClientInGame(client))
-				continue;
-			
-			if (!DRPlayer(client).IsActivator())
-				continue;
-			
-			TF2_AddCondition(client, TFCond_SpeedBuffAlly);
-		}
-	}
-	
 	for (int client = 1; client <= MaxClients; ++client)
 	{
 		if (!IsClientInGame(client))
 			continue;
 		
-		switch (TF2_GetClientTeam(client))
+		if (DRPlayer(client).IsActivator())
 		{
-			case TFTeam_Runners:
-			{
-				CPrintToChat(client, "%s %t", PLUGIN_TAG, "Selected As Runner");
-			}
-			case TFTeam_Activators:
-			{
-				CPrintToChat(client, "%s %t", PLUGIN_TAG, "Selected As Activator");
-			}
+			CPrintToChat(client, "%s %t", PLUGIN_TAG, "Selected As Activator");
+			
+			if (!DRPlayer(client).HasPreference(Preference_DisableActivatorSpeedBoost))
+				TF2_AddCondition(client, TFCond_SpeedBuffAlly);
+		}
+		else
+		{
+			CPrintToChat(client, "%s %t", PLUGIN_TAG, "Selected As Runner");
 		}
 	}
 }
