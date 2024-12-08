@@ -7,7 +7,7 @@ void Events_Init()
 	PSM_AddEventHook("arena_win_panel", OnGameEvent_arena_win_panel);
 	PSM_AddEventHook("post_inventory_application", OnGameEvent_post_inventory_application);
 	PSM_AddEventHook("player_spawn", OnGameEvent_player_spawn);
-	PSM_AddEventHook("player_death", OnGameEvent_player_death);
+	PSM_AddEventHook("player_death", OnGameEvent_player_death, EventHookMode_Pre);
 }
 
 static void OnGameEvent_arena_round_start(Event event, const char[] name, bool dontBroadcast)
