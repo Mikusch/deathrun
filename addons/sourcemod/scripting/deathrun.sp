@@ -30,7 +30,6 @@ ConVar sm_dr_activator_health_modifier;
 ConVar sm_dr_activator_allow_healthkits;
 ConVar sm_dr_disable_regen;
 ConVar sm_dr_allow_teleporters;
-ConVar sm_dr_waiting_for_players;
 ConVar sm_dr_chat_hint_interval;
 
 #include "deathrun/shareddefs.sp"
