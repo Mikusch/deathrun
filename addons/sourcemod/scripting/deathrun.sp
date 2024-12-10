@@ -21,16 +21,16 @@ int g_lastShownHint;
 
 ConVar sm_dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
 ConVar sm_dr_queue_points;
-ConVar sm_dr_runner_backstab_damage;
+ConVar sm_dr_backstab_damage;
 ConVar sm_dr_runner_allow_button_damage;
 ConVar sm_dr_runner_glow;
 ConVar sm_dr_activator_speed_buff;
 ConVar sm_dr_activator_count;
 ConVar sm_dr_activator_health_modifier;
-ConVar sm_dr_activator_allow_healthkits;
+ConVar sm_dr_activator_prevent_healthkit_pickup;
 ConVar sm_dr_activator_healthbar_lifetime;
 ConVar sm_dr_disable_regen;
-ConVar sm_dr_allow_teleporters;
+ConVar sm_dr_allow_teleporter_use;
 ConVar sm_dr_chat_hint_interval;
 
 #include "deathrun/shareddefs.sp"
@@ -216,14 +216,13 @@ public Action TF2_OnPlayerTeleport(int client, int teleporter, bool &result)
 	if (!PSM_IsEnabled())
 		return Plugin_Continue;
 	
-	if (sm_dr_allow_teleporters.BoolValue)
+	if (!result)
 		return Plugin_Continue;
 	
 	if (GetEntProp(teleporter, Prop_Send, "m_bWasMapPlaced"))
 		return Plugin_Continue;
 	
-	// Prevent player-built teleporters from actually teleporting
-	result = false;
+	result = sm_dr_allow_teleporter_use.BoolValue;
 	return Plugin_Changed;
 }
 

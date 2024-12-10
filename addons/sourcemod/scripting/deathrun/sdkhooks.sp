@@ -84,9 +84,9 @@ static Action OnClientSetTransmit(int entity, int client)
 
 static Action OnClientOnTakeDamageAlive(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
-	if (DRPlayer(victim).IsActivator() && damagecustom == TF_CUSTOM_BACKSTAB && sm_dr_runner_backstab_damage.FloatValue > 0.0)
+	if (DRPlayer(victim).IsActivator() && damagecustom == TF_CUSTOM_BACKSTAB && sm_dr_backstab_damage.FloatValue > 0.0)
 	{
-		damage = sm_dr_runner_backstab_damage.FloatValue;
+		damage = sm_dr_backstab_damage.FloatValue;
 		return Plugin_Changed;
 	}
 	
@@ -96,7 +96,7 @@ static Action OnClientOnTakeDamageAlive(int victim, int &attacker, int &inflicto
 static Action OnButtonTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
 	// Some maps allow runners to activate traps with ranged weapons
-	if (!sm_dr_runner_allow_button_damage.BoolValue && (0 < attacker <= MaxClients) && !DRPlayer(attacker).IsActivator() && !(damagetype & DMG_MELEE))
+	if ((0 < attacker <= MaxClients) && !DRPlayer(attacker).IsActivator() && !(damagetype & DMG_MELEE) && !sm_dr_runner_allow_button_damage.BoolValue)
 		return Plugin_Handled;
 	
 	// Prevent multiple buttons from being hit at the same time
@@ -113,7 +113,10 @@ static void OnObjectSpawnPost(int entity)
 	if (GetEntProp(entity, Prop_Send, "m_bWasMapPlaced"))
 		return;
 	
-	if (TF2_GetObjectType(entity) == TFObject_Teleporter && sm_dr_allow_teleporters.BoolValue)
+	if (TF2_GetObjectType(entity) == TFObject_Teleporter)
+		return;
+	
+	if (sm_dr_allow_teleporter_use.BoolValue)
 		return;
 	
 	SetVariantInt(SOLID_TO_PLAYER_NO);
@@ -193,7 +196,7 @@ static Action OnVGUIScreenSetTransmit(int entity, int client)
 
 static Action OnHealthKitTouch(int entity, int other)
 {
-	if ((0 < other <= MaxClients) && DRPlayer(other).IsActivator() && !sm_dr_activator_allow_healthkits.BoolValue)
+	if ((0 < other <= MaxClients) && DRPlayer(other).IsActivator() && sm_dr_activator_prevent_healthkit_pickup.BoolValue)
 		return Plugin_Handled;
 	
 	return Plugin_Continue;

@@ -16,17 +16,17 @@ void ConVars_Init()
 	sm_dr_speed_modifier[TFClass_Pyro] = CreateConVar("sm_dr_speed_modifier_pyro", "0", "Value to add to Pyro's maximum speed, in HU/s.");
 	sm_dr_speed_modifier[TFClass_Spy] = CreateConVar("sm_dr_speed_modifier_spy", "0", "Value to add to Spy's maximum speed, in HU/s.");
 	sm_dr_speed_modifier[TFClass_Engineer] = CreateConVar("sm_dr_speed_modifier_engineer", "0", "Value to add to Engineer's maximum speed, in HU/s.");
-	sm_dr_runner_backstab_damage = CreateConVar("sm_dr_runner_backstab_damage", "750", "Damage dealt to the activator by backstabs. Set to 0 to use the default damage calculation.", _, true, 0.0);
+	sm_dr_backstab_damage = CreateConVar("sm_dr_backstab_damage", "750", "Damage dealt to the activator by backstabs. Set to 0 to use the default damage calculation.", _, true, 0.0);
 	sm_dr_runner_allow_button_damage = CreateConVar("sm_dr_runner_allow_button_damage", "1", "Whether runners are allowed to damage buttons with ranged weapons.");
 	sm_dr_runner_glow = CreateConVar("sm_dr_runner_glow", "0", "Whether runners should have a glowing outline.");
-	sm_dr_activator_speed_buff = CreateConVar("sm_dr_activator_speed_buff", "1", "Whether activators should have a speed buff effect.");
+	sm_dr_activator_speed_buff = CreateConVar("sm_dr_activator_speed_buff", "1", "Whether activators should have a speed buff.");
 	sm_dr_activator_count = CreateConVar("sm_dr_activator_count", "1", "Amount of activators.", _, true, 1.0);
-	sm_dr_activator_health_modifier = CreateConVar("sm_dr_activator_health_modifier", "1.0", "Percentage of health the activator gains from every runner.", _, true, 0.0);
-	sm_dr_activator_allow_healthkits = CreateConVar("sm_dr_activator_allow_healthkits", "0", "Whether the activator is allowed to pick up health kits.");
-	sm_dr_activator_healthbar_lifetime = CreateConVar("sm_dr_activator_healthbar_lifetime", "3", "Duration to display the activator health bar after taking damage, in seconds.");
-	sm_dr_disable_regen = CreateConVar("sm_dr_disable_regen", "1", "Whether to disable passive health regeneration.");
-	sm_dr_allow_teleporters = CreateConVar("sm_dr_allow_teleporters", "0", "Whether to allow players to use player-built teleporters.");
-	sm_dr_chat_hint_interval = CreateConVar("sm_dr_chat_hint_interval", "240", "Time between chat hints, in seconds.", _, true, 0.0);
+	sm_dr_activator_health_modifier = CreateConVar("sm_dr_activator_health_modifier", "1.0", "The percentage of health activators gain from every runner.", _, true, 0.0);
+	sm_dr_activator_prevent_healthkit_pickup = CreateConVar("sm_dr_activator_prevent_healthkit_pickup", "0", "Whether activators are allowed to pick up health kits.");
+	sm_dr_activator_healthbar_lifetime = CreateConVar("sm_dr_activator_healthbar_lifetime", "5", "The duration to display the activator health bar for after taking damage, in seconds. Set to 0 to disable the health bar.");
+	sm_dr_disable_regen = CreateConVar("sm_dr_disable_regen", "1", "Whether to disable all health and ammo regeneration for players.");
+	sm_dr_allow_teleporter_use = CreateConVar("sm_dr_allow_teleporter_use", "0", "Whether to allow using player-built teleporters.");
+	sm_dr_chat_hint_interval = CreateConVar("sm_dr_chat_hint_interval", "240", "Time between chat hints, in seconds. Set to 0 to disable chat hints.", _, true, 0.0);
 	
 	PSM_AddEnforcedConVar("mp_autoteambalance", "0");
 	PSM_AddEnforcedConVar("mp_teams_unbalance_limit", "0");
