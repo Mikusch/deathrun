@@ -23,6 +23,7 @@ void ConVars_Init()
 	sm_dr_activator_count = CreateConVar("sm_dr_activator_count", "1", "Amount of activators.", _, true, 1.0);
 	sm_dr_activator_health_modifier = CreateConVar("sm_dr_activator_health_modifier", "1.0", "Percentage of health the activator gains from every runner.", _, true, 0.0);
 	sm_dr_activator_allow_healthkits = CreateConVar("sm_dr_activator_allow_healthkits", "0", "Whether the activator is allowed to pick up health kits.");
+	sm_dr_activator_healthbar_lifetime = CreateConVar("sm_dr_activator_healthbar_lifetime", "3", "Duration to display the activator health bar after taking damage, in seconds.");
 	sm_dr_disable_regen = CreateConVar("sm_dr_disable_regen", "1", "Whether to disable passive health regeneration.");
 	sm_dr_allow_teleporters = CreateConVar("sm_dr_allow_teleporters", "0", "Whether to allow players to use player-built teleporters.");
 	sm_dr_chat_hint_interval = CreateConVar("sm_dr_chat_hint_interval", "240", "Time between chat hints, in seconds.", _, true, 0.0);

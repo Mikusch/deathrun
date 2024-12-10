@@ -28,6 +28,7 @@ ConVar sm_dr_activator_speed_buff;
 ConVar sm_dr_activator_count;
 ConVar sm_dr_activator_health_modifier;
 ConVar sm_dr_activator_allow_healthkits;
+ConVar sm_dr_activator_healthbar_lifetime;
 ConVar sm_dr_disable_regen;
 ConVar sm_dr_allow_teleporters;
 ConVar sm_dr_chat_hint_interval;
@@ -136,6 +137,46 @@ public void OnEntityDestroyed(int entity)
 		return;
 	
 	PSM_SDKUnhook(entity);
+}
+
+public void OnGameFrame()
+{
+	int monsterResource = FindEntityByClassname(-1, "monster_resource");
+	if (monsterResource == -1)
+		return;
+	
+	int maxhealth, health;
+	
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		if (!DRPlayer(client).IsActivator())
+			continue;
+		
+		if (IsPlayerAlive(client))
+			health += GetEntProp(client, Prop_Send, "m_iHealth");
+		
+		maxhealth += TF2_GetPlayerMaxHealth(client);
+	}
+	
+	static float healthBarHideTime;
+	static int oldHealthPercentageByte;
+	
+	int healthPercentageByte = Min(RoundFloat(float(health) / float(maxhealth) * 255), 255);
+	
+	if (GameRules_GetRoundState() == RoundState_Preround || (oldHealthPercentageByte != 0 && oldHealthPercentageByte != healthPercentageByte))
+	{
+		healthBarHideTime = GetGameTime() + sm_dr_activator_healthbar_lifetime.FloatValue;
+		oldHealthPercentageByte = healthPercentageByte;
+		
+		SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", healthPercentageByte);
+	}
+	else if (healthBarHideTime <= GetGameTime())
+	{
+		SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
+	}
 }
 
 void OnPluginStateChanged(bool enabled)
