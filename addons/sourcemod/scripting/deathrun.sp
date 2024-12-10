@@ -19,19 +19,19 @@ ArrayList g_currentActivators;
 Handle g_chatHintTimer;
 int g_lastShownHint;
 
-ConVar sm_dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
-ConVar sm_dr_queue_points;
-ConVar sm_dr_backstab_damage;
-ConVar sm_dr_runner_allow_button_damage;
-ConVar sm_dr_runner_glow;
-ConVar sm_dr_activator_speed_buff;
-ConVar sm_dr_activator_count;
-ConVar sm_dr_activator_health_modifier;
-ConVar sm_dr_activator_prevent_healthkit_pickup;
-ConVar sm_dr_activator_healthbar_lifetime;
-ConVar sm_dr_disable_regen;
-ConVar sm_dr_allow_teleporter_use;
-ConVar sm_dr_chat_hint_interval;
+ConVar dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
+ConVar dr_queue_points;
+ConVar dr_backstab_damage;
+ConVar dr_runner_allow_button_damage;
+ConVar dr_runner_glow;
+ConVar dr_activator_speed_buff;
+ConVar dr_activator_count;
+ConVar dr_activator_health_modifier;
+ConVar dr_activator_allow_healthkits;
+ConVar dr_activator_healthbar_lifetime;
+ConVar dr_disable_regen;
+ConVar dr_allow_teleporter_use;
+ConVar dr_chat_hint_interval;
 
 #include "deathrun/shareddefs.sp"
 
@@ -66,7 +66,7 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases");
 	LoadTranslations("deathrun.phrases");
 	
-	PSM_Init("sm_dr_enabled", gameconf);
+	PSM_Init("dr_enabled", gameconf);
 	PSM_AddPluginStateChangedHook(OnPluginStateChanged);
 	PSM_AddPluginStateChangedHook(ConVars_OnPluginStateChanged);
 	
@@ -168,7 +168,7 @@ public void OnGameFrame()
 	
 	if (GameRules_GetRoundState() == RoundState_Preround || (oldHealthPercentageByte != 0 && oldHealthPercentageByte != healthPercentageByte))
 	{
-		healthBarHideTime = GetGameTime() + sm_dr_activator_healthbar_lifetime.FloatValue;
+		healthBarHideTime = GetGameTime() + dr_activator_healthbar_lifetime.FloatValue;
 		oldHealthPercentageByte = healthPercentageByte;
 		
 		SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", healthPercentageByte);
@@ -201,7 +201,7 @@ void OnPluginStateChanged(bool enabled)
 			OnClientPutInServer(client);
 		}
 		
-		g_chatHintTimer = CreateChatHintTimer(sm_dr_chat_hint_interval.FloatValue);
+		g_chatHintTimer = CreateChatHintTimer(dr_chat_hint_interval.FloatValue);
 		
 		OnMapStart();
 	}
@@ -222,7 +222,7 @@ public Action TF2_OnPlayerTeleport(int client, int teleporter, bool &result)
 	if (GetEntProp(teleporter, Prop_Send, "m_bWasMapPlaced"))
 		return Plugin_Continue;
 	
-	result = sm_dr_allow_teleporter_use.BoolValue;
+	result = dr_allow_teleporter_use.BoolValue;
 	return Plugin_Changed;
 }
 

@@ -85,7 +85,7 @@ methodmap DRPlayer
 		{
 			case Preference_DisableActivatorSpeedBuff:
 			{
-				if (sm_dr_activator_speed_buff.BoolValue && this.IsActivator() && !this.HasPreference(preference))
+				if (dr_activator_speed_buff.BoolValue && this.IsActivator() && !this.HasPreference(preference))
 					TF2_AddCondition(this.entindex, TFCond_SpeedBuffAlly);
 				else
 					TF2_RemoveCondition(this.entindex, TFCond_SpeedBuffAlly);

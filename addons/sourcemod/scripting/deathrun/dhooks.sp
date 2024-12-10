@@ -60,7 +60,7 @@ static MRESReturn CTFPlayer_GetMaxHealthForBuffing_Post(int player, DHookReturn 
 		if (DRPlayer(client).IsActivator())
 			continue;
 		
-		maxhealth += RoundFloat(TF2_GetPlayerMaxHealth(client) * sm_dr_activator_health_modifier.FloatValue);
+		maxhealth += RoundFloat(TF2_GetPlayerMaxHealth(client) * dr_activator_health_modifier.FloatValue);
 	}
 	
 	maxhealth /= g_currentActivators.Length;
@@ -88,13 +88,13 @@ static MRESReturn CTFPlayer_TeamFortress_CalculateMaxSpeed_Post(int player, DHoo
 		return MRES_Ignored;
 	
 	// FIXME: Figure out a way to add this to the base speed, instead of calculated speed
-	ret.Value = speed + sm_dr_speed_modifier[class].FloatValue;
+	ret.Value = speed + dr_speed_modifier[class].FloatValue;
 	return MRES_Supercede;
 }
 
 static MRESReturn CTFPlayer_RegenThink_Pre(int player)
 {
-	return sm_dr_disable_regen.BoolValue ? MRES_Supercede : MRES_Ignored;
+	return dr_disable_regen.BoolValue ? MRES_Supercede : MRES_Ignored;
 }
 
 static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Pre(DHookParam params)
@@ -132,7 +132,7 @@ static MRESReturn CTeamplayRoundBasedRules_BHavePlayers_Pre(DHookReturn ret)
 		totalPlayers++;
 	}
 	
-	if (sm_dr_activator_count.IntValue >= totalPlayers || Queue_GetPlayersInQueue() < sm_dr_activator_count.IntValue)
+	if (dr_activator_count.IntValue >= totalPlayers || Queue_GetPlayersInQueue() < dr_activator_count.IntValue)
 	{
 		ret.Value = false;
 		return MRES_Supercede;

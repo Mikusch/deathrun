@@ -98,7 +98,7 @@ void Menus_DisplayPreferencesMenu(int client)
 	AddPreferenceToMenu(menu, Preference_DisableActivatorQueue, "Preference: Disable Activator Queue");
 	AddPreferenceToMenu(menu, Preference_DisableChatHints, "Preference: Disable Chat Hints");
 	
-	if (sm_dr_activator_speed_buff.BoolValue)
+	if (dr_activator_speed_buff.BoolValue)
 		AddPreferenceToMenu(menu, Preference_DisableActivatorSpeedBuff, "Preference: Disable Activator Speed Buff");
 	
 	menu.Display(client, MENU_TIME_FOREVER);

@@ -32,7 +32,7 @@ static void OnGameEvent_arena_round_start(Event event, const char[] name, bool d
 
 static void OnGameEvent_arena_win_panel(Event event, const char[] name, bool dontBroadcast)
 {
-	int points = sm_dr_queue_points.IntValue;
+	int points = dr_queue_points.IntValue;
 	
 	// Award queue points
 	ArrayList queue = Queue_GetQueueList();
@@ -59,7 +59,7 @@ static void OnGameEvent_player_spawn(Event event, const char[] name, bool dontBr
 	
 	if (!DRPlayer(client).IsActivator())
 	{
-		SetEntProp(client, Prop_Send, "m_bGlowEnabled", sm_dr_runner_glow.BoolValue);
+		SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 	}
 	
 	// We already refill health during preround (see GetMaxHealthForBuffing)

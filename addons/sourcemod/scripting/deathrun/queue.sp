@@ -56,7 +56,7 @@ void Queue_SelectNextActivators()
 	
 	ArrayList queue = Queue_GetQueueList();
 	
-	int numActivators = Min(sm_dr_activator_count.IntValue, queue.Length);
+	int numActivators = Min(dr_activator_count.IntValue, queue.Length);
 	for (int i = 0; i < numActivators; ++i)
 	{
 		int client = queue.Get(i, QueueData::client);
