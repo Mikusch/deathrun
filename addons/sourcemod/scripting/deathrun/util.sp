@@ -59,11 +59,6 @@ void RemoveEdictFlagFromChildren(int entity, int flagsToRemove)
 	delete children;
 }
 
-int TF2_GetPlayerMaxHealth(int client)
-{
-	return GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, client);
-}
-
 void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 {
 	TFClassType class = TF2_GetPlayerClass(client);

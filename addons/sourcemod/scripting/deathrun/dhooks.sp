@@ -77,7 +77,7 @@ static MRESReturn CTFPlayer_GetMaxHealthForBuffing_Post(int player, DHookReturn 
 		if (DRPlayer(client).IsActivator())
 			continue;
 		
-		maxhealth += RoundFloat(TF2_GetPlayerMaxHealth(client) * dr_activator_health_modifier.FloatValue);
+		maxhealth += RoundFloat(DRPlayer(client).GetMaxHealth() * dr_activator_health_modifier.FloatValue);
 	}
 	
 	maxhealth /= g_currentActivators.Length;

@@ -86,8 +86,8 @@ static void OnGameEvent_player_spawn(Event event, const char[] name, bool dontBr
 		{
 			int activator = g_currentActivators.Get(i);
 			
-			int healthToAdd = TF2_GetPlayerMaxHealth(client) / g_currentActivators.Length;
-			SetEntityHealth(activator, TF2_GetPlayerMaxHealth(activator) + healthToAdd);
+			int healthToAdd = DRPlayer(client).GetMaxHealth() / g_currentActivators.Length;
+			SetEntityHealth(activator, DRPlayer(activator).GetMaxHealth() + healthToAdd);
 		}
 	}
 }

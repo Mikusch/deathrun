@@ -175,7 +175,7 @@ public void OnGameFrame()
 		if (IsPlayerAlive(client))
 			health += GetEntProp(client, Prop_Send, "m_iHealth");
 		
-		maxhealth += TF2_GetPlayerMaxHealth(client);
+		maxhealth += DRPlayer(client).GetMaxHealth();
 	}
 	
 	static float healthBarHideTime;

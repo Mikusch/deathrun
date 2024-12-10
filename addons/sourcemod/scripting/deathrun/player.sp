@@ -146,6 +146,11 @@ methodmap DRPlayer
 		}
 	}
 	
+	public int GetMaxHealth()
+	{
+		return GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, this.entindex);
+	}
+	
 	public bool ShouldHideClient(int client)
 	{
 		return this.IsHidingPlayers && this.entindex != client && IsPlayerAlive(this.entindex) && GetClientTeam(this.entindex) == GetClientTeam(client);

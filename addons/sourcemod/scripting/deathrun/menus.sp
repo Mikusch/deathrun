@@ -26,7 +26,7 @@ void Menus_DisplayMainMenu(int client)
 {
 	Menu menu = new Menu(MenuHandler_MainMenu, MenuAction_Select | MenuAction_End | MenuAction_DrawItem | MenuAction_DisplayItem);
 	
-	menu.SetTitle("%T", "Main Menu: Title", client);
+	menu.SetTitle("%t\n%t", "Menu Header", "Main Menu: Title");
 	
 	menu.AddItem(INFO_QUEUE, "Main Menu: Queue");
 	menu.AddItem(INFO_PREFERENCES, "Main Menu: Preferences");
@@ -81,7 +81,7 @@ void Menus_DisplayQueueMenu(int client)
 	if (queue.Length > 0)
 	{
 		Menu menu = new Menu(MenuHandler_QueueMenu, MenuAction_Cancel | MenuAction_End);
-		menu.SetTitle("%T\n%T", "Queue Menu: Title", client, "Your Queue Points", client, DRPlayer(client).QueuePoints);
+		menu.SetTitle("%t\n%t\n%t", "Menu Header", "Queue Menu: Title", "Your Queue Points", DRPlayer(client).QueuePoints);
 		menu.ExitBackButton = true;
 		
 		for (int i = 0; i < queue.Length; ++i)
@@ -109,7 +109,7 @@ void Menus_DisplayQueueMenu(int client)
 void Menus_DisplayPreferencesMenu(int client)
 {
 	Menu menu = new Menu(MenuHandler_PreferencesMenu, MenuAction_Select | MenuAction_Cancel | MenuAction_End | MenuAction_DisplayItem);
-	menu.SetTitle("%T", "Preferences Menu: Title", client);
+	menu.SetTitle("%t\n%t", "Menu Header", "Preferences Menu: Title");
 	menu.ExitBackButton = true;
 	
 	AddPreferenceToMenu(menu, Preference_DisableActivatorQueue, "Preference: Disable Activator Queue");

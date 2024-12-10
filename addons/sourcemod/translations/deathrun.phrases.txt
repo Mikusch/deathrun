@@ -25,9 +25,13 @@
 	{
 		"en"		"You are a {red}RUNNER{default}! Avoid the traps and reach the end of the map!"
 	}
+	"Menu Header"
+	{
+		"en"		"DEATHRUN NEU"
+	}
 	"Main Menu: Title"
 	{
-		"en"		"DEATHRUN NEU\n— Main Menu —"
+		"en"		"➤ Main Menu"
 	}
 	"Main Menu: Queue"
 	{
@@ -43,7 +47,7 @@
 	}
 	"Queue Menu: Title"
 	{
-		"en"		"DEATHRUN NEU\n— Activator Queue —"
+		"en"		"➤ Activator Queue"
 	}
 	"Your Queue Points"
 	{
@@ -56,7 +60,7 @@
 	}
 	"Preferences Menu: Title"
 	{
-		"en"		"DEATHRUN NEU\n— User Preferences —"
+		"en"		"➤ User Preferences"
 	}
 	"Preference: Disable Activator Queue"
 	{
