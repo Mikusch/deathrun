@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2020  Mikusch
+/**
+ * Copyright (C) 2024  Mikusch
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,9 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-int g_PlayerQueuePoints[MAXPLAYERS + 1] = { -1, ... };
-int g_PlayerPreferences[MAXPLAYERS + 1] = { -1, ... };
-bool g_PlayerIsHidingTeammates[MAXPLAYERS + 1];
+#pragma newdecls required
+#pragma semicolon 1
+
+static int m_queuePoints[MAXPLAYERS + 1];
+static bool m_isHidingPlayers[MAXPLAYERS + 1];
+static int m_preferences[MAXPLAYERS + 1];
 
 methodmap DRPlayer
 {
@@ -26,7 +29,7 @@ methodmap DRPlayer
 		return view_as<DRPlayer>(client);
 	}
 	
-	property int Client
+	property int entindex
 	{
 		public get()
 		{
@@ -38,11 +41,23 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerQueuePoints[this.Client];
+			return m_queuePoints[this.entindex];
 		}
-		public set(int val)
+		public set(int queuePoints)
 		{
-			g_PlayerQueuePoints[this.Client] = val;
+			m_queuePoints[this.entindex] = queuePoints;
+		}
+	}
+	
+	property bool IsHidingPlayers
+	{
+		public get()
+		{
+			return m_isHidingPlayers[this.entindex];
+		}
+		public set(bool isHidingPlayers)
+		{
+			m_isHidingPlayers[this.entindex] = isHidingPlayers;
 		}
 	}
 	
@@ -50,61 +65,110 @@ methodmap DRPlayer
 	{
 		public get()
 		{
-			return g_PlayerPreferences[this.Client];
+			return m_preferences[this.entindex];
 		}
-		public set(int val)
+		public set(int preferences)
 		{
-			g_PlayerPreferences[this.Client] = val;
+			m_preferences[this.entindex] = preferences;
 		}
 	}
 	
-	property bool IsHidingTeammates
+	public void Init()
 	{
-		public get()
-		{
-			return g_PlayerIsHidingTeammates[this.Client];
-		}
-		public set(bool val)
-		{
-			g_PlayerIsHidingTeammates[this.Client] = val;
-		}
+		this.QueuePoints = 0;
+		this.IsHidingPlayers = false;
+		this.Preferences = 0;
 	}
 	
-	public void Reset()
+	public void SetPreference(Preference preference, bool enable)
 	{
-		this.IsHidingTeammates = false;
-	}
-	
-	public bool IsActivator()
-	{
-		return g_CurrentActivators.FindValue(this.Client) != -1;
-	}
-	
-	public bool HasPreference(PreferenceType preference)
-	{
-		return this.Preferences != -1 && this.Preferences & view_as<int>(preference) != 0;
-	}
-	
-	public bool SetPreference(PreferenceType preference, bool enable)
-	{
-		if (this.Preferences == -1)
-			return false;
-		
 		if (enable)
 			this.Preferences |= view_as<int>(preference);
 		else
 			this.Preferences &= ~view_as<int>(preference);
 		
-		Cookies_SavePreferences(this.Client, this.Preferences);
-		
-		return true;
+		ClientPrefs_SavePreferences(this.entindex);
+		this.OnPreferencesChanged(preference);
 	}
 	
-	public bool CanHideClient(int client)
+	public bool HasPreference(Preference preference)
 	{
-		return this.IsHidingTeammates //Does this client want to hide teammates?
-		 && IsPlayerAlive(this.Client) //Only hide players when alive
-		 && TF2_GetClientTeam(this.Client) == TF2_GetClientTeam(client) //Only hide players on our team
-		 && this.Client != client; //Don't hide ourselves
+		return this.Preferences != -1 && this.Preferences & view_as<int>(preference) != 0;
+	}
+	
+	public void OnPreferencesChanged(Preference preference)
+	{
+		switch (preference)
+		{
+			case Preference_DisableActivatorSpeedBuff:
+			{
+				if (dr_activator_speed_buff.BoolValue && this.IsActivator() && !this.HasPreference(preference))
+					TF2_AddCondition(this.entindex, TFCond_SpeedBuffAlly);
+				else
+					TF2_RemoveCondition(this.entindex, TFCond_SpeedBuffAlly);
+			}
+		}
+	}
+	
+	public void RemoveItem(int item)
+	{
+		if (TF2Util_IsEntityWeapon(item))
+		{
+			RemovePlayerItem(this.entindex, item);
+			RemoveExtraWearables(item);
+		}
+		else if (TF2Util_IsEntityWearable(item))
+		{
+			TF2_RemoveWearable(this.entindex, item);
+		}
+		
+		RemoveEntity(item);
+	}
+	
+	public void RemoveAllItems()
+	{
+		for (int i = 0; i < GetEntPropArraySize(this.entindex, Prop_Send, "m_hMyWeapons"); ++i)
+		{
+			int weapon = GetEntPropEnt(this.entindex, Prop_Send, "m_hMyWeapons", i);
+			if (weapon == -1)
+				continue;
+			
+			this.RemoveItem(weapon);
+		}
+		
+		for (int wbl = TF2Util_GetPlayerWearableCount(this.entindex) - 1; wbl >= 0; wbl--)
+		{
+			int wearable = TF2Util_GetPlayerWearable(this.entindex, wbl);
+			if (wearable == -1)
+				continue;
+			
+			this.RemoveItem(wearable);
+		}
+	}
+	
+	public int GetMaxHealth()
+	{
+		return GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, this.entindex);
+	}
+	
+	public bool ShouldHideClient(int client)
+	{
+		return this.IsHidingPlayers && this.entindex != client && IsPlayerAlive(this.entindex) && GetClientTeam(this.entindex) == GetClientTeam(client);
+	}
+	
+	public bool IsActivator()
+	{
+		return g_currentActivators.FindValue(this.entindex) != -1;
+	}
+	
+	public void AddQueuePoints(int nQueuePoints)
+	{
+		this.SetQueuePoints(this.QueuePoints + nQueuePoints);
+	}
+	
+	public void SetQueuePoints(int nQueuePoints)
+	{
+		this.QueuePoints = nQueuePoints;
+		ClientPrefs_SaveQueuePoints(this.entindex);
 	}
 }

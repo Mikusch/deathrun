@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2020  Mikusch
+/**
+ * Copyright (C) 2024  Mikusch
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,114 +15,168 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-static DynamicHook g_DHookSetWinningTeam;
+#pragma newdecls required
+#pragma semicolon 1
 
-void DHooks_Init(GameData gamedata)
+static int g_prevGameType;
+
+static DynamicHook g_CTeamplayRoundBasedRules_BHavePlayers;
+static DynamicHook g_CTeamplayRoundBasedRules_RoundRespawn;
+
+void DHooks_Init()
 {
-	g_DHookSetWinningTeam = DHooks_CreateVirtualHook(gamedata, "CTeamplayRoundBasedRules::SetWinningTeam");
+	PSM_AddDynamicDetourFromConf("CObjectDispenser::CouldHealTarget(CBaseEntity *)", _, CObjectDispenser_CouldHealTarget_Post);
+	PSM_AddDynamicDetourFromConf("CTFPlayer::GetMaxHealthForBuffing()", _, CTFPlayer_GetMaxHealthForBuffing_Post);
+	PSM_AddDynamicDetourFromConf("CTFPlayer::TeamFortress_CalculateMaxSpeed(bool)", _, CTFPlayer_TeamFortress_CalculateMaxSpeed_Post);
+	PSM_AddDynamicDetourFromConf("CTFPlayer::RegenThink()", CTFPlayer_RegenThink_Pre);
+	PSM_AddDynamicDetourFromConf("CTeamplayRoundBasedRules::SetInWaitingForPlayers(bool)", CTeamplayRoundBasedRules_SetInWaitingForPlayers_Pre, CTeamplayRoundBasedRules_SetInWaitingForPlayers_Post);
 	
-	DHooks_CreateDetour(gamedata, "CTFPlayer::TeamFortress_CalculateMaxSpeed", _, DHookCallback_CalculateMaxSpeed_Post);
-	DHooks_CreateDetour(gamedata, "CTFPlayer::GetMaxHealthForBuffing", _, DHookCallback_GetMaxHealthForBuffing_Post);
+	g_CTeamplayRoundBasedRules_BHavePlayers = PSM_AddDynamicHookFromConf("CTeamplayRoundBasedRules::BHavePlayers()");
+	g_CTeamplayRoundBasedRules_RoundRespawn = PSM_AddDynamicHookFromConf("CTeamplayRoundBasedRules::RoundRespawn()");
 }
 
-static DynamicHook DHooks_CreateVirtualHook(GameData gamedata, const char[] name)
+void DHooks_OnMapStart()
 {
-	DynamicHook hook = DynamicHook.FromConf(gamedata, name);
-	if (!hook)
-		LogError("Failed to create virtual hook: %s", name);
-	
-	return hook;
+	PSM_DHookGameRules(g_CTeamplayRoundBasedRules_BHavePlayers, Hook_Pre, CTeamplayRoundBasedRules_BHavePlayers_Pre);
+	PSM_DHookGameRules(g_CTeamplayRoundBasedRules_RoundRespawn, Hook_Pre, CTeamplayRoundBasedRules_RoundRespawn_Pre);
 }
 
-static void DHooks_CreateDetour(GameData gamedata, const char[] name, DHookCallback callbackPre = INVALID_FUNCTION, DHookCallback callbackPost = INVALID_FUNCTION)
+static MRESReturn CObjectDispenser_CouldHealTarget_Post(int dispenser, DHookReturn ret, DHookParam params)
 {
-	DynamicDetour detour = DynamicDetour.FromConf(gamedata, name);
-	if (!detour)
+	if (!ret.Value)
+		return MRES_Ignored;
+	
+	if (GetEntProp(dispenser, Prop_Send, "m_bWasMapPlaced"))
+		return MRES_Ignored;
+	
+	int target = params.Get(1);
+	
+	// Prevent dispenser healing while in hurt trigger or submerged
+	ret.Value = !IsInTriggerHurt(target) && GetEntProp(target, Prop_Data, "m_nWaterLevel") < WL_Eyes;
+	return MRES_Supercede;
+}
+
+static MRESReturn CTFPlayer_GetMaxHealthForBuffing_Post(int player, DHookReturn ret)
+{
+	if (!DRPlayer(player).IsActivator())
+		return MRES_Ignored;
+	
+	int maxhealth = ret.Value;
+	
+	for (int client = 1; client <= MaxClients; ++client)
 	{
-		LogError("Failed to create detour: %s", name);
-	}
-	else
-	{
-		if (callbackPre != INVALID_FUNCTION)
-			detour.Enable(Hook_Pre, callbackPre);
+		if (!IsClientInGame(client))
+			continue;
 		
-		if (callbackPost != INVALID_FUNCTION)
-			detour.Enable(Hook_Post, callbackPost);
-	}
-}
-
-void DHooks_HookGamerules()
-{
-	g_DHookSetWinningTeam.HookGamerules(Hook_Pre, DHook_SetWinningTeam_Pre);
-}
-
-public MRESReturn DHook_SetWinningTeam_Pre(DHookParam param)
-{
-	int winReason = param.Get(2);
-	
-	//The arena timer has no assigned targetname and doesn't fire its OnFinished output before the round ends, making this the only way to detect the timer stalemate
-	if (FindConVar("tf_arena_round_time").IntValue > 0 && winReason == WINREASON_STALEMATE && GetAliveClientCount() > 0)
-	{
-		for (int client = 1; client <= MaxClients; client++)
-		{
-			if (IsClientInGame(client) && IsPlayerAlive(client) && TF2_GetClientTeam(client) == TFTeam_Runners)
-			{
-				if (g_CurrentActivators.Length == 1)
-					SDKHooks_TakeDamage(client, g_CurrentActivators.Get(0), 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
-				else
-					SDKHooks_TakeDamage(client, 0, 0, float(INTEGER_MAX_VALUE), DMG_BLAST);
-			}
-		}
+		if (!IsPlayerAlive(client))
+			continue;
 		
-		EmitGameSoundToAll(GAMESOUND_EXPLOSION);
+		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
+			continue;
 		
-		param.Set(1, TFTeam_Activators);	//team
-		param.Set(2, WINREASON_TIMELIMIT);	//iWinReason
-		return MRES_ChangedOverride;
-	}
-	
-	return MRES_Ignored;
-}
-
-public MRESReturn DHookCallback_CalculateMaxSpeed_Post(int client, DHookReturn ret)
-{
-	if (GameRules_GetRoundState() != RoundState_Preround && IsClientInGame(client))
-	{
-		//Modify player speed based on their class
-		TFClassType class = TF2_GetPlayerClass(client);
-		if (class != TFClass_Unknown)
-		{
-			float speed = ret.Value;
-			float modifier = dr_speed_modifier[0].FloatValue + dr_speed_modifier[class].FloatValue;
-			ret.Value = Max(speed + modifier, 1.0);
-			
-			return MRES_Supercede;
-		}
+		if (DRPlayer(client).IsActivator())
+			continue;
+		
+		maxhealth += RoundFloat(DRPlayer(client).GetMaxHealth() * dr_activator_health_modifier.FloatValue);
 	}
 	
-	return MRES_Ignored;
+	maxhealth /= g_currentActivators.Length;
+	
+	// Refill the activator's health during preround
+	if (GameRules_GetRoundState() == RoundState_Preround)
+		SetEntityHealth(player, maxhealth);
+	
+	ret.Value = maxhealth;
+	return MRES_Supercede;
 }
 
-public MRESReturn DHookCallback_GetMaxHealthForBuffing_Post(int client, DHookReturn ret)
+static MRESReturn CTFPlayer_TeamFortress_CalculateMaxSpeed_Post(int player, DHookReturn ret, DHookParam params)
 {
-	if (DRPlayer(client).IsActivator())
+	if (!IsPlayerAlive(player))
+		return MRES_Ignored;
+	
+	TFClassType class = TF2_GetPlayerClass(player);
+	if (class == TFClass_Unknown)
+		return MRES_Ignored;
+	
+	float speed = ret.Value;
+	
+	if (speed <= 1.0)
+		return MRES_Ignored;
+	
+	// FIXME: Figure out a way to add this to the base speed, instead of calculated speed
+	ret.Value = speed + dr_speed_modifier[class].FloatValue;
+	return MRES_Supercede;
+}
+
+static MRESReturn CTFPlayer_RegenThink_Pre(int player)
+{
+	return dr_disable_regen.BoolValue ? MRES_Supercede : MRES_Ignored;
+}
+
+static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Pre(DHookParam params)
+{
+	g_prevGameType = GameRules_GetProp("m_nGameType");
+	GameRules_SetProp("m_nGameType", 0);
+	
+	bool bWaitingForPlayers = params.Get(1);
+	
+	if (bWaitingForPlayers)
+		GameRules_SetPropFloat("m_flRestartRoundTime", -1.0);
+	
+	return MRES_Handled;
+}
+
+static MRESReturn CTeamplayRoundBasedRules_SetInWaitingForPlayers_Post(DHookParam params)
+{
+	GameRules_SetProp("m_nGameType", g_prevGameType);
+	
+	return MRES_Handled;
+}
+
+static MRESReturn CTeamplayRoundBasedRules_BHavePlayers_Pre(DHookReturn ret)
+{
+	int totalPlayers = 0;
+	
+	for (int client = 1; client < MaxClients; client++)
 	{
-		int maxhealth = ret.Value;
+		if (!IsClientInGame(client))
+			continue;
 		
-		for (int i = 1; i <= MaxClients; i++)
-		{
-			if (client != i && IsValidClient(i) && IsPlayerAlive(i) && !DRPlayer(i).IsActivator())
-				maxhealth += RoundFloat(TF2_GetMaxHealth(i) * dr_activator_health_modifier.FloatValue);
-		}
+		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
+			continue;
 		
-		maxhealth /= g_CurrentActivators.Length;
-		
-		// Refill the activator's health during preround
-		if (GameRules_GetRoundState() == RoundState_Preround)
-			SetEntityHealth(client, maxhealth);
-		
-		ret.Value = maxhealth;
+		totalPlayers++;
+	}
+	
+	if (dr_activator_count.IntValue >= totalPlayers || Queue_GetPlayersInQueue() < dr_activator_count.IntValue)
+	{
+		ret.Value = false;
 		return MRES_Supercede;
+	}
+	
+	ret.Value = true;
+	return MRES_Supercede;
+}
+
+// RoundRespawn will restart waiting for players if any team has no players in it.
+// This was easily triggered by players leaving the activator team, so we have to choose a new one before that logic runs.
+static MRESReturn CTeamplayRoundBasedRules_RoundRespawn_Pre()
+{
+	if (GameRules_GetProp("m_bInWaitingForPlayers"))
+		return MRES_Ignored;
+	
+	Queue_SelectNextActivators();
+	
+	for (int client = 1; client <= MaxClients; ++client)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
+			continue;
+		
+		TF2_ChangeClientTeamAlive(client, DRPlayer(client).IsActivator() ? TFTeam_Activators : TFTeam_Runners);
 	}
 	
 	return MRES_Ignored;

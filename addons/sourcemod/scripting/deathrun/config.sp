@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2020  Mikusch
+/**
+ * Copyright (C) 2024  Mikusch
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,289 +15,340 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-enum struct ItemAttributeConfig
+#pragma newdecls required
+#pragma semicolon 1
+
+enum NetPropTarget
 {
-	char name[256];	/*< Attribute name */
-	float value;	/*< Attribute value */
+	Target_Player, 
+	Target_Item
+}
+
+enum struct AttributeData
+{
+	char name[64];
+	float value;
 	
-	void ReadConfig(KeyValues kv)
+	bool Parse(KeyValues kv)
 	{
-		kv.GetString("name", this.name, 256);
-		this.value = kv.GetFloat("value");
+		if (!kv.GetSectionName(this.name, sizeof(this.name)))
+			return false;
+		
+		this.value = kv.GetFloat(NULL_STRING);
+		return true;
 	}
 }
 
-enum struct ItemEntPropConfig
+enum struct NetPropData
 {
-	EntPropTarget target;		/*< Property target */
-	char name[256];				/*< Property name */
-	PropType type;				/*< Property type */
-	PropFieldType fieldType;	/*< Property field type */
-	char value[256];			/*< Property value */
-	int element;				/*< Property element, if it is an array */
+	char name[64];
+	PropType type;
+	PropFieldType field_type;
+	char value[64];
+	int int_value;
+	float float_value;
+	int element;
+	NetPropTarget target;
 	
-	void ReadConfig(KeyValues kv)
+	bool Parse(KeyValues kv)
 	{
-		char target[16];
-		kv.GetString("target", target, sizeof(target));
-		if (StrEqual(target, "item") || StrEqual(target, "weapon"))
+		if (!kv.GetSectionName(this.name, sizeof(this.name)))
+			return false;
+		
+		char type[64];
+		if (kv.GetString("type", type, sizeof(type)))
+		{
+			if (StrEqual(type, "send"))
+			{
+				this.type = Prop_Send;
+			}
+			else if (StrEqual(type, "data"))
+			{
+				this.type = Prop_Data;
+			}
+			else
+			{
+				LogError("[%s] Invalid value for \"type\": %s", this.name, type);
+				return false;
+			}
+		}
+		else
+		{
+			LogError("[%s] Required attribute \"type\" not set", this.name);
+			return false;
+		}
+		
+		char field_type[64];
+		if (kv.GetString("field_type", field_type, sizeof(field_type)))
+		{
+			if (StrEqual(field_type, "int"))
+			{
+				this.field_type = PropField_Integer;
+			}
+			else if (StrEqual(field_type, "float"))
+			{
+				this.field_type = PropField_Float;
+			}
+			else if (StrEqual(field_type, "string"))
+			{
+				this.field_type = PropField_String;
+			}
+			else
+			{
+				LogError("[%s] Invalid value for \"field_type\": %s", this.name, field_type);
+				return false;
+			}
+		}
+		else
+		{
+			LogError("[%s] Required attribute \"field_type\" not set", this.name);
+			return false;
+		}
+		
+		if (kv.GetString("value", this.value, sizeof(this.value)))
+		{
+			this.int_value = StringToInt(this.value);
+			this.float_value = StringToFloat(this.value);
+		}
+		
+		char target[64];
+		if (kv.GetString("target", target, sizeof(target)))
+		{
+			if (StrEqual(target, "player"))
+			{
+				this.target = Target_Player;
+			}
+			else if (StrEqual(target, "item"))
+			{
+				this.target = Target_Item;
+			}
+			else
+			{
+				LogError("[%s] Invalid value for \"target\": %s", this.name, target);
+				return false;
+			}
+		}
+		else
+		{
 			this.target = Target_Item;
-		else if (StrEqual(target, "player") || StrEqual(target, "client"))
-			this.target = Target_Player;
-		else
-			LogError("Invalid prop target: %s", target);
+		}
 		
-		kv.GetString("name", this.name, sizeof(this.name));
+		this.element = kv.GetNum("element", 0);
 		
-		char type[16];
-		kv.GetString("type", type, sizeof(type));
-		if (StrEqual(type, "send") || StrEqual(type, "netprop"))
-			this.type = Prop_Send;
-		else if (StrEqual(type, "data") || StrEqual(type, "datamap"))
-			this.type = Prop_Data;
-		else
-			LogError("Invalid prop type: %s", type);
-		
-		char fieldType[256];
-		kv.GetString("field_type", fieldType, sizeof(fieldType));
-		if (StrEqual(fieldType, "int") || StrEqual(fieldType, "integer"))
-			this.fieldType = PropField_Integer;
-		else if (StrEqual(fieldType, "float"))
-			this.fieldType = PropField_Float;
-		else if (StrEqual(fieldType, "vector"))
-			this.fieldType = PropField_Vector;
-		else if (StrEqual(fieldType, "string"))
-			this.fieldType = PropField_String;
-		else
-			LogError("Invalid prop field type: %s", fieldType);
-		
-		kv.GetString("value", this.value, sizeof(this.value));
-		
-		this.element = kv.GetNum("element");
+		return true;
 	}
 }
 
-enum struct ItemConfig
+enum struct ItemData
 {
-	int defindex;				/*< Item definition index of the item */
-	bool blockPrimaryAttack;	/*< Whether the primary fire of this item should be blocked */
-	bool blockSecondaryAttack;	/*< Whether the secondary fire of this item should be blocked */
-	bool remove;				/*< Whether this item should be removed from the player */
-	ArrayList attributes;		/*< Item attributes - ArrayList<ItemAttributeConfig> */
-	ArrayList entprops;			/*< Entity properties - ArrayList<ItemEntPropConfig> */
+	int def_index;
+	ArrayList attributes;
+	ArrayList netprops;
+	bool remove;
+	int replacement_defindex;
 	
-	void SetConfig(int defindex, KeyValues kv)
+	bool Parse(KeyValues kv)
 	{
-		this.defindex = defindex;
-		this.blockPrimaryAttack = view_as<bool>(kv.GetNum("block_attack"));
-		this.blockSecondaryAttack = view_as<bool>(kv.GetNum("block_attack2"));
-		this.remove = view_as<bool>(kv.GetNum("remove"));
-		
-		this.attributes = new ArrayList(sizeof(ItemAttributeConfig));
-		if (kv.JumpToKey("attributes", false))
+		char section[8];
+		if (kv.GetSectionName(section, sizeof(section)))
 		{
-			if (kv.GotoFirstSubKey(false))
+			if (!StringToIntEx(section, this.def_index))
 			{
-				do
+				LogError("Failed to parse item definition index: %s", section);
+				return false;
+			}
+			
+			int prefab = kv.GetNum("prefab", -1);
+			if (prefab != -1)
+			{
+				int index = g_itemData.FindValue(prefab, ItemData::def_index);
+				
+				ItemData data;
+				if (index != -1 && g_itemData.GetArray(index, data))
 				{
-					ItemAttributeConfig attribute;
-					attribute.ReadConfig(kv);
-					this.attributes.PushArray(attribute);
+					this.CopyFrom(data);
 				}
-				while (kv.GotoNextKey(false));
+				else
+				{
+					LogError("[%d] Failed to fetch prefab info from item: %d", this.def_index, prefab);
+					return false;
+				}
+			}
+			
+			if (kv.JumpToKey("attributes", false))
+			{
+				if (!this.attributes)
+					this.attributes = new ArrayList(sizeof(AttributeData));
+				
+				if (kv.GotoFirstSubKey(false))
+				{
+					do
+					{
+						AttributeData data;
+						if (data.Parse(kv))
+							this.attributes.PushArray(data);
+						else
+							LogError("[%d] Failed to parse attributes", this.def_index);
+					}
+					while (kv.GotoNextKey(false));
+					kv.GoBack();
+				}
 				kv.GoBack();
 			}
-			kv.GoBack();
+			
+			if (kv.JumpToKey("netprops", false))
+			{
+				if (!this.netprops)
+					this.netprops = new ArrayList(sizeof(NetPropData));
+				
+				if (kv.GotoFirstSubKey(false))
+				{
+					do
+					{
+						NetPropData data;
+						if (data.Parse(kv))
+							this.netprops.PushArray(data);
+						else
+							LogError("[%d] Failed to parse netprops", this.def_index);
+					}
+					while (kv.GotoNextKey(false));
+					kv.GoBack();
+				}
+				kv.GoBack();
+			}
+			
+			this.remove = kv.GetNum("remove", this.remove) != 0;
+			this.replacement_defindex = kv.GetNum("replacement_defindex", -1);
+			
+			return true;
 		}
-		
-		this.entprops = new ArrayList(sizeof(ItemEntPropConfig));
-		if (kv.JumpToKey("entprops", false))
+		else
 		{
-			if (kv.GotoFirstSubKey(false))
-			{
-				do
-				{
-					ItemEntPropConfig entprop;
-					entprop.ReadConfig(kv);
-					this.entprops.PushArray(entprop);
-				}
-				while (kv.GotoNextKey(false));
-				kv.GoBack();
-			}
-			kv.GoBack();
+			return false;
 		}
 	}
 	
-	void Destroy()
+	void CopyFrom(ItemData data)
 	{
-		delete this.attributes;
-		delete this.entprops;
+		if (data.attributes)
+			this.attributes = data.attributes.Clone();
+		
+		if (data.netprops)
+			this.netprops = data.netprops.Clone();
+		
+		this.remove = data.remove;
+		this.replacement_defindex = data.replacement_defindex;
 	}
 }
 
-methodmap ItemConfigList < ArrayList
+void Config_Init()
 {
-	public ItemConfigList()
+	char file[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, file, sizeof(file), "configs/deathrun/items.cfg");
+	KeyValues kv = new KeyValues("items");
+	if (kv.ImportFromFile(file))
 	{
-		return view_as<ItemConfigList>(new ArrayList(sizeof(ItemConfig)));
-	}
-	
-	public void ReadConfig(KeyValues kv)
-	{
+		g_itemData = new ArrayList(sizeof(ItemData));
+		
 		if (kv.GotoFirstSubKey(false))
 		{
 			do
 			{
-				char section[8];
-				int defindex;
-				if (kv.GetSectionName(section, sizeof(section)) && StringToIntEx(section, defindex) > 0)
-				{
-					ItemConfig item;
-					item.SetConfig(defindex, kv);
-					
-					ItemConfig oldItem;
-					int i = this.FindValue(defindex);
-					if (i != -1 && this.GetArray(i, oldItem) > 0)
-					{
-						oldItem.Destroy();
-						this.SetArray(i, item);
-					}
-					else
-					{
-						this.PushArray(item);
-					}
-				}
+				ItemData item;
+				if (item.Parse(kv))
+					g_itemData.PushArray(item);
 			}
 			while (kv.GotoNextKey(false));
 			kv.GoBack();
 		}
-		kv.GoBack();
 	}
-	
-	public int GetByDefIndex(int defindex, ItemConfig config)
+	else
 	{
-		int i = this.FindValue(defindex);
-		return i != -1 ? this.GetArray(i, config) : 0;
+		LogError("Failed to import config file \"%s\"", file);
 	}
-}
-
-static ItemConfigList g_ItemConfig;
-
-void Config_Init()
-{
-	g_ItemConfig = new ItemConfigList();
-	
-	KeyValues kv = new KeyValues("Items");
-	char path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), "configs/deathrun/items.cfg");
-	if (kv.ImportFromFile(path))
-	{
-		g_ItemConfig.ReadConfig(kv);
-		kv.GoBack();
-	}
-	
-	char map[128];
-	GetCurrentMap(map, sizeof(map));
-	GetMapDisplayName(map, map, sizeof(map));
-	
-	kv = new KeyValues("Items");
-	BuildPath(Path_SM, path, sizeof(path), "configs/deathrun/maps/%s.items.cfg", map);
-	if (kv.ImportFromFile(path))
-	{
-		g_ItemConfig.ReadConfig(kv);
-		kv.GoBack();
-	}
-	
 	delete kv;
 }
 
-bool Config_GetItemByDefIndex(int defindex, ItemConfig config)
+void Config_ApplyItemAttributes(int userid)
 {
-	return g_ItemConfig.GetByDefIndex(defindex, config) > 0;
-}
-
-void Config_Apply(int client)
-{
-	if (!IsClientInGame(client))
+	int client = GetClientOfUserId(userid);
+	if (client == 0)
 		return;
 	
-	for (int slot = 0; slot <= ItemSlot_Misc2; slot++)
+	ArrayList myItems = new ArrayList();
+	
+	int numWeapons = GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons");
+	for (int i = 0; i < numWeapons; ++i)
 	{
-		int item = TF2_GetItemInSlot(client, slot);
+		int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
+		if (weapon == -1)
+			continue;
 		
-		if (IsValidEntity(item))
+		myItems.Push(weapon);
+	}
+	
+	int numWearables = TF2Util_GetPlayerWearableCount(client);
+	for (int wbl = numWearables - 1; wbl >= 0; --wbl)
+	{
+		int wearable = TF2Util_GetPlayerWearable(client, wbl);
+		if (wearable == -1)
+			continue;
+		
+		myItems.Push(wearable);
+	}
+	
+	int numItems = myItems.Length;
+	for (int i = 0; i < numItems; ++i)
+	{
+		int item = myItems.Get(i);
+		int def_index = GetEntProp(item, Prop_Send, "m_iItemDefinitionIndex");
+		
+		int index = g_itemData.FindValue(def_index, ItemData::def_index);
+		if (index == -1)
+			continue;
+		
+		ItemData data;
+		if (!g_itemData.GetArray(index, data))
+			continue;
+		
+		if (data.attributes)
 		{
-			int defindex = GetEntProp(item, Prop_Send, "m_iItemDefinitionIndex");
-			
-			ItemConfig config;
-			if (Config_GetItemByDefIndex(defindex, config))
+			for (int j = 0; j < data.attributes.Length; ++j)
 			{
-				//Remove item if wanted
-				if (config.remove)
+				AttributeData attribute;
+				if (data.attributes.GetArray(j, attribute))
 				{
-					char classname[256];
-					GetEntityClassname(item, classname, sizeof(classname));
-					
-					if (StrContains(classname, "tf_wearable") != -1)
-						TF2_RemoveWearable(client, item);
-					else
-						RemovePlayerItem(client, item);
-					
-					continue;
+					TF2Attrib_SetByName(item, attribute.name, attribute.value);
 				}
-				
-				//Handle attributes
-				for (int i = 0; i < config.attributes.Length; i++)
+			}
+		}
+		
+		if (data.netprops)
+		{
+			for (int j = 0; j < data.netprops.Length; ++j)
+			{
+				NetPropData netprop;
+				if (data.netprops.GetArray(j, netprop))
 				{
-					ItemAttributeConfig attribute;
-					if (config.attributes.GetArray(i, attribute, sizeof(attribute)) > 0)
+					switch (netprop.field_type)
 					{
-						TF2Attrib_SetByName(item, attribute.name, attribute.value);
-					}
-				}
-				
-				//Handle entity props
-				for (int i = 0; i < config.entprops.Length; i++)
-				{
-					ItemEntPropConfig entprop;
-					if (config.entprops.GetArray(i, entprop, sizeof(entprop)) > 0)
-					{
-						int entity;
-						if (entprop.target == Target_Item)
-							entity = item;
-						else if (entprop.target == Target_Player)
-							entity = client;
-						
-						if (!HasEntProp(entity, entprop.type, entprop.name))
+						case PropField_Integer:
 						{
-							LogError("Invalid entity property: %s", entprop.name);
-							continue;
+							SetEntProp(client, netprop.type, netprop.name, netprop.int_value, _, netprop.element);
 						}
-						
-						switch (entprop.fieldType)
+						case PropField_Float:
 						{
-							case PropField_Integer:
-							{
-								SetEntProp(entity, entprop.type, entprop.name, StringToInt(entprop.value), _, entprop.element);
-							}
-							case PropField_Float:
-							{
-								SetEntPropFloat(entity, entprop.type, entprop.name, StringToFloat(entprop.value), entprop.element);
-							}
-							case PropField_Vector:
-							{
-								float vector[3];
-								StringToVector(entprop.value, vector);
-								SetEntPropVector(entity, entprop.type, entprop.name, vector, entprop.element);
-							}
-							case PropField_String:
-							{
-								SetEntPropString(entity, entprop.type, entprop.name, entprop.value, entprop.element);
-							}
+							SetEntPropFloat(client, netprop.type, netprop.name, netprop.float_value, netprop.element);
+						}
+						case PropField_String:
+						{
+							SetEntPropString(client, netprop.type, netprop.name, netprop.value, netprop.element);
 						}
 					}
 				}
 			}
 		}
 	}
+	
+	delete myItems;
 }

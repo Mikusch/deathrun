@@ -1,175 +1,119 @@
+/**
+ * Copyright (C) 2024  Mikusch
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 "Phrases"
 {
-	"Command_Disabled"
+	"Selected As Activator"
 	{
-		"en"		"The server operator has disabled this command."
+		"en"		"You are an {blue}ACTIVATOR{default}! Activate the traps and eliminate all the {red}RUNNERS{default}!"
 	}
-	"Command_HideTeammates_Enabled"
+	"Selected As Runner"
 	{
-		"en"		"Your teammates are now {secondary}invisible {default}to you."
+		"en"		"You are a {red}RUNNER{default}! Avoid the traps and reach the end of the map!"
 	}
-	"Command_HideTeammates_Disabled"
+	"Menu Header"
 	{
-		"en"		"Your teammates are now {secondary}visible {default}to you."
+		"en"		"DEATHRUN NEU"
 	}
-	"Command_AddQueuePoints_Usage"
+	"Main Menu: Title"
 	{
-		"en"		"Usage: {secondary}dr_addqueue <#userid|name> <amount>"
+		"en"		"➤ Main Menu"
 	}
-	"Command_AddQueuePoints_Success"
+	"Main Menu: Queue"
 	{
-		"#format"	"{1:d},{2:t}"
-		"en"		"Added {positive}{1} {default}queue point(s) to {secondary}{2}{default}."
+		"en"		"View activator queue (!queue)"
 	}
-	"Command_SetQueuePoints_Usage"
+	"Main Menu: Preferences"
 	{
-		"en"		"Usage: {secondary}dr_setqueue <#userid|name> <amount>"
+		"en"		"Edit user preferences (!settings)"
 	}
-	"Command_SetQueuePoints_Success"
+	"Main Menu: Hide Players"
 	{
-		"#format"	"{1:t},{2:d}"
-		"en"		"Set the queue points of {secondary}{1} {default}to {secondary}{2}{default}."
+		"en"		"Toggle teammate visibility (!hideplayers)"
 	}
-	
-	"Target_RunnerTeam"
+	"Queue Menu: Title"
 	{
-		"en"		"Runner Team"
+		"en"		"➤ Activator Queue"
 	}
-	"Target_ActivatorTeam"
-	{
-		"en"		"Activator Team"
-	}
-	
-	"ChatTip_Deathrun"
-	{
-		"en"		"{positive}PROTIP: {default}You can get an overview of all features and commands with {secondary}/deathrun{default} or {secondary}/dr{default}."
-	}
-	"ChatTip_HideTeammates"
-	{
-		"en"		"{positive}PROTIP: {default}Can't see in crowded areas? You can hide teammates blocking your sight with {secondary}/drhide{default}."
-	}
-	"ChatTip_ActivatorWeapons"
-	{
-		"en"		"{positive}PROTIP: {default}As the {blue}Activator{default}, utilize ranged weapons from your loadout to hit traps from far away."
-	}
-	"ChatTip_CheckQueue"
-	{
-		"en"		"{positive}PROTIP: {default}You can check the Activator queue with {secondary}/drnext{default}."
-	}
-	"ChatTip_DisableChatTips"
-	{
-		"en"		"{positive}PROTIP: {default}You can disable these chat tips by changing your user preferences with {secondary}/drsettings{default}."
-	}
-	"ChatTip_DisableActivator"
-	{
-		"en"		"{positive}PROTIP: {default}Don't want to play as the {blue}Activator{default}? Change your user preferences with {secondary}/drsettings{default}."
-	}
-	
-	"RoundWin_Activator"
-	{
-		"en"		"The {blue}Activator {default}wins!"
-	}
-	"RoundWin_Runners"
-	{
-		"en"		"The {red}Runners {default}win!"
-	}
-	"RoundStart_NewActivator_Runners"
-	{
-		"#format"	"{1:N}"
-		"en"		"{1} became the {blue}Activator{default}! Avoid getting killed by the traps and bring your team to victory!"
-	}
-	"RoundStart_NewActivator_Activator"
-	{
-		"en"		"You became the {blue}Activator{default}! Press the buttons to activate traps and emerge victorious over the enemy team!"
-	}
-	"RoundStart_MultipleActivators_Activator"
-	{
-		"en"		"You became an {blue}Activator{default}! Work together with your teammates to stop the Runners!"
-	}
-	"RoundStart_MultipleActivators_Runners"
-	{
-		"en"		"Multiple players became the {blue}Activator{default}! Avoid getting killed by the traps and bring your team to victory!"
-	}
-	"RoundStart_Activator_Disconnected"
-	{
-		"#format"	"{1:d}"
-		"en"		"The {blue}Activator {default}has disconnected! The round will restart in {secondary}{1} {default}seconds!"
-	}
-	
-	"Preferences_Enabled"
-	{
-		"#format"	"{1:s}"
-		"en"		"You have {positive}enabled {default}the preference {secondary}{1}{default}."
-	}
-	"Preferences_Disabled"
-	{
-		"#format"	"{1:s}"
-		"en"		"You have {negative}disabled {default}the preference {secondary}{1}{default}."
-	}
-	
-	"Preference_DontBeActivator"
-	{
-		"en"		"Don't select me as the Activator"
-	}
-	"Preference_HideChatTips"
-	{
-		"en"		"Hide occasional chat tips"
-	}
-	
-	"Queue_NoPointsAwarded_NotLoaded"
-	{
-		"en"		"You have not been awarded any queue points because the server failed to load your queue points."
-	}
-	"Queue_NoPointsAwarded_Preferences"
-	{
-		"en"		"You have not been awarded any queue points based on your preferences."
-	}
-	"Queue_PointsAwarded"
-	{
-		"#format"	"{1:d},{2:d}"
-		"en"		"You have been awarded {positive}{1} {default}queue points (Total: {positive}{2}{default})."
-	}
-	"Queue_ChosenAsRandomActivator"
-	{
-		"en"		"You have been randomly chosen to become the {blue}Activator {default}because there were no other valid players in the server. Your queue points have not been consumed."
-	}
-	
-	"Menu_Main_Title"
-	{
-		"#format"	"{1:s},{2:s},{3:s},{4:s}"
-		"en"		"{1} ({2}) by {3}\n{4}"
-	}
-	"Menu_Main_Queue"
-	{
-		"en"		"View Activator Queue (/drnext)"
-	}
-	"Menu_Main_Preferences"
-	{
-		"en"		"Change User Preferences (/drsettings)"
-	}
-	"Menu_Main_HideTeammates"
-	{
-		"en"		"Hide Teammates (/drhide)"
-	}
-	"Menu_Queue_Title"
-	{
-		"en"		"Activator Queue"
-	}
-	"Menu_Queue_Title_QueuePoints"
+	"Your Queue Points"
 	{
 		"#format"	"{1:d}"
 		"en"		"Your queue points: {1}"
 	}
-	"Menu_Queue_NotLoaded"
+	"No Players In Queue"
 	{
-		"en"		"Your queue points are still loading, please wait a moment."
+		"en"		"There are no players in the queue"
 	}
-	"Menu_Preferences_Title"
+	"Preferences Menu: Title"
 	{
-		"en"		"User Preferences"
+		"en"		"➤ User Preferences"
 	}
-	"Menu_Preferences_NotLoaded"
+	"Preference: Disable Activator Queue"
 	{
-		"en"		"Your preferences are still loading, please wait a moment."
+		"en"		"Don't select me as the activator"
+	}
+	"Preference: Disable Activator Speed Buff"
+	{
+		"en"		"Disable activator speed boost"
+	}
+	"Preference: Disable Chat Hints"
+	{
+		"en"		"Disable chat hints"
+	}
+	"Queue Points Earned"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"You have been awarded {green}{1}{default} queue points (Total: {green}{2}{default})."
+	}
+	"Added Queue Points"
+	{
+		"#format"	"{1:d},{2:t}"
+		"en"		"Added {green}{1}{default} queue points to {lightgreen}{2}{default}."
+	}
+	"Teammate Visiblity Off"
+	{
+		"en"		"Your teammates are now {gray}invisible{default} to you."
+	}
+	"Teammate Visiblity On"
+	{
+		"en"		"Your teammates are now {lightgreen}visible{default} to you."
+	}
+	"Chat Hint Prefix"
+	{
+		"en"	"{green}PROTIP: {default}"
+	}
+	"Chat Hint Credits"
+	{
+		"en"		"You are currently playing {royalblue}Deathrun Neu{default} (%s) by {lightgreen}Mikusch{default}."
+	}
+	"Chat Hint 1"
+	{
+		"en"		"As an {blue}ACTIVATOR{default}, you can utilize ranged weapons to activate traps from a distance."
+	}
+	"Chat Hint 2"
+	{
+		"en"		"You can check the current activator queue using the {cyan}/queue{default} command."
+	}
+	"Chat Hint 3"
+	{
+		"en"		"You can edit your user preferences using the {cyan}/settings{default} command."
+	}
+	"Chat Hint 4"
+	{
+		"en"		"Can't see in crowded areas? Hide other players using the {cyan}/settings{default} menu or by binding a key to the {cyan}+sm_hideplayers{default} command."
 	}
 }
