@@ -280,7 +280,12 @@ Handle CreateChatHintTimer(float interval)
 static void Timer_DisplayChatHint(Handle timer)
 {
 	char phrase[64];
-	Format(phrase, sizeof(phrase), "Chat Hint %d", ++g_lastShownHint);
+	
+	int index = g_lastShownHint++;
+	if (index == 0)
+		Format(phrase, sizeof(phrase), "Chat Hint Credits");
+	else
+		Format(phrase, sizeof(phrase), "Chat Hint %d", index);
 	
 	if (!TranslationPhraseExists(phrase))
 	{
@@ -296,6 +301,9 @@ static void Timer_DisplayChatHint(Handle timer)
 		if (DRPlayer(client).HasPreference(Preference_DisableChatHints))
 			continue;
 		
-		CPrintToChat(client, "%s %t", PLUGIN_TAG, phrase);
+		if (index == 0)
+			CPrintToChat(client, "%s %t", PLUGIN_TAG, phrase, PLUGIN_VERSION);
+		else
+			CPrintToChat(client, "%s %t", PLUGIN_TAG, phrase);
 	}
 }

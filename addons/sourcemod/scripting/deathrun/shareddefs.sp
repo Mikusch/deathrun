@@ -1,7 +1,7 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-#define PLUGIN_TAG	"[{orange}DEATHRUN NEU{default}]"
+#define PLUGIN_TAG	"[{royalblue}DEATHRUN NEU{default}]"
 
 // m_lifeState values
 #define	LIFE_ALIVE				0 // alive

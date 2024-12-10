@@ -9,7 +9,7 @@ void Menus_DisplayMainMenu(int client)
 {
 	Menu menu = new Menu(MenuHandler_MainMenu, MenuAction_Select | MenuAction_End | MenuAction_DrawItem | MenuAction_DisplayItem);
 	
-	menu.SetTitle("%T", "Main Menu: Title", client, PLUGIN_VERSION);
+	menu.SetTitle("%T", "Main Menu: Title", client);
 	
 	menu.AddItem(INFO_QUEUE, "Main Menu: Queue");
 	menu.AddItem(INFO_PREFERENCES, "Main Menu: Preferences");
@@ -99,7 +99,7 @@ void Menus_DisplayPreferencesMenu(int client)
 	AddPreferenceToMenu(menu, Preference_DisableChatHints, "Preference: Disable Chat Hints");
 	
 	if (sm_dr_activator_speed_buff.BoolValue)
-		AddPreferenceToMenu(menu, Preference_DisableActivatorSpeedBuff, "Preference: Disable Activator Speed Boost");
+		AddPreferenceToMenu(menu, Preference_DisableActivatorSpeedBuff, "Preference: Disable Activator Speed Buff");
 	
 	menu.Display(client, MENU_TIME_FOREVER);
 }
