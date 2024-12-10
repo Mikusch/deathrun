@@ -10,7 +10,7 @@
 	}
 	"Main Menu: Title"
 	{
-		"en"		"DEATHRUN NEU — Main Menu"
+		"en"		"DEATHRUN NEU\n— Main Menu —"
 	}
 	"Main Menu: Queue"
 	{
@@ -26,7 +26,7 @@
 	}
 	"Queue Menu: Title"
 	{
-		"en"		"DEATHRUN NEU — Activator Queue"
+		"en"		"DEATHRUN NEU\n— Activator Queue —"
 	}
 	"Your Queue Points"
 	{
@@ -39,7 +39,7 @@
 	}
 	"Preferences Menu: Title"
 	{
-		"en"		"DEATHRUN NEU — User Preferences"
+		"en"		"DEATHRUN NEU\n— User Preferences —"
 	}
 	"Preference: Disable Activator Queue"
 	{
@@ -62,6 +62,14 @@
 	{
 		"#format"	"{1:d},{2:t}"
 		"en"		"Added {green}{1}{default} queue points to {lightgreen}{2}{default}."
+	}
+	"Teammate Visiblity Off"
+	{
+		"en"		"Your teammates are now {gray}invisible{default} to you."
+	}
+	"Teammate Visiblity On"
+	{
+		"en"		"Your teammates are now {lightgreen}visible{default} to you."
 	}
 	"Chat Hint Prefix"
 	{

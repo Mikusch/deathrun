@@ -45,6 +45,13 @@ static Action OnCommand_HidePlayers(int client, int args)
 	
 	DRPlayer player = DRPlayer(client);
 	player.IsHidingPlayers = !player.IsHidingPlayers;
+	
+	char command[16];
+	if (GetCmdArg(0, command, sizeof(command)) && command[0] != '+' && command[0] != '-')
+	{
+		CReplyToCommand(client, "%s %t", PLUGIN_TAG, player.IsHidingPlayers ? "Teammate Visiblity Off" : "Teammate Visiblity On");
+	}
+	
 	return Plugin_Handled;
 }
 
