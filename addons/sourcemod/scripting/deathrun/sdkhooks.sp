@@ -130,7 +130,7 @@ static void OnObjectSpawnPost(int entity)
 	if (GetEntProp(entity, Prop_Send, "m_bWasMapPlaced"))
 		return;
 	
-	if (TF2_GetObjectType(entity) == TFObject_Teleporter)
+	if (TF2_GetObjectType(entity) != TFObject_Teleporter)
 		return;
 	
 	if (dr_allow_teleporter_use.BoolValue)
