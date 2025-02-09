@@ -60,9 +60,9 @@ void SDKHooks_HookEntity(int entity, const char[] classname)
 	else if (!strncmp(classname, "tf_projectile_", 14))
 	{
 		if (HasEntProp(entity, Prop_Send, "m_hThrower"))
-			SDKHook(entity, SDKHook_SetTransmit, OnThrowerEntitySetTransmit);
+			PSM_SDKHook(entity, SDKHook_SetTransmit, OnThrowerEntitySetTransmit);
 		else if (HasEntProp(entity, Prop_Send, "m_hOwnerEntity"))
-			SDKHook(entity, SDKHook_SetTransmit, OnOwnerEntitySetTransmit);
+			PSM_SDKHook(entity, SDKHook_SetTransmit, OnOwnerEntitySetTransmit);
 	}
 	else if (StrEqual(classname, "tf_ragdoll"))
 	{
@@ -70,11 +70,11 @@ void SDKHooks_HookEntity(int entity, const char[] classname)
 	}
 	else if (StrEqual(classname, "vgui_screen"))
 	{
-		SDKHook(entity, SDKHook_SetTransmit, OnVGUIScreenSetTransmit);
+		PSM_SDKHook(entity, SDKHook_SetTransmit, OnVGUIScreenSetTransmit);
 	}
 	else if (!strncmp(classname, "item_healthkit_", 15))
 	{
-		SDKHook(entity, SDKHook_Touch, OnHealthKitTouch);
+		PSM_SDKHook(entity, SDKHook_Touch, OnHealthKitTouch);
 	}
 	else
 	{
@@ -82,7 +82,7 @@ void SDKHooks_HookEntity(int entity, const char[] classname)
 		{
 			if (StrEqual(classname, g_ownerEntityList[i]))
 			{
-				SDKHook(entity, SDKHook_SetTransmit, OnOwnerEntitySetTransmit);
+				PSM_SDKHook(entity, SDKHook_SetTransmit, OnOwnerEntitySetTransmit);
 			}
 		}
 	}
