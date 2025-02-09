@@ -61,10 +61,6 @@ void RemoveEdictFlagFromChildren(int entity, int flagsToRemove)
 
 void TF2_ChangeClientTeamAlive(int client, TFTeam team)
 {
-	TFClassType class = TF2_GetPlayerClass(client);
-	if (class == TFClass_Unknown)
-		TF2_SetPlayerClass(client, view_as<TFClassType>(GetRandomInt(view_as<int>(TFClass_Unknown) + 1, view_as<int>(TFClass_Engineer))));
-	
 	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
 	TF2_ChangeClientTeam(client, team);
 	TF2_RespawnPlayer(client);
