@@ -57,14 +57,14 @@
 			"CTeamplayRoundBasedRules::BHavePlayers()"
 			{
 				"library"	"server"
-				"linux"		"230"
-				"windows"	"228"
+				"linux"		"231"
+				"windows"	"229"
 			}
 			"CTeamplayRoundBasedRules::RoundRespawn()"
 			{
 				"library"	"server"
-				"linux"		"231"
-				"windows"	"229"
+				"linux"		"232"
+				"windows"	"230"
 			}
 		}
 		"Functions"
