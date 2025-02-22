@@ -127,6 +127,12 @@ static Action OnButtonTakeDamage(int victim, int &attacker, int &inflictor, floa
 
 static void OnObjectSpawnPost(int entity)
 {
+	// m_bWasMapPlaced is not available here yet as it gets set in CBaseEntity::Activate
+	RequestFrame(OnObjectInitialized, EntIndexToEntRef(entity));
+}
+
+static void OnObjectInitialized(int entity)
+{
 	if (GetEntProp(entity, Prop_Send, "m_bWasMapPlaced"))
 		return;
 	
