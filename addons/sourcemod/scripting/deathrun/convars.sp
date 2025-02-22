@@ -52,22 +52,10 @@ void ConVars_Init()
 	PSM_AddEnforcedConVar("tf_avoidteammates_pushaway", "0");
 	PSM_AddEnforcedConVar("tf_scout_air_dash_count", "0");
 	PSM_AddEnforcedConVar("tf_solidobjects", "0");
-}
-
-void ConVars_OnPluginStateChanged(bool enabled)
-{
-	if (enabled)
-	{
-		dr_activator_speed_buff.AddChangeHook(OnConVarChanged_ActivatorSpeedBuff);
-		dr_runner_glow.AddChangeHook(OnConVarChanged_RunnerGlow);
-		dr_chat_hint_interval.AddChangeHook(OnConVarChanged_ChatHintInterval);
-	}
-	else
-	{
-		dr_activator_speed_buff.RemoveChangeHook(OnConVarChanged_ActivatorSpeedBuff);
-		dr_runner_glow.RemoveChangeHook(OnConVarChanged_RunnerGlow);
-		dr_chat_hint_interval.RemoveChangeHook(OnConVarChanged_ChatHintInterval);
-	}
+	
+	PSM_AddConVarChangeHook(dr_activator_speed_buff, OnConVarChanged_ActivatorSpeedBuff);
+	PSM_AddConVarChangeHook(dr_runner_glow, OnConVarChanged_RunnerGlow);
+	PSM_AddConVarChangeHook(dr_chat_hint_interval, OnConVarChanged_ChatHintInterval);
 }
 
 static void OnConVarChanged_ActivatorSpeedBuff(ConVar convar, const char[] oldValue, const char[] newValue)

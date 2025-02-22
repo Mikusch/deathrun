@@ -85,7 +85,6 @@ public void OnPluginStart()
 	
 	PSM_Init("dr_enabled", gameconf);
 	PSM_AddPluginStateChangedHook(OnPluginStateChanged);
-	PSM_AddPluginStateChangedHook(ConVars_OnPluginStateChanged);
 	
 	ClientPrefs_Init();
 	Commands_Init();
