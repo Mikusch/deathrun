@@ -133,6 +133,9 @@ static void OnObjectSpawnPost(int entity)
 
 static void OnObjectInitialized(int entity)
 {
+	if (!IsValidEntity(entity))
+		return;
+	
 	if (GetEntProp(entity, Prop_Send, "m_bWasMapPlaced"))
 		return;
 	
