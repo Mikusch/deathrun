@@ -24,18 +24,18 @@ void ConVars_Init()
 	CreateConVar("dr_enabled", "1", "Whether to enable the plugin.");
 	
 	dr_queue_points = CreateConVar("dr_queue_points", "5", "Amount of queue points being given to runners every round.");
-	dr_speed_modifier[TFClass_Scout] = CreateConVar("dr_speed_modifier_scout", "-80", "Value to add to Scout's maximum speed, in HU/s.");
+	dr_speed_modifier[TFClass_Scout] = CreateConVar("dr_speed_modifier_scout", "0", "Value to add to Scout's maximum speed, in HU/s.");
 	dr_speed_modifier[TFClass_Sniper] = CreateConVar("dr_speed_modifier_sniper", "0", "Value to add to Sniper's maximum speed, in HU/s.");
 	dr_speed_modifier[TFClass_Soldier] = CreateConVar("dr_speed_modifier_soldier", "0", "Value to add to Soldier's maximum speed, in HU/s.");
 	dr_speed_modifier[TFClass_DemoMan] = CreateConVar("dr_speed_modifier_demoman", "0", "Value to add to Demoman's maximum speed, in HU/s.");
 	dr_speed_modifier[TFClass_Medic] = CreateConVar("dr_speed_modifier_medic", "0", "Value to add to Medic's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_Heavy] = CreateConVar("dr_speed_modifier_heavy", "10", "Value to add to Heavy's maximum speed, in HU/s.");
+	dr_speed_modifier[TFClass_Heavy] = CreateConVar("dr_speed_modifier_heavy", "0", "Value to add to Heavy's maximum speed, in HU/s.");
 	dr_speed_modifier[TFClass_Pyro] = CreateConVar("dr_speed_modifier_pyro", "0", "Value to add to Pyro's maximum speed, in HU/s.");
 	dr_speed_modifier[TFClass_Spy] = CreateConVar("dr_speed_modifier_spy", "0", "Value to add to Spy's maximum speed, in HU/s.");
 	dr_speed_modifier[TFClass_Engineer] = CreateConVar("dr_speed_modifier_engineer", "0", "Value to add to Engineer's maximum speed, in HU/s.");
 	dr_backstab_damage = CreateConVar("dr_backstab_damage", "750", "Damage dealt to the activator by backstabs. Set to 0 to use the default damage calculation.", _, true, 0.0);
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have a glowing outline.");
-	dr_activator_speed_buff = CreateConVar("dr_activator_speed_buff", "1", "Whether activators should have a speed buff.");
+	dr_activator_speed_buff = CreateConVar("dr_activator_speed_buff", "0", "Whether activators should have a speed buff.");
 	dr_activator_count = CreateConVar("dr_activator_count", "1", "Amount of activators.", _, true, 1.0);
 	dr_activator_health_modifier = CreateConVar("dr_activator_health_modifier", "1.0", "The percentage of health activators gain from every runner.", _, true, 0.0);
 	dr_activator_allow_healthkits = CreateConVar("dr_activator_allow_healthkits", "0", "Whether activators are allowed to pick up health kits.");
