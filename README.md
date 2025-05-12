@@ -15,6 +15,7 @@ A Deathrun plugin for Team Fortress 2 with minimal weapon and class restrictions
 * SourceMod 1.12+
 * [TF2Attributes](https://forums.alliedmods.net/showthread.php?t=210221)
 * [TF2Items](https://forums.alliedmods.net/showthread.php?t=115100)
+* [TF2 Utils](https://forums.alliedmods.net/showthread.php?t=338773)
 * [TF2 Econ Data](https://forums.alliedmods.net/showthread.php?t=315011)
 * [Plugin State Manager](https://github.com/Mikusch/PluginStateManager) (compile only)
 * [More Colors](https://forums.alliedmods.net/showthread.php?t=185016) (compile only)
