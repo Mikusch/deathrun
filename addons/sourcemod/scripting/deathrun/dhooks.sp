@@ -49,10 +49,14 @@ static MRESReturn CObjectDispenser_CouldHealTarget_Post(int dispenser, DHookRetu
 	if (GetEntProp(dispenser, Prop_Send, "m_bWasMapPlaced"))
 		return MRES_Ignored;
 	
+	int mode = dr_allow_dispenser_heal.IntValue;
+	if (mode == 0)
+		return MRES_Supercede;
+	
 	int target = params.Get(1);
 	
 	// Prevent dispenser healing while in hurt trigger or submerged
-	ret.Value = !IsInTriggerHurt(target) && GetEntProp(target, Prop_Data, "m_nWaterLevel") < WL_Eyes;
+	ret.Value = mode == -1 && !IsInTriggerHurt(target) && GetEntProp(target, Prop_Data, "m_nWaterLevel") < WL_Eyes;
 	return MRES_Supercede;
 }
 

@@ -42,6 +42,7 @@ void ConVars_Init()
 	dr_activator_healthbar_lifetime = CreateConVar("dr_activator_healthbar_lifetime", "5", "The duration to display the activator health bar for after taking damage, in seconds. Set to 0 to disable the health bar.");
 	dr_disable_regen = CreateConVar("dr_disable_regen", "1", "Whether to disable all passive health and ammo regeneration for players.");
 	dr_allow_teleporter_use = CreateConVar("dr_allow_teleporter_use", "0", "Whether to allow using player-built teleporters.");
+	dr_allow_dispenser_heal = CreateConVar("dr_allow_dispenser_heal", "-1", "Whether player-built dispensers can heal players. -1 = Never heal while in a trigger_hurt. 0 = Never heal. 1 = Always heal.");
 	dr_chat_hint_interval = CreateConVar("dr_chat_hint_interval", "240", "Time between chat hints, in seconds. Set to 0 to disable chat hints.", _, true, 0.0);
 	dr_prevent_multi_button_hits = CreateConVar("dr_prevent_multi_button_hits", "0", "Whether to prevent multiple buttons from being activated at the same time.");
 	

@@ -47,6 +47,7 @@ ConVar dr_activator_allow_healthkits;
 ConVar dr_activator_healthbar_lifetime;
 ConVar dr_disable_regen;
 ConVar dr_allow_teleporter_use;
+ConVar dr_allow_dispenser_heal;
 ConVar dr_chat_hint_interval;
 ConVar dr_prevent_multi_button_hits;
 
