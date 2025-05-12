@@ -44,6 +44,7 @@ void ConVars_Init()
 	dr_disable_regen = CreateConVar("dr_disable_regen", "1", "Whether to disable all passive health and ammo regeneration for players.");
 	dr_allow_teleporter_use = CreateConVar("dr_allow_teleporter_use", "0", "Whether to allow using player-built teleporters.");
 	dr_chat_hint_interval = CreateConVar("dr_chat_hint_interval", "240", "Time between chat hints, in seconds. Set to 0 to disable chat hints.", _, true, 0.0);
+	dr_prevent_multi_button_hits = CreateConVar("dr_prevent_multi_button_hits", "0", "Whether to prevent multiple buttons from being activated at the same time.");
 	
 	PSM_AddEnforcedConVar("mp_autoteambalance", "0");
 	PSM_AddEnforcedConVar("mp_teams_unbalance_limit", "0");

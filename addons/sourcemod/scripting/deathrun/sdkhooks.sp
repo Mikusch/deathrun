@@ -117,7 +117,7 @@ static Action OnButtonTakeDamage(int victim, int &attacker, int &inflictor, floa
 		return Plugin_Handled;
 	
 	// Prevent multiple buttons from being hit at the same time
-	if (g_buttonDamagedTime == GetGameTime() && view_as<TOGGLE_STATE>(GetEntProp(victim, Prop_Data, "m_toggle_state")) == TS_AT_BOTTOM)
+	if (dr_prevent_multi_button_hits.BoolValue && g_buttonDamagedTime == GetGameTime() && view_as<TOGGLE_STATE>(GetEntProp(victim, Prop_Data, "m_toggle_state")) == TS_AT_BOTTOM)
 		return Plugin_Handled;
 	
 	g_buttonDamagedTime = GetGameTime();
