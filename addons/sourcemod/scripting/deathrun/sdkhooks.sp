@@ -112,10 +112,6 @@ static Action OnClientOnTakeDamageAlive(int victim, int &attacker, int &inflicto
 
 static Action OnButtonTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
-	// Some maps allow runners to activate traps with ranged weapons
-	if ((0 < attacker <= MaxClients) && !DRPlayer(attacker).IsActivator() && !(damagetype & DMG_MELEE) && !dr_runner_allow_button_damage.BoolValue)
-		return Plugin_Handled;
-	
 	// Prevent multiple buttons from being hit at the same time
 	if (dr_prevent_multi_button_hits.BoolValue && g_buttonDamagedTime == GetGameTime() && view_as<TOGGLE_STATE>(GetEntProp(victim, Prop_Data, "m_toggle_state")) == TS_AT_BOTTOM)
 		return Plugin_Handled;

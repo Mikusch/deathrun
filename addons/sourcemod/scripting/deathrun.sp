@@ -39,7 +39,6 @@ int g_lastShownHint;
 ConVar dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
 ConVar dr_queue_points;
 ConVar dr_backstab_damage;
-ConVar dr_runner_allow_button_damage;
 ConVar dr_runner_glow;
 ConVar dr_activator_speed_buff;
 ConVar dr_activator_count;

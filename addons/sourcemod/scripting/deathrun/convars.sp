@@ -34,7 +34,6 @@ void ConVars_Init()
 	dr_speed_modifier[TFClass_Spy] = CreateConVar("dr_speed_modifier_spy", "0", "Value to add to Spy's maximum speed, in HU/s.");
 	dr_speed_modifier[TFClass_Engineer] = CreateConVar("dr_speed_modifier_engineer", "0", "Value to add to Engineer's maximum speed, in HU/s.");
 	dr_backstab_damage = CreateConVar("dr_backstab_damage", "750", "Damage dealt to the activator by backstabs. Set to 0 to use the default damage calculation.", _, true, 0.0);
-	dr_runner_allow_button_damage = CreateConVar("dr_runner_allow_button_damage", "1", "Whether runners are allowed to damage buttons with ranged weapons.");
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have a glowing outline.");
 	dr_activator_speed_buff = CreateConVar("dr_activator_speed_buff", "1", "Whether activators should have a speed buff.");
 	dr_activator_count = CreateConVar("dr_activator_count", "1", "Amount of activators.", _, true, 1.0);
