@@ -24,6 +24,9 @@ void Commands_Init()
 	RegConsoleCmd("sm_hideplayers", OnCommand_HidePlayers, "Hides players on the same team.");
 	RegConsoleCmd("+sm_hideplayers", OnCommand_HidePlayers, "Hides players on the same team.");
 	RegConsoleCmd("-sm_hideplayers", OnCommand_HidePlayers, "Hides players on the same team.");
+	RegConsoleCmd("sm_hide", OnCommand_HidePlayers, "Hides players on the same team.");
+	RegConsoleCmd("+sm_hide", OnCommand_HidePlayers, "Hides players on the same team.");
+	RegConsoleCmd("-sm_hide", OnCommand_HidePlayers, "Hides players on the same team.");
 	RegConsoleCmd("sm_deathrun", OnCommand_OpenMainMenu, "Opens the main menu.");
 	RegConsoleCmd("sm_dr", OnCommand_OpenMainMenu, "Opens the main menu.");
 	RegConsoleCmd("sm_queue", OnCommand_OpenQueueMenu, "Opens the queue menu.");
