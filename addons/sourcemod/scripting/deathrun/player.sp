@@ -148,7 +148,7 @@ methodmap DRPlayer
 	
 	public int GetMaxHealth()
 	{
-		return GetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iMaxHealth", _, this.entindex);
+		return GetEntProp(this.entindex, Prop_Data, "m_iMaxHealth");
 	}
 	
 	public bool ShouldHideClient(int client)
