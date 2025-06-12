@@ -5,7 +5,7 @@ A Deathrun plugin for Team Fortress 2 with minimal weapon and class restrictions
 ## Features
 
 * Activator queue system (`!queue`)
-* Ability to toggle visility of teammates in crowded areas (`!hideplayers`)
+* Ability to toggle visility of teammates in crowded areas (`!hide`)
 * Dynamic activator health for combat minigames
 * Anti-exploit measures
 * Highly customizable item and plugin configuration

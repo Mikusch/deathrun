@@ -43,7 +43,7 @@
 	}
 	"Main Menu: Hide Players"
 	{
-		"en"		"Toggle teammate visibility (!hideplayers)"
+		"en"		"Toggle teammate visibility (!hide)"
 	}
 	"Queue Menu: Title"
 	{
@@ -114,6 +114,6 @@
 	}
 	"Chat Hint 4"
 	{
-		"en"		"Can't see in crowded areas? Hide other players using the {cyan}/settings{default} menu or by binding a key to the {cyan}+sm_hideplayers{default} command."
+		"en"		"Can't see in crowded areas? Hide other players using the {cyan}/settings{default} menu or by binding a key to the {cyan}+sm_hide{default} command."
 	}
 }
