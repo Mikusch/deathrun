@@ -29,7 +29,7 @@
 #include <pluginstatemanager>
 #include <morecolors>
 
-#define PLUGIN_VERSION	"2.2.0"
+#define PLUGIN_VERSION	"2.2.1"
 
 ArrayList g_itemData;
 ArrayList g_currentActivators;
@@ -66,7 +66,7 @@ ConVar dr_prevent_multi_button_hits;
 #include "deathrun/sdkhooks.sp"
 #include "deathrun/util.sp"
 
-public Plugin pluginInfo =
+public Plugin myinfo =
 {
 	name = "Deathrun Neu",
 	author = "Mikusch",
