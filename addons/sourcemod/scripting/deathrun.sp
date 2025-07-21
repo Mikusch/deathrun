@@ -29,7 +29,7 @@
 #include <pluginstatemanager>
 #include <morecolors>
 
-#define PLUGIN_VERSION	"2.2.1"
+#define PLUGIN_VERSION	"2.2.2"
 
 ArrayList g_itemData;
 ArrayList g_currentActivators;
