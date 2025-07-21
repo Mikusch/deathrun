@@ -32,29 +32,30 @@ static Action CommandListener_JoinTeam(int client, const char[] command, int arg
 	if (GameRules_GetRoundState() == RoundState_Pregame || GameRules_GetProp("m_bInWaitingForPlayers"))
 		return Plugin_Continue;
 	
-	char team[16];
-	if (StrEqual(command, "spectate"))
-		Format(team, sizeof(team), command);
+	// Don't allow activators to switch teams in setup
+	if (GameRules_GetRoundState() == RoundState_Preround && DRPlayer(client).IsActivator())
+		return Plugin_Handled;
 	
-	if (argc > 0 && StrEqual(command, "jointeam"))
-		GetCmdArg(1, team, sizeof(team));
-	
-	if (StrEqual(team, "spectate"))
+	if (StrEqual(command, "autoteam", false))
 	{
-		if (DRPlayer(client).IsActivator() && IsPlayerAlive(client) && (GameRules_GetRoundState() == RoundState_Stalemate || GameRules_GetRoundState() == RoundState_Preround))
-			return Plugin_Handled;
-		
-		return Plugin_Continue;
+		// Rewrite autoteam
+		FakeClientCommand(client, "jointeam %s", DRPlayer(client).IsActivator() ? "blue" : "red");
+		return Plugin_Handled;
 	}
-	
-	if (DRPlayer(client).IsActivator())
-		TF2_ChangeClientTeam(client, TFTeam_Activators);
-	else
-		TF2_ChangeClientTeam(client, TFTeam_Runners);
-	
-	ShowVGUIPanel(client, TF2_GetClientTeam(client) == TFTeam_Red ? "class_red" : "class_blue");
-	
-	return Plugin_Handled;
+	else if (StrEqual(command, "jointeam", false))
+	{
+		char team[16];
+		if (argc > 0 && GetCmdArg(1, team, sizeof(team)))
+		{
+			if (StrEqual(team, "auto", false) || StrEqual(team, "blue", false) && !DRPlayer(client).IsActivator())
+			{
+				FakeClientCommand(client, "autoteam");
+				return Plugin_Handled;
+			}
+		}
+	}
+
+	return Plugin_Continue;
 }
 
 static Action OnNormalSoundPlayed(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
