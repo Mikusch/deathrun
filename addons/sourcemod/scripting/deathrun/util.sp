@@ -59,13 +59,6 @@ void RemoveEdictFlagFromChildren(int entity, int flagsToRemove)
 	delete children;
 }
 
-void TF2_ChangeClientTeamAlive(int client, TFTeam team)
-{
-	SetEntProp(client, Prop_Send, "m_lifeState", LIFE_DEAD);
-	TF2_ChangeClientTeam(client, team);
-	TF2_RespawnPlayer(client);
-}
-
 any Min(any a, any b)
 {
 	return (a <= b) ? a : b;
@@ -123,4 +116,16 @@ void RemoveExtraWearables(int item)
 		TF2_RemoveWearable(GetEntPropEnt(extraWearableViewModel, Prop_Send, "m_hOwnerEntity"), extraWearableViewModel);
 		SetEntPropEnt(item, Prop_Send, "m_hExtraWearableViewModel", -1);
 	}
+}
+
+void RunScriptCode(int entity, int activator, int caller, const char[] format, any...)
+{
+	if (!IsValidEntity(entity))
+		return;
+	
+	static char buffer[1024];
+	VFormat(buffer, sizeof(buffer), format, 5);
+	
+	SetVariantString(buffer);
+	AcceptEntityInput(entity, "RunScriptCode", activator, caller);
 }

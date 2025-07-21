@@ -180,7 +180,7 @@ static MRESReturn CTeamplayRoundBasedRules_RoundRespawn_Pre()
 		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
 			continue;
 		
-		TF2_ChangeClientTeamAlive(client, DRPlayer(client).IsActivator() ? TFTeam_Activators : TFTeam_Runners);
+		RunScriptCode(client, -1, -1, "self.ForceChangeTeam(%s, true)", DRPlayer(client).IsActivator() ? "Constants.ETFTeam.TF_TEAM_BLUE" : "Constants.ETFTeam.TF_TEAM_RED");
 	}
 	
 	return MRES_Ignored;
