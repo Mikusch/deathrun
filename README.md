@@ -82,7 +82,7 @@ configuration:
 ```
 
 If you don't want to copy-paste the same configuration onto similar weapons, you may use the prefabs system. After an
-item has been defined, you can copy its properties over to another weaopon:
+item has been defined, you can copy its properties over to another weapon:
 
 ```
 "211"	// Medi Gun (Renamed/Strange)
