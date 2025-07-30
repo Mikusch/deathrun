@@ -98,7 +98,8 @@
 	}
 	"Chat Hint Credits"
 	{
-		"en"		"You are currently playing {royalblue}Deathrun Neu{default} (%s) by {lightgreen}Mikusch{default}."
+		"#format"	"{1:s}"
+		"en"		"You are currently playing {royalblue}Deathrun Neu{default} ({1}) by {lightgreen}Mikusch{default}."
 	}
 	"Chat Hint 1"
 	{
