@@ -18,7 +18,7 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-#include <virtual_address>
+#tryinclude <virtual_address>
 #include <clientprefs>
 #include <sdktools>
 #include <sdkhooks>
