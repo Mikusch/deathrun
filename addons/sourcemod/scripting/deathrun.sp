@@ -18,11 +18,11 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+#include <virtual_address>
 #include <clientprefs>
 #include <sdktools>
 #include <sdkhooks>
 #include <tf2_stocks>
-#include <tf2utils>
 #include <tf2attributes>
 #include <tf2items>
 #include <tf_econ_data>

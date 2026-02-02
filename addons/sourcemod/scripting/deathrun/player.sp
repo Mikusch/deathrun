@@ -110,42 +110,6 @@ methodmap DRPlayer
 		}
 	}
 	
-	public void RemoveItem(int item)
-	{
-		if (TF2Util_IsEntityWeapon(item))
-		{
-			RemovePlayerItem(this.entindex, item);
-			RemoveExtraWearables(item);
-		}
-		else if (TF2Util_IsEntityWearable(item))
-		{
-			TF2_RemoveWearable(this.entindex, item);
-		}
-		
-		RemoveEntity(item);
-	}
-	
-	public void RemoveAllItems()
-	{
-		for (int i = 0; i < GetEntPropArraySize(this.entindex, Prop_Send, "m_hMyWeapons"); ++i)
-		{
-			int weapon = GetEntPropEnt(this.entindex, Prop_Send, "m_hMyWeapons", i);
-			if (weapon == -1)
-				continue;
-			
-			this.RemoveItem(weapon);
-		}
-		
-		for (int wbl = TF2Util_GetPlayerWearableCount(this.entindex) - 1; wbl >= 0; wbl--)
-		{
-			int wearable = TF2Util_GetPlayerWearable(this.entindex, wbl);
-			if (wearable == -1)
-				continue;
-			
-			this.RemoveItem(wearable);
-		}
-	}
-	
 	public int GetMaxHealth()
 	{
 		return GetEntProp(this.entindex, Prop_Data, "m_iMaxHealth");

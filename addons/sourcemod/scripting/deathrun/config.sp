@@ -287,14 +287,11 @@ void Config_ApplyItemAttributes(int userid)
 		myItems.Push(weapon);
 	}
 	
-	int numWearables = TF2Util_GetPlayerWearableCount(client);
-	for (int wbl = numWearables - 1; wbl >= 0; --wbl)
+	int wearable = -1;
+	while ((wearable = FindEntityByClassname(wearable, "tf_wear*")) != -1)
 	{
-		int wearable = TF2Util_GetPlayerWearable(client, wbl);
-		if (wearable == -1)
-			continue;
-		
-		myItems.Push(wearable);
+		if (GetEntPropEnt(wearable, Prop_Send, "m_hOwnerEntity") == client && !GetEntProp(wearable, Prop_Send, "m_bDisguiseWearable"))
+			myItems.Push(wearable);
 	}
 	
 	int numItems = myItems.Length;

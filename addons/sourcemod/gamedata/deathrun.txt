@@ -25,31 +25,41 @@
 			{
 				"library"	"server"
 				"linux"		"@_ZN16CObjectDispenser15CouldHealTargetEP11CBaseEntity"
+				"linux64"	"@_ZN16CObjectDispenser15CouldHealTargetEP11CBaseEntity"
 				"windows"	"\x55\x8B\xEC\x53\x56\x8B\x75\x08\x57\x8B\xF9\x8B\x87\x38\x01\x00\x00"
+				"windows64"	"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x48\x89\x74\x24\x18\x57\x48\x83\xEC\x20\x8B\x81\xEC\x01\x00\x00"
 			}
 			"CTFPlayer::GetMaxHealthForBuffing()"
 			{
 				"library"	"server"
 				"linux"		"@_ZN9CTFPlayer22GetMaxHealthForBuffingEv"
+				"linux64"	"@_ZN9CTFPlayer22GetMaxHealthForBuffingEv"
 				"windows"	"\x55\x8B\xEC\x83\xEC\x20\x53\x56\x57\x8B\xF9\xFF\xB7\xD0\x22\x00\x00"
+				"windows64"	"\x40\x53\x55\x56\x57\x41\x54\x48\x83\xEC\x50"
 			}
 			"CTFPlayer::TeamFortress_CalculateMaxSpeed(bool)"
 			{
 				"library"	"server"
 				"linux"		"@_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
+				"linux64"	"@_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
 				"windows"	"\x55\x8B\xEC\x83\xEC\x18\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A"
+				"windows64"	"\x88\x54\x24\x10\x53"
 			}
 			"CTFPlayer::RegenThink()"
 			{
 				"library"	"server"
 				"linux"		"@_ZN9CTFPlayer10RegenThinkEv"
+				"linux64"	"@_ZN9CTFPlayer10RegenThinkEv"
 				"windows"	"\x55\x8B\xEC\x83\xEC\x7C\x56\x8B\xF1"
+				"windows64"	"\x40\x53\x48\x81\xEC\x30\x01\x00\x00\x48\x8B\x01"
 			}
 			"CTeamplayRoundBasedRules::SetInWaitingForPlayers(bool)"
 			{
 				"library"	"server"
 				"linux"		"@_ZN24CTeamplayRoundBasedRules22SetInWaitingForPlayersEb"
+				"linux64"	"@_ZN24CTeamplayRoundBasedRules22SetInWaitingForPlayersEb"
 				"windows"	"\x55\x8B\xEC\x56\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x84\xC0\x0F\x85\x2A\x2A\x2A\x2A"
+				"windows64"	"\x48\x89\x5C\x24\x08\x57\x48\x83\xEC\x20\x0F\xB6\xFA\x48\x8B\xD9\xE8\x2A\x2A\x2A\x2A\x84\xC0\x0F\x85\x2A\x2A\x2A\x2A"
 			}
 		}
 		"Offsets"
@@ -58,13 +68,17 @@
 			{
 				"library"	"server"
 				"linux"		"231"
+				"linux64"	"231"
 				"windows"	"229"
+				"windows64"	"229"
 			}
 			"CTeamplayRoundBasedRules::RoundRespawn()"
 			{
 				"library"	"server"
 				"linux"		"232"
+				"linux64"	"232"
 				"windows"	"230"
+				"windows64"	"230"
 			}
 		}
 		"Functions"
