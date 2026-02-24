@@ -26,9 +26,7 @@ jobs:
       - name: Download include files
         run: |
           includes=(
-            "https://raw.githubusercontent.com/FlaminSarge/tf2attributes/master/scripting/include/tf2attributes.inc"
             "https://raw.githubusercontent.com/asherkin/TF2Items/master/pawn/tf2items.inc"
-            "https://raw.githubusercontent.com/nosoop/SM-TFUtils/master/scripting/include/tf2utils.inc"
             "https://raw.githubusercontent.com/nosoop/SM-TFEconData/master/scripting/include/tf_econ_data.inc"
             "https://raw.githubusercontent.com/Mikusch/PluginStateManager/refs/heads/master/addons/sourcemod/scripting/include/pluginstatemanager.inc"
             "https://raw.githubusercontent.com/DoctorMcKay/sourcemod-plugins/master/scripting/include/morecolors.inc"
