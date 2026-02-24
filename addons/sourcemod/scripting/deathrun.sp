@@ -22,21 +22,22 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <tf2_stocks>
-#include <tf2utils>
 #include <tf2attributes>
 #include <tf2items>
 #include <tf_econ_data>
-#include <pluginstatemanager>
 #include <morecolors>
+#undef REQUIRE_EXTENSIONS
+#include <pluginstatemanager>
+#define REQUIRE_EXTENSIONS
 
-#define PLUGIN_VERSION	"2.2.2"
+#define PLUGIN_VERSION	"2.3.0"
 
 ArrayList g_itemData;
 ArrayList g_currentActivators;
 Handle g_chatHintTimer;
 int g_lastShownHint;
 
-ConVar dr_speed_modifier[view_as<int>(TFClass_Engineer) + 1];
+ConVar dr_speed_multiplier[view_as<int>(TFClass_Engineer) + 1];
 ConVar dr_queue_points;
 ConVar dr_backstab_damage;
 ConVar dr_runner_glow;
@@ -57,7 +58,6 @@ ConVar dr_prevent_multi_button_hits;
 #include "deathrun/commands.sp"
 #include "deathrun/config.sp"
 #include "deathrun/convars.sp"
-#include "deathrun/dhooks.sp"
 #include "deathrun/events.sp"
 #include "deathrun/hooks.sp"
 #include "deathrun/menus.sp"
@@ -77,26 +77,19 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	GameData gameconf = new GameData("deathrun");
-	if (!gameconf)
-		SetFailState("Failed to find deathrun gamedata");
-	
 	LoadTranslations("common.phrases");
 	LoadTranslations("deathrun.phrases");
-	
-	PSM_Init("dr_enabled", gameconf);
+
+	PSM_Init("dr_enabled");
 	PSM_AddPluginStateChangedHook(OnPluginStateChanged);
-	
+
 	ClientPrefs_Init();
 	Commands_Init();
 	Config_Init();
 	ConVars_Init();
-	DHooks_Init();
 	Events_Init();
 	Hooks_Init();
 	Queue_Init();
-	
-	delete gameconf;
 }
 
 public void OnPluginEnd()
@@ -116,14 +109,24 @@ public void OnClientPutInServer(int client)
 		OnClientCookiesCached(client);
 }
 
+public void OnClientDisconnect(int client)
+{
+	if (!PSM_IsEnabled())
+		return;
+
+	DRPlayer(client).ActivatorHealthBonus = 0;
+
+	if (!DRPlayer(client).IsActivator())
+		RecalculateActivatorHealth();
+}
+
 public void OnMapStart()
 {
 	if (!PSM_IsEnabled())
 		return;
-	
+
 	SDKHooks_OnMapStart();
-	DHooks_OnMapStart();
-	
+
 	g_currentActivators.Clear();
 }
 

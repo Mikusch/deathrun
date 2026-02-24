@@ -101,23 +101,6 @@ static bool EnumerateEntities(int entity)
 	return !didHit;
 }
 
-void RemoveExtraWearables(int item)
-{
-	int extraWearable = GetEntPropEnt(item, Prop_Send, "m_hExtraWearable");
-	if (extraWearable != -1)
-	{
-		TF2_RemoveWearable(GetEntPropEnt(extraWearable, Prop_Send, "m_hOwnerEntity"), extraWearable);
-		SetEntPropEnt(item, Prop_Send, "m_hExtraWearable", -1);
-	}
-	
-	int extraWearableViewModel = GetEntPropEnt(item, Prop_Send, "m_hExtraWearableViewModel");
-	if (extraWearableViewModel != -1)
-	{
-		TF2_RemoveWearable(GetEntPropEnt(extraWearableViewModel, Prop_Send, "m_hOwnerEntity"), extraWearableViewModel);
-		SetEntPropEnt(item, Prop_Send, "m_hExtraWearableViewModel", -1);
-	}
-}
-
 void RunScriptCode(int entity, int activator, int caller, const char[] format, any...)
 {
 	if (!IsValidEntity(entity))

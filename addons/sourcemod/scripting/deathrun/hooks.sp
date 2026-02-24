@@ -31,7 +31,7 @@ static Action CommandListener_JoinTeam(int client, const char[] command, int arg
 {
 	if (GameRules_GetRoundState() == RoundState_Pregame || GameRules_GetProp("m_bInWaitingForPlayers"))
 		return Plugin_Continue;
-	
+
 	// Don't allow activators to switch teams in setup
 	if (GameRules_GetRoundState() == RoundState_Preround && DRPlayer(client).IsActivator())
 		return Plugin_Handled;

@@ -59,14 +59,6 @@ ArrayList Queue_GetQueueList()
 	return queue;
 }
 
-int Queue_GetPlayersInQueue()
-{
-	ArrayList queue = Queue_GetQueueList();
-	int length = queue.Length;
-	delete queue;
-	return length;
-}
-
 void Queue_SelectNextActivators()
 {
 	g_currentActivators.Clear();
