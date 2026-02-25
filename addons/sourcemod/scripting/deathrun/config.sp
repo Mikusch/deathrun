@@ -315,7 +315,7 @@ void Config_ApplyItemAttributes(int userid)
 				AttributeData attribute;
 				if (data.attributes.GetArray(j, attribute))
 				{
-					RunScriptCode(-1, item, -1, "self.AddAttribute(\"%s\", %f, -1.0)", attribute.name, attribute.value);
+					RunScriptCode(item, -1, -1, "self.AddAttribute(\"%s\", casti2f(%f), 0)", attribute.name, attribute.value);
 				}
 			}
 		}
