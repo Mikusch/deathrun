@@ -72,16 +72,28 @@ static void OnGameEvent_scorestats_accumulated_update(Event event, const char[] 
 
 static void OnGameEvent_post_inventory_application(Event event, const char[] name, bool dontBroadcast)
 {
-	RequestFrame(OnPostInventoryApplication, event.GetInt("userid"));
+	RequestFrame(Config_ApplyItemAttributes, event.GetInt("userid"));
 }
 
-static void OnPostInventoryApplication(int userid)
+static void OnGameEvent_player_spawn(Event event, const char[] name, bool dontBroadcast)
+{
+	int userid = event.GetInt("userid");
+	int client = GetClientOfUserId(userid);
+
+	RequestFrame(OnPostPlayerSpawn, userid);
+
+	// The game resets m_iMaxHealth during InitClass(), so tracked health must be zeroed here before any RequestFrame callbacks run
+	DRPlayer(client).ActivatorHealthBonus = 0;
+
+	if (!DRPlayer(client).IsActivator())
+		SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
+}
+
+static void OnPostPlayerSpawn(int userid)
 {
 	int client = GetClientOfUserId(userid);
 	if (client == 0)
 		return;
-
-	Config_ApplyItemAttributes(userid);
 
 	ApplySpeedModifier(client);
 
@@ -100,19 +112,6 @@ static void OnPostInventoryApplication(int userid)
 
 			SetEntityHealth(activator, GetEntProp(activator, Prop_Send, "m_iHealth") + healthToAdd);
 		}
-	}
-}
-
-static void OnGameEvent_player_spawn(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-
-	// The game resets m_iMaxHealth during InitClass(), so tracked health must be zeroed here before any RequestFrame callbacks run
-	DRPlayer(client).ActivatorHealthBonus = 0;
-
-	if (!DRPlayer(client).IsActivator())
-	{
-		SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
 	}
 }
 
@@ -204,7 +203,7 @@ void RecalculateActivatorHealth(bool refillHealth = false, int excludeClient = 0
 		DRPlayer(activator).ActivatorHealthBonus = bonusPerActivator;
 
 		if (bonusPerActivator > 0)
-			RunScriptCode(activator, -1, -1, "self.AddCustomAttribute(\"max health additive bonus\", %d.0, -1.0)", bonusPerActivator);
+			RunScriptCode(activator, -1, -1, "self.AddCustomAttribute(\"max health additive bonus\", %d, 0)", bonusPerActivator);
 		else
 			RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"max health additive bonus\")");
 
@@ -226,7 +225,7 @@ void ApplySpeedModifier(int client)
 		return;
 	}
 
-	RunScriptCode(client, -1, -1, "self.AddCustomAttribute(\"move speed bonus\", %f, -1.0)", multiplier);
+	RunScriptCode(client, -1, -1, "self.AddCustomAttribute(\"move speed bonus\", %f, 0)", multiplier);
 }
 
 static void SelectActivatorsAndAssignTeams()
@@ -241,6 +240,6 @@ static void SelectActivatorsAndAssignTeams()
 		if (TF2_GetClientTeam(client) <= TFTeam_Spectator)
 			continue;
 
-		RunScriptCode(client, -1, -1, "self.ForceChangeTeam(%s, true)", DRPlayer(client).IsActivator() ? "Constants.ETFTeam.TF_TEAM_BLUE" : "Constants.ETFTeam.TF_TEAM_RED");
+		RunScriptCode(client, -1, -1, "self.ForceChangeTeam(%d, true)", DRPlayer(client).IsActivator() ? TFTeam_Activators : TFTeam_Runners);
 	}
 }
