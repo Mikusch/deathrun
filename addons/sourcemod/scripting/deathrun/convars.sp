@@ -24,15 +24,15 @@ void ConVars_Init()
 	CreateConVar("dr_enabled", "1", "Whether to enable the plugin.");
 	
 	dr_queue_points = CreateConVar("dr_queue_points", "5", "Amount of queue points being given to runners every round.");
-	dr_speed_modifier[TFClass_Scout] = CreateConVar("dr_speed_modifier_scout", "0", "Value to add to Scout's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_Sniper] = CreateConVar("dr_speed_modifier_sniper", "0", "Value to add to Sniper's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_Soldier] = CreateConVar("dr_speed_modifier_soldier", "0", "Value to add to Soldier's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_DemoMan] = CreateConVar("dr_speed_modifier_demoman", "0", "Value to add to Demoman's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_Medic] = CreateConVar("dr_speed_modifier_medic", "0", "Value to add to Medic's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_Heavy] = CreateConVar("dr_speed_modifier_heavy", "0", "Value to add to Heavy's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_Pyro] = CreateConVar("dr_speed_modifier_pyro", "0", "Value to add to Pyro's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_Spy] = CreateConVar("dr_speed_modifier_spy", "0", "Value to add to Spy's maximum speed, in HU/s.");
-	dr_speed_modifier[TFClass_Engineer] = CreateConVar("dr_speed_modifier_engineer", "0", "Value to add to Engineer's maximum speed, in HU/s.");
+	dr_speed_multiplier[TFClass_Scout] = CreateConVar("dr_speed_multiplier_scout", "1.0", "Move speed multiplier for Scout.");
+	dr_speed_multiplier[TFClass_Sniper] = CreateConVar("dr_speed_multiplier_sniper", "1.0", "Move speed multiplier for Sniper.");
+	dr_speed_multiplier[TFClass_Soldier] = CreateConVar("dr_speed_multiplier_soldier", "1.0", "Move speed multiplier for Soldier.");
+	dr_speed_multiplier[TFClass_DemoMan] = CreateConVar("dr_speed_multiplier_demoman", "1.0", "Move speed multiplier for Demoman.");
+	dr_speed_multiplier[TFClass_Medic] = CreateConVar("dr_speed_multiplier_medic", "1.0", "Move speed multiplier for Medic.");
+	dr_speed_multiplier[TFClass_Heavy] = CreateConVar("dr_speed_multiplier_heavy", "1.0", "Move speed multiplier for Heavy.");
+	dr_speed_multiplier[TFClass_Pyro] = CreateConVar("dr_speed_multiplier_pyro", "1.0", "Move speed multiplier for Pyro.");
+	dr_speed_multiplier[TFClass_Spy] = CreateConVar("dr_speed_multiplier_spy", "1.0", "Move speed multiplier for Spy.");
+	dr_speed_multiplier[TFClass_Engineer] = CreateConVar("dr_speed_multiplier_engineer", "1.0", "Move speed multiplier for Engineer.");
 	dr_backstab_damage = CreateConVar("dr_backstab_damage", "750", "Damage dealt to the activator by backstabs. Set to 0 to use the default damage calculation.", _, true, 0.0);
 	dr_runner_glow = CreateConVar("dr_runner_glow", "0", "Whether runners should have a glowing outline.");
 	dr_activator_speed_buff = CreateConVar("dr_activator_speed_buff", "0", "Whether activators should have a speed buff.");
@@ -57,6 +57,17 @@ void ConVars_Init()
 	PSM_AddConVarChangeHook(dr_activator_speed_buff, OnConVarChanged_ActivatorSpeedBuff);
 	PSM_AddConVarChangeHook(dr_runner_glow, OnConVarChanged_RunnerGlow);
 	PSM_AddConVarChangeHook(dr_chat_hint_interval, OnConVarChanged_ChatHintInterval);
+
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_Scout], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_Sniper], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_Soldier], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_DemoMan], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_Medic], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_Heavy], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_Pyro], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_Spy], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_speed_multiplier[TFClass_Engineer], OnConVarChanged_SpeedModifier);
+	PSM_AddConVarChangeHook(dr_activator_health_modifier, OnConVarChanged_ActivatorHealthModifier);
 }
 
 static void OnConVarChanged_ActivatorSpeedBuff(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -90,4 +101,23 @@ static void OnConVarChanged_RunnerGlow(ConVar convar, const char[] oldValue, con
 static void OnConVarChanged_ChatHintInterval(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	g_chatHintTimer = CreateChatHintTimer(convar.FloatValue);
+}
+
+static void OnConVarChanged_SpeedModifier(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!IsClientInGame(client))
+			continue;
+
+		if (!IsPlayerAlive(client))
+			continue;
+
+		ApplySpeedModifier(client);
+	}
+}
+
+static void OnConVarChanged_ActivatorHealthModifier(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	RecalculateActivatorHealth();
 }

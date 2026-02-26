@@ -76,6 +76,10 @@ void SDKHooks_HookEntity(int entity, const char[] classname)
 	{
 		PSM_SDKHook(entity, SDKHook_Touch, OnHealthKitTouch);
 	}
+	else if (StrEqual(classname, "dispenser_touch_trigger"))
+	{
+		PSM_SDKHook(entity, SDKHook_StartTouch, OnDispenserTouchTriggerStartTouch);
+	}
 	else
 	{
 		for (int i = 0; i < sizeof(g_ownerEntityList); ++i)
@@ -220,6 +224,28 @@ static Action OnHealthKitTouch(int entity, int other)
 {
 	if ((0 < other <= MaxClients) && DRPlayer(other).IsActivator() && !dr_activator_allow_healthkits.BoolValue)
 		return Plugin_Handled;
-	
+
+	return Plugin_Continue;
+}
+
+static Action OnDispenserTouchTriggerStartTouch(int entity, int other)
+{
+	if (!IsEntityClient(other))
+		return Plugin_Continue;
+
+	int dispenser = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+	if (dispenser == -1)
+		return Plugin_Continue;
+
+	if (GetEntProp(dispenser, Prop_Send, "m_bWasMapPlaced"))
+		return Plugin_Continue;
+
+	int mode = dr_allow_dispenser_heal.IntValue;
+	if (mode == 0)
+		return Plugin_Handled;
+
+	if (mode == -1 && (IsInTriggerHurt(other) || GetEntProp(other, Prop_Data, "m_nWaterLevel") >= WL_Eyes))
+		return Plugin_Handled;
+
 	return Plugin_Continue;
 }
