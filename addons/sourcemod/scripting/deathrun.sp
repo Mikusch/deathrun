@@ -22,7 +22,6 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <tf2_stocks>
-#include <tf2attributes>
 #include <tf2items>
 #include <tf_econ_data>
 #include <morecolors>
