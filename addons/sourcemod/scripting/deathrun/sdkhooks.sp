@@ -237,7 +237,7 @@ static Action OnDispenserTouchTriggerStartTouch(int entity, int other)
 	if (dispenser == -1)
 		return Plugin_Continue;
 
-	if (GetEntProp(dispenser, Prop_Send, "m_bWasMapPlaced"))
+	if (!HasEntProp(dispenser, Prop_Send, "m_bWasMapPlaced") || GetEntProp(dispenser, Prop_Send, "m_bWasMapPlaced"))
 		return Plugin_Continue;
 
 	int mode = dr_allow_dispenser_heal.IntValue;
