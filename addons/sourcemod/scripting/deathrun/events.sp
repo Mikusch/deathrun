@@ -230,6 +230,16 @@ void ApplySpeedModifier(int client)
 
 static void SelectActivatorsAndAssignTeams()
 {
+	// Remove health bonus attribute from current activators before the upcoming respawn
+	for (int i = 0; i < g_currentActivators.Length; ++i)
+	{
+		int activator = g_currentActivators.Get(i);
+		if (!IsClientInGame(activator) || !IsPlayerAlive(activator))
+			continue;
+
+		RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"max health additive bonus\")");
+	}
+
 	Queue_SelectNextActivators();
 
 	for (int client = 1; client <= MaxClients; ++client)
