@@ -29,7 +29,7 @@
 #include <pluginstatemanager>
 #define REQUIRE_EXTENSIONS
 
-#define PLUGIN_VERSION	"2.3.1"
+#define PLUGIN_VERSION	"2.3.2"
 
 ArrayList g_itemData;
 ArrayList g_currentActivators;
@@ -284,6 +284,23 @@ public Action TF2Items_OnGiveNamedItem(int client, char[] classname, int itemDef
 	}
 	
 	return data.remove ? Plugin_Handled : Plugin_Continue;
+}
+
+public void TF2_OnConditionRemoved(int client, TFCond condition)
+{
+	if (!PSM_IsEnabled())
+		return;
+
+	if (condition == TFCond_Disguising)
+	{
+		if (TF2_GetPlayerClass(client) == TFClass_Spy && TF2_IsPlayerInCondition(client, TFCond_Disguised))
+			ApplySpeedModifier(client);
+	}
+	else if (condition == TFCond_Disguised)
+	{
+		if (TF2_GetPlayerClass(client) == TFClass_Spy)
+			ApplySpeedModifier(client);
+	}
 }
 
 Handle CreateChatHintTimer(float interval)

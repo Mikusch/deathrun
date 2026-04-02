@@ -218,6 +218,14 @@ void ApplySpeedModifier(int client)
 	if (class == TFClass_Unknown)
 		return;
 
+	// Use the disguise class for disguised Spies
+	if (class == TFClass_Spy && TF2_IsPlayerInCondition(client, TFCond_Disguised))
+	{
+		TFClassType disguiseClass = view_as<TFClassType>(GetEntProp(client, Prop_Send, "m_nDisguiseClass"));
+		if (disguiseClass != TFClass_Unknown)
+			class = disguiseClass;
+	}
+
 	float multiplier = dr_speed_multiplier[class].FloatValue;
 	if (multiplier == 1.0)
 	{
