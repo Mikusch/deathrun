@@ -25,11 +25,12 @@
 #include <tf2items>
 #include <tf_econ_data>
 #include <morecolors>
+#include <vscript>
 #undef REQUIRE_EXTENSIONS
 #include <pluginstatemanager>
 #define REQUIRE_EXTENSIONS
 
-#define PLUGIN_VERSION	"2.3.2"
+#define PLUGIN_VERSION	"2.3.3"
 
 ArrayList g_itemData;
 ArrayList g_currentActivators;
@@ -74,6 +75,7 @@ public Plugin myinfo =
 	url = "https://github.com/Mikusch/deathrun"
 };
 
+VScriptCall call;
 public void OnPluginStart()
 {
 	LoadTranslations("common.phrases");
@@ -89,7 +91,37 @@ public void OnPluginStart()
 	Events_Init();
 	Hooks_Init();
 	Queue_Init();
+
+	PrintToServer("=====================================================PLUGIN START");
+
+	if (VScript_IsVMInitialized())
+{
+	PrintToServer("/////////////////// LATE");
+	VScript_OnVMInitialized();
 }
+
+	call = new VScriptCall("RandomInt", VScriptField_Int, VScriptField_Int, VScriptField_Int);
+}
+
+public void OnGameFrame()
+{
+	call.Execute(1, 100);
+	//PrintToServer("the random number is %d", call.GetReturnInt());
+}
+
+ public void VScript_OnVMInitialized()
+  {
+      //VScript_RegisterFunction("MyTestFunc", OnMyTestFunc, "A test function", VScriptField_Int, VScriptField_Int);
+	  VScript_RegisterClassFunction("CTFPlayer", "MyTestFunc", OnMyTestFunc, "A late test function", VScriptField_Int, VScriptField_Int);
+	  PrintToServer("=====================================================VSCRIPT INITIALIZED");
+  }
+
+  public void OnMyTestFunc(VScriptContext context)
+  {
+      int val = context.GetArgInt(0);
+      PrintToServer("=====================================================[TEST] MyTestFunc called with %d", val);
+      context.SetReturnInt(val * 2);
+  }
 
 public void OnPluginEnd()
 {
@@ -158,45 +190,7 @@ public void OnEntityDestroyed(int entity)
 	PSM_SDKUnhook(entity);
 }
 
-public void OnGameFrame()
-{
-	int monsterResource = FindEntityByClassname(-1, "monster_resource");
-	if (monsterResource == -1)
-		return;
-	
-	int maxhealth, health;
-	
-	for (int client = 1; client <= MaxClients; client++)
-	{
-		if (!IsClientInGame(client))
-			continue;
-		
-		if (!DRPlayer(client).IsActivator())
-			continue;
-		
-		if (IsPlayerAlive(client))
-			health += GetEntProp(client, Prop_Send, "m_iHealth");
-		
-		maxhealth += DRPlayer(client).GetMaxHealth();
-	}
-	
-	static float healthBarHideTime;
-	static int oldHealthPercentageByte;
-	
-	int healthPercentageByte = Min(RoundFloat(float(health) / float(maxhealth) * 255), 255);
-	
-	if (GameRules_GetRoundState() == RoundState_Preround || (oldHealthPercentageByte != 0 && oldHealthPercentageByte != healthPercentageByte))
-	{
-		healthBarHideTime = GetGameTime() + dr_activator_healthbar_lifetime.FloatValue;
-		oldHealthPercentageByte = healthPercentageByte;
-		
-		SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", healthPercentageByte);
-	}
-	else if (healthBarHideTime <= GetGameTime())
-	{
-		SetEntProp(monsterResource, Prop_Send, "m_iBossHealthPercentageByte", 0);
-	}
-}
+
 
 void OnPluginStateChanged(bool enabled)
 {
