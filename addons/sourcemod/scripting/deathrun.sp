@@ -29,7 +29,7 @@
 #include <pluginstatemanager>
 #define REQUIRE_EXTENSIONS
 
-#define PLUGIN_VERSION	"2.3.2"
+#define PLUGIN_VERSION	"2.3.3"
 
 ArrayList g_itemData;
 ArrayList g_currentActivators;
