@@ -131,7 +131,7 @@ static void OnGameEvent_player_team(Event event, const char[] name, bool dontBro
 		if (index != -1)
 			g_currentActivators.Erase(index);
 
-		RecalculateActivatorHealth();
+		RecalculateActivatorHealth(.excludeClient = client);
 	}
 }
 
