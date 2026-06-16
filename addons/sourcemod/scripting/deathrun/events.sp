@@ -203,9 +203,17 @@ void RecalculateActivatorHealth(bool refillHealth = false, int excludeClient = 0
 		DRPlayer(activator).ActivatorHealthBonus = bonusPerActivator;
 
 		if (bonusPerActivator > 0)
+		{
 			RunScriptCode(activator, -1, -1, "self.AddCustomAttribute(\"max health additive bonus\", %d, 0)", bonusPerActivator);
+
+			int baseMaxHealth = newMaxHealth - bonusPerActivator;
+			RunScriptCode(activator, -1, -1, "self.AddCustomAttribute(\"health from packs increased\", %f, 0)", float(baseMaxHealth) / float(newMaxHealth));
+		}
 		else
+		{
 			RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"max health additive bonus\")");
+			RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"health from packs increased\")");
+		}
 
 		if (refillHealth)
 			SetEntityHealth(activator, newMaxHealth);
@@ -246,6 +254,7 @@ static void SelectActivatorsAndAssignTeams()
 			continue;
 
 		RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"max health additive bonus\")");
+		RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"health from packs increased\")");
 	}
 
 	Queue_SelectNextActivators();
