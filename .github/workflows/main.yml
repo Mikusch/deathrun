@@ -2,8 +2,12 @@ name: Compile and release
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 env:
   PLUGIN_NAME: deathrun
@@ -18,13 +22,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Prepare include directory
-        run: mkdir -p ${{ env.SCRIPTS_PATH }}/include
+        uses: actions/checkout@v6
 
       - name: Download include files
         run: |
+          set -euo pipefail
+          mkdir -p "${{ env.SCRIPTS_PATH }}/include"
+
           includes=(
             "https://raw.githubusercontent.com/asherkin/TF2Items/master/pawn/tf2items.inc"
             "https://raw.githubusercontent.com/nosoop/SM-TFEconData/master/scripting/include/tf_econ_data.inc"
@@ -32,11 +36,9 @@ jobs:
             "https://raw.githubusercontent.com/DoctorMcKay/sourcemod-plugins/master/scripting/include/morecolors.inc"
           )
 
-          mkdir -p "${{ env.SCRIPTS_PATH }}/include"
-
           for url in "${includes[@]}"; do
             echo "Downloading $url"
-            curl -sSL -O --output-dir "${{ env.SCRIPTS_PATH }}/include" "$url"
+            curl -fsSL -O --output-dir "${{ env.SCRIPTS_PATH }}/include" "$url"
           done
 
       - name: Setup SourcePawn Compiler ${{ matrix.sm-version }}
@@ -49,34 +51,25 @@ jobs:
 
       - name: Compile plugin
         run: |
+          set -euo pipefail
           mkdir -p ../plugins
           spcomp -v2 -E -i "include" -o "../plugins/${{ env.PLUGIN_NAME }}.smx" "${{ env.PLUGIN_NAME }}.sp"
-          echo "=== OUT FILES ==="
-          ls ../plugins
-          echo "=== VERSION ==="
-          echo ${{ steps.setup_sp.outputs.plugin-version }}
         working-directory: ${{ env.SCRIPTS_PATH }}
 
-      - name: Install zip utility
-        uses: montudor/action-zip@v1
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PLUGIN_NAME }}-${{ matrix.sm-version }}
+          path: addons/sourcemod/plugins/${{ env.PLUGIN_NAME }}.smx
+          if-no-files-found: error
 
       - name: Zip output
-        run: |
-          zip -qq -r ${{ github.event.repository.name }}.zip addons/sourcemod
-
-      - name: List build outputs
-        run: |
-          echo "::group::Directory contents"
-          ls -R
-          echo "::endgroup::"
-          echo "::group::Zip contents"
-          unzip -l ${{ github.event.repository.name }}.zip
-          echo "::endgroup::"
+        if: github.event_name != 'pull_request'
+        run: zip -qq -r "${{ github.event.repository.name }}.zip" addons/sourcemod
 
       - name: Create GitHub Release
+        if: github.event_name != 'pull_request'
         uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.setup_sp.outputs.plugin-version }}
