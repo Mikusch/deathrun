@@ -207,12 +207,12 @@ void RecalculateActivatorHealth(bool refillHealth = false, int excludeClient = 0
 			RunScriptCode(activator, -1, -1, "self.AddCustomAttribute(\"max health additive bonus\", %d, 0)", bonusPerActivator);
 
 			int baseMaxHealth = newMaxHealth - bonusPerActivator;
-			RunScriptCode(activator, -1, -1, "self.AddCustomAttribute(\"health from packs increased\", %f, 0)", float(baseMaxHealth) / float(newMaxHealth));
+			RunScriptCode(activator, -1, -1, "self.AddCustomAttribute(\"health from packs decreased\", %f, 0)", float(baseMaxHealth) / float(newMaxHealth));
 		}
 		else
 		{
 			RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"max health additive bonus\")");
-			RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"health from packs increased\")");
+			RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"health from packs decreased\")");
 		}
 
 		if (refillHealth)
@@ -235,13 +235,21 @@ void ApplySpeedModifier(int client)
 	}
 
 	float multiplier = dr_speed_multiplier[class].FloatValue;
-	if (multiplier == 1.0)
+	if (multiplier > 1.0)
+	{
+		RunScriptCode(client, -1, -1, "self.RemoveCustomAttribute(\"move speed penalty\")");
+		RunScriptCode(client, -1, -1, "self.AddCustomAttribute(\"move speed bonus\", %f, 0)", multiplier);
+	}
+	else if (multiplier < 1.0)
 	{
 		RunScriptCode(client, -1, -1, "self.RemoveCustomAttribute(\"move speed bonus\")");
-		return;
+		RunScriptCode(client, -1, -1, "self.AddCustomAttribute(\"move speed penalty\", %f, 0)", multiplier);
 	}
-
-	RunScriptCode(client, -1, -1, "self.AddCustomAttribute(\"move speed bonus\", %f, 0)", multiplier);
+	else
+	{
+		RunScriptCode(client, -1, -1, "self.RemoveCustomAttribute(\"move speed bonus\")");
+		RunScriptCode(client, -1, -1, "self.RemoveCustomAttribute(\"move speed penalty\")");
+	}
 }
 
 static void SelectActivatorsAndAssignTeams()
@@ -254,7 +262,7 @@ static void SelectActivatorsAndAssignTeams()
 			continue;
 
 		RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"max health additive bonus\")");
-		RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"health from packs increased\")");
+		RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"health from packs decreased\")");
 	}
 
 	Queue_SelectNextActivators();
