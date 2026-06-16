@@ -157,7 +157,9 @@ enum struct ItemData
 				LogError("Failed to parse item definition index: %s", section);
 				return false;
 			}
-			
+
+			this.replacement_defindex = -1;
+
 			int prefab = kv.GetNum("prefab", -1);
 			if (prefab != -1)
 			{
@@ -218,7 +220,7 @@ enum struct ItemData
 			}
 			
 			this.remove = kv.GetNum("remove", this.remove) != 0;
-			this.replacement_defindex = kv.GetNum("replacement_defindex", -1);
+			this.replacement_defindex = kv.GetNum("replacement_defindex", this.replacement_defindex);
 			
 			return true;
 		}
@@ -327,19 +329,20 @@ void Config_ApplyItemAttributes(int userid)
 				NetPropData netprop;
 				if (data.netprops.GetArray(j, netprop))
 				{
+					int entity = (netprop.target == Target_Item) ? item : client;
 					switch (netprop.field_type)
 					{
 						case PropField_Integer:
 						{
-							SetEntProp(client, netprop.type, netprop.name, netprop.int_value, _, netprop.element);
+							SetEntProp(entity, netprop.type, netprop.name, netprop.int_value, _, netprop.element);
 						}
 						case PropField_Float:
 						{
-							SetEntPropFloat(client, netprop.type, netprop.name, netprop.float_value, netprop.element);
+							SetEntPropFloat(entity, netprop.type, netprop.name, netprop.float_value, netprop.element);
 						}
 						case PropField_String:
 						{
-							SetEntPropString(client, netprop.type, netprop.name, netprop.value, netprop.element);
+							SetEntPropString(entity, netprop.type, netprop.name, netprop.value, netprop.element);
 						}
 					}
 				}
