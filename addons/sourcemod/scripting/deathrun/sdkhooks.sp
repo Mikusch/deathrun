@@ -170,7 +170,7 @@ static Action OnDroppedWeaponSetTransmit(int entity, int client)
 	int accountID = GetEntProp(entity, Prop_Send, "m_iAccountID");
 	for (int i = 1; i <= MaxClients; ++i)
 	{
-		if (IsClientConnected(i) && (IsFakeClient(i) || GetSteamAccountID(i, false) == accountID) && DRPlayer(client).ShouldHideClient(i))
+		if (IsClientConnected(i) && ((IsFakeClient(i) && accountID == 0) || (!IsFakeClient(i) && GetSteamAccountID(i, false) == accountID)) && DRPlayer(client).ShouldHideClient(i))
 			return Plugin_Handled;
 	}
 	

@@ -163,6 +163,9 @@ public void OnEntityDestroyed(int entity)
 
 public void OnGameFrame()
 {
+	if (!PSM_IsEnabled())
+		return;
+
 	int monsterResource = FindEntityByClassname(-1, "monster_resource");
 	if (monsterResource == -1)
 		return;
@@ -186,7 +189,7 @@ public void OnGameFrame()
 	static float healthBarHideTime;
 	static int oldHealthPercentageByte;
 	
-	int healthPercentageByte = Min(RoundFloat(float(health) / float(maxhealth) * 255), 255);
+	int healthPercentageByte = maxhealth > 0 ? Min(RoundFloat(float(health) / float(maxhealth) * 255), 255) : 0;
 	
 	if (GameRules_GetRoundState() == RoundState_Preround || (oldHealthPercentageByte != 0 && oldHealthPercentageByte != healthPercentageByte))
 	{
