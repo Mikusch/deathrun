@@ -25,6 +25,7 @@ void Events_Init()
 	PSM_AddEventHook("scorestats_accumulated_update", OnGameEvent_scorestats_accumulated_update);
 	PSM_AddEventHook("post_inventory_application", OnGameEvent_post_inventory_application);
 	PSM_AddEventHook("player_spawn", OnGameEvent_player_spawn);
+	PSM_AddEventHook("player_team", OnGameEvent_player_team);
 	PSM_AddEventHook("player_death", OnGameEvent_player_death, EventHookMode_Pre);
 	PSM_AddEventHook("player_healed", OnGameEvent_player_healed, EventHookMode_Pre);
 }
@@ -112,6 +113,25 @@ static void OnPostPlayerSpawn(int userid)
 
 			SetEntityHealth(activator, GetEntProp(activator, Prop_Send, "m_iHealth") + healthToAdd);
 		}
+	}
+}
+
+static void OnGameEvent_player_team(Event event, const char[] name, bool dontBroadcast)
+{
+	if (event.GetBool("disconnect"))
+		return;
+
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if (client == 0)
+		return;
+
+	if (view_as<TFTeam>(event.GetInt("team")) != TFTeam_Activators && DRPlayer(client).IsActivator())
+	{
+		int index = g_currentActivators.FindValue(client);
+		if (index != -1)
+			g_currentActivators.Erase(index);
+
+		RecalculateActivatorHealth();
 	}
 }
 

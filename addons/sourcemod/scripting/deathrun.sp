@@ -115,8 +115,11 @@ public void OnClientDisconnect(int client)
 
 	DRPlayer(client).ActivatorHealthBonus = 0;
 
-	if (!DRPlayer(client).IsActivator())
-		RecalculateActivatorHealth();
+	int index = g_currentActivators.FindValue(client);
+	if (index != -1)
+		g_currentActivators.Erase(index);
+
+	RecalculateActivatorHealth(.excludeClient = client);
 }
 
 public void OnMapStart()
