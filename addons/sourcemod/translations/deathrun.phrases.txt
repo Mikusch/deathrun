@@ -8,6 +8,10 @@
 	{
 		"en"		"You are a {red}RUNNER{default}! Avoid the traps and reach the end of the map!"
 	}
+	"Activator Cannot Suicide"
+	{
+		"en"		"You cannot suicide as the ACTIVATOR!"
+	}
 	"Menu Header"
 	{
 		"en"		"DEATHRUN NEU"

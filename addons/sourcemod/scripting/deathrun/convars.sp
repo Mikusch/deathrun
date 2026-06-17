@@ -23,6 +23,7 @@ void ConVars_Init()
 	dr_activator_health_modifier = CreateConVar("dr_activator_health_modifier", "1.0", "The percentage of health activators gain from every runner.", _, true, 0.0);
 	dr_activator_allow_healthkits = CreateConVar("dr_activator_allow_healthkits", "0", "Whether activators are allowed to pick up health kits.");
 	dr_activator_healthbar_lifetime = CreateConVar("dr_activator_healthbar_lifetime", "5", "The duration to display the activator health bar for after taking damage, in seconds. Set to 0 to disable the health bar.");
+	dr_prevent_activator_escape = CreateConVar("dr_prevent_activator_escape", "0", "Whether to prevent activators from suiciding or switching teams.");
 	dr_disable_regen = CreateConVar("dr_disable_regen", "1", "Whether to disable all passive health and ammo regeneration for players.");
 	dr_allow_teleporter_use = CreateConVar("dr_allow_teleporter_use", "0", "Whether to allow using player-built teleporters.");
 	dr_allow_dispenser_heal = CreateConVar("dr_allow_dispenser_heal", "-1", "Whether player-built dispensers can heal players. -1 = Never heal while in a trigger_hurt. 0 = Never heal. 1 = Always heal.");

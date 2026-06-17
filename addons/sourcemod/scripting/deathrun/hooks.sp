@@ -6,7 +6,9 @@ void Hooks_Init()
 	PSM_AddCommandListener(CommandListener_JoinTeam, "jointeam");
 	PSM_AddCommandListener(CommandListener_JoinTeam, "autoteam");
 	PSM_AddCommandListener(CommandListener_JoinTeam, "spectate");
-	
+	PSM_AddCommandListener(CommandListener_Suicide, "kill");
+	PSM_AddCommandListener(CommandListener_Suicide, "explode");
+
 	PSM_AddNormalSoundHook(OnNormalSoundPlayed);
 }
 
@@ -15,10 +17,10 @@ static Action CommandListener_JoinTeam(int client, const char[] command, int arg
 	if (GameRules_GetRoundState() == RoundState_Pregame || GameRules_GetProp("m_bInWaitingForPlayers"))
 		return Plugin_Continue;
 
-	// Don't allow activators to switch teams in setup
-	if (GameRules_GetRoundState() == RoundState_Preround && DRPlayer(client).IsActivator())
+	// Don't allow activators to switch teams during setup, or at any time when configured
+	if (DRPlayer(client).IsActivator() && (GameRules_GetRoundState() == RoundState_Preround || dr_prevent_activator_escape.BoolValue))
 		return Plugin_Handled;
-	
+
 	if (StrEqual(command, "autoteam", false))
 	{
 		// Rewrite autoteam
@@ -36,6 +38,19 @@ static Action CommandListener_JoinTeam(int client, const char[] command, int arg
 				return Plugin_Handled;
 			}
 		}
+	}
+
+	return Plugin_Continue;
+}
+
+static Action CommandListener_Suicide(int client, const char[] command, int argc)
+{
+	if (dr_prevent_activator_escape.BoolValue && DRPlayer(client).IsActivator() && IsPlayerAlive(client) && GameRules_GetRoundState() != RoundState_Preround)
+	{
+		// nope.avi
+		PrintCenterText(client, "%t", "Activator Cannot Suicide");
+		EmitGameSoundToClient(client, "Player.DenyWeaponSelection");
+		return Plugin_Handled;
 	}
 
 	return Plugin_Continue;

@@ -28,6 +28,7 @@ ConVar dr_activator_count;
 ConVar dr_activator_health_modifier;
 ConVar dr_activator_allow_healthkits;
 ConVar dr_activator_healthbar_lifetime;
+ConVar dr_prevent_activator_escape;
 ConVar dr_disable_regen;
 ConVar dr_allow_teleporter_use;
 ConVar dr_allow_dispenser_heal;
