@@ -12,7 +12,7 @@
 #include <pluginstatemanager>
 #define REQUIRE_EXTENSIONS
 
-#define PLUGIN_VERSION	"2.4.0"
+#define PLUGIN_VERSION	"2.5.0"
 
 ArrayList g_itemData;
 ArrayList g_currentActivators;
