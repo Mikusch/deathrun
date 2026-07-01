@@ -39,8 +39,9 @@ enum struct NetPropData
 			return false;
 		
 		char type[64];
-		if (kv.GetString("type", type, sizeof(type)))
+		if (kv.GetDataType("type") != KvData_None)
 		{
+			kv.GetString("type", type, sizeof(type));
 			if (StrEqual(type, "send"))
 			{
 				this.type = Prop_Send;
@@ -62,8 +63,9 @@ enum struct NetPropData
 		}
 		
 		char field_type[64];
-		if (kv.GetString("field_type", field_type, sizeof(field_type)))
+		if (kv.GetDataType("field_type") != KvData_None)
 		{
+			kv.GetString("field_type", field_type, sizeof(field_type));
 			if (StrEqual(field_type, "int"))
 			{
 				this.field_type = PropField_Integer;
@@ -88,15 +90,17 @@ enum struct NetPropData
 			return false;
 		}
 		
-		if (kv.GetString("value", this.value, sizeof(this.value)))
+		if (kv.GetDataType("value") != KvData_None)
 		{
+			kv.GetString("value", this.value, sizeof(this.value));
 			this.int_value = StringToInt(this.value);
 			this.float_value = StringToFloat(this.value);
 		}
 		
 		char target[64];
-		if (kv.GetString("target", target, sizeof(target)))
+		if (kv.GetDataType("target") != KvData_None)
 		{
+			kv.GetString("target", target, sizeof(target));
 			if (StrEqual(target, "player"))
 			{
 				this.target = Target_Player;
