@@ -47,6 +47,15 @@ any Min(any a, any b)
 	return (a <= b) ? a : b;
 }
 
+void ResyncMaxHealth(int client)
+{
+	if (TF2_GetPlayerClass(client) == TFClass_Unknown)
+		return;
+
+	// The game only writes m_iMaxHealth during InitClass(), where it still sees attributes that are stripped later
+	RunScriptCode(client, -1, -1, "self.SetMaxHealth(self.GetMaxHealth())");
+}
+
 int Compare(any val1, any val2)
 {
 	if (val1 > val2)

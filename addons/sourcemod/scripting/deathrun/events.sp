@@ -66,11 +66,10 @@ static void OnGameEvent_player_spawn(Event event, const char[] name, bool dontBr
 
 	RequestFrame(OnPostPlayerSpawn, userid);
 
-	// The game resets m_iMaxHealth during InitClass(), so tracked health must be zeroed here before any RequestFrame callbacks run
+	// The game rewrites m_iMaxHealth during InitClass(), so tracked health must be zeroed here before any RequestFrame callbacks run
 	DRPlayer(client).ActivatorHealthBonus = 0;
 
-	if (!DRPlayer(client).IsActivator())
-		SetEntProp(client, Prop_Send, "m_bGlowEnabled", dr_runner_glow.BoolValue);
+	SetEntProp(client, Prop_Send, "m_bGlowEnabled", !DRPlayer(client).IsActivator() && dr_runner_glow.BoolValue);
 }
 
 static void OnPostPlayerSpawn(int userid)
@@ -79,24 +78,14 @@ static void OnPostPlayerSpawn(int userid)
 	if (client == 0)
 		return;
 
+	ResyncMaxHealth(client);
+
 	ApplySpeedModifier(client);
 
-	bool preround = GameRules_GetRoundState() == RoundState_Preround;
-	RecalculateActivatorHealth(preround);
+	if (DRPlayer(client).IsActivator())
+		DRPlayer(client).OnPreferencesChanged(Preference_DisableActivatorSpeedBuff);
 
-	// If runner spawned mid-round, add health to activators
-	if (!DRPlayer(client).IsActivator() && !preround && g_currentActivators.Length > 0)
-	{
-		int healthToAdd = RoundFloat(DRPlayer(client).GetMaxHealth() * dr_activator_health_modifier.FloatValue) / g_currentActivators.Length;
-		for (int i = 0; i < g_currentActivators.Length; ++i)
-		{
-			int activator = g_currentActivators.Get(i);
-			if (!IsClientInGame(activator) || !IsPlayerAlive(activator))
-				continue;
-
-			SetEntityHealth(activator, GetEntProp(activator, Prop_Send, "m_iHealth") + healthToAdd);
-		}
-	}
+	RecalculateActivatorHealth();
 }
 
 static void OnGameEvent_player_team(Event event, const char[] name, bool dontBroadcast)
@@ -164,10 +153,12 @@ static Action OnGameEvent_player_healed(Event event, const char[] name, bool don
 	return Plugin_Continue;
 }
 
-void RecalculateActivatorHealth(bool refillHealth = false, int excludeClient = 0)
+void RecalculateActivatorHealth(int excludeClient = 0)
 {
 	if (g_currentActivators.Length == 0)
 		return;
+
+	bool preround = GameRules_GetRoundState() == RoundState_Preround;
 
 	int totalRunnerHealth = 0;
 	for (int client = 1; client <= MaxClients; ++client)
@@ -198,6 +189,8 @@ void RecalculateActivatorHealth(bool refillHealth = false, int excludeClient = 0
 		if (!IsClientInGame(activator) || !IsPlayerAlive(activator))
 			continue;
 
+		ResyncMaxHealth(activator);
+
 		int oldBonus = DRPlayer(activator).ActivatorHealthBonus;
 		int oldMaxHealth = GetEntProp(activator, Prop_Data, "m_iMaxHealth");
 		int newMaxHealth = oldMaxHealth - oldBonus + bonusPerActivator;
@@ -218,8 +211,16 @@ void RecalculateActivatorHealth(bool refillHealth = false, int excludeClient = 0
 			RunScriptCode(activator, -1, -1, "self.RemoveCustomAttribute(\"health from packs decreased\")");
 		}
 
-		if (refillHealth)
+		if (preround)
+		{
 			SetEntityHealth(activator, newMaxHealth);
+		}
+		else if (oldMaxHealth > 0 && newMaxHealth > oldMaxHealth)
+		{
+			int health = GetEntProp(activator, Prop_Data, "m_iHealth");
+			if (health < newMaxHealth)
+				SetEntityHealth(activator, Min(newMaxHealth, health * newMaxHealth / oldMaxHealth));
+		}
 	}
 }
 
