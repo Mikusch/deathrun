@@ -12,12 +12,10 @@ ArrayList GetEntityChildren(int entity)
 {
 	ArrayList list = new ArrayList();
 	
-	int count = 0;
 	int child = GetEntPropEnt(entity, Prop_Data, "m_hMoveChild");
 	while (child != -1)
 	{
 		list.Push(child);
-		count++;
 		child = GetEntPropEnt(child, Prop_Data, "m_hMovePeer");
 	}
 	
